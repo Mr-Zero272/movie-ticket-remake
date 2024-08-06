@@ -15,6 +15,12 @@ public class RouteConfig {
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
+                .route("media-service", predicateSpec ->
+                        predicateSpec.path("/api/v2/moon-movie/media/**")
+                                .filters(f -> f
+                                        .rewritePath("/api/v2/moon-movie/media/images//(?<segment>.*)", "/images/${segment}")
+                                        .rewritePath("/api/v2/moon-movie/media/videos//(?<segment>.*)", "/videos/${segment}"))
+                                .uri("lb://media-service"))
                 .route("user-service", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/user/**")
                                 .filters(f -> f.rewritePath("/api/v2/moon-movie/user//(?<segment>.*)", "/user/${segment}")
