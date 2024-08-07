@@ -1,12 +1,16 @@
 package com.moonmovie.movie_service.controllers;
 
 import com.moonmovie.movie_service.models.Movie;
+import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.requests.MovieRequest;
+import com.moonmovie.movie_service.requests.ScheduleRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v2/moon-movie/movie")
@@ -36,6 +40,12 @@ public class MovieController {
     @PutMapping("/{movieId}")
     public ResponseEntity<Movie> updateMovie(@PathVariable("movieId") int id, @RequestBody MovieRequest request) {
         return ResponseEntity.ok(movieService.updateMovie(id, request));
+    }
+
+    @PostMapping("/schedule")
+    public ResponseEntity<List<Showing>> scheduleMovie(@RequestBody ScheduleRequest request) {
+        // TODO check role in the request
+        return ResponseEntity.ok(movieService.schedule(request.getMonth(), request.getYear(), "ADMIN"));
     }
 
 }

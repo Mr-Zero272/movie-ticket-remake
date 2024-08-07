@@ -4,10 +4,11 @@ import com.moonmovie.movie_service.constants.MovieErrorConstants;
 import com.moonmovie.movie_service.dao.DetailShowingTypeDao;
 import com.moonmovie.movie_service.dao.GenreDao;
 import com.moonmovie.movie_service.dao.MovieDao;
+import com.moonmovie.movie_service.dao.ShowingDao;
+import com.moonmovie.movie_service.dto.ShowingDto;
 import com.moonmovie.movie_service.exceptions.MovieException;
-import com.moonmovie.movie_service.models.DetailShowingType;
-import com.moonmovie.movie_service.models.Genre;
-import com.moonmovie.movie_service.models.Movie;
+import com.moonmovie.movie_service.helpers.DateTimeTransfer;
+import com.moonmovie.movie_service.models.*;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.MovieService;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -32,6 +34,11 @@ public class MovieServiceImpl implements MovieService {
 
     @Autowired
     private DetailShowingTypeDao detailShowingTypeDao;
+
+    @Autowired
+    private DateTimeTransfer dateTimeTransfer;
+    @Autowired
+    private ShowingDao showingDao;
 
     @Override
     public PaginationResponse<Movie> getAllMovies(int page, int size) {
@@ -56,7 +63,12 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public Movie addMovie(MovieRequest request) {
         // Check if max showings in the month
-        int totalShowingsThisMoth = movieDao.sumTotalShowings(request.getMonthToSchedule(), request.getYearToSchedule());
+        int totalShowingsThisMoth = 0;
+        try {
+         totalShowingsThisMoth = movieDao.sumTotalShowings(request.getMonthToSchedule(), request.getYearToSchedule());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (totalShowingsThisMoth > 30 * 8 * 10) {
             throw new MovieException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
         }
@@ -73,7 +85,7 @@ public class MovieServiceImpl implements MovieService {
             detailShowingType.setMovie(movie);
             detailShowingTypeDao.save(detailShowingType);
         }
-        return  moveSaved;
+        return moveSaved;
     }
 
     @Override
@@ -100,7 +112,7 @@ public class MovieServiceImpl implements MovieService {
 
             return movieDao.save(movie.get());
         }
-        return  null;
+        return null;
     }
 
     @Override
@@ -115,7 +127,90 @@ public class MovieServiceImpl implements MovieService {
             movie.get().setDetailShowingTypes(detailShowingTypes);
             return movieDao.save(movie.get());
         }
-        return  null;
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public List<Showing> schedule(int month, int year, String role) {
+        if (!role.equalsIgnoreCase("ADMIN")) {
+            throw new MovieException(MovieErrorConstants.ERROR_DO_NOT_HAVE_PERMISSION);
+        }
+
+        if (showingDao.countByMonthAndYear(month, year) > 0) {
+            throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
+        }
+
+        final int restTime = 20;
+        final int maxScreeningsPerDay = 7;
+        LocalDateTime startDate = LocalDateTime.of(year, month, 1, 0, 0);
+        // start at 6:00 am
+        LocalDateTime startTimeToSchedule = dateTimeTransfer.calculateDatePlusHours(startDate, 6F);
+
+        List<Movie> moviesToSchedule = movieDao.findAllByMonthToScheduleAndYearToSchedule(month, year);
+        List<List<DetailShowingType>> detailShowingTypes = moviesToSchedule.stream().map(movie -> movie.getDetailShowingTypes()).toList();
+
+        // synchronous -> use http/https request to get auditorium id
+        // TODO replace this to a real call http to seat-service
+        List<String> auditoriumIds = List.of("aud1", "ud2");
+
+        List<AuditoriumState> auditoriumStates = new ArrayList<>();
+        for (String auditoriumId : auditoriumIds) {
+            AuditoriumState auditoriumState = new AuditoriumState(auditoriumId, startTimeToSchedule, 0);
+            auditoriumStates.add(auditoriumState);
+        }
+
+        List<Showing> showings = new ArrayList<>();
+
+        int indexAuditorium = 0;
+        int screeningCount = 0;
+        int breakState = 0;
+        // dell choi cai giai thuat cu nua
+        // mac du hoi cham hon nhung khoi ruom ra
+        for (Movie movie : moviesToSchedule) {
+            for (DetailShowingType detailShowingType : movie.getDetailShowingTypes()) {
+                for (int i = 0; i < detailShowingType.getShowings(); i++) {
+
+                    // if all auditorium are scheduled turn it to next date
+                    if(screeningCount == auditoriumIds.size() * maxScreeningsPerDay) {
+                        screeningCount = 0;
+                        LocalDateTime nextDay = dateTimeTransfer.getNextDay(auditoriumStates.get(0).getLastScreeningsStartTime());
+                        LocalDateTime newStartTime = dateTimeTransfer.calculateDatePlusHours(nextDay, 7F);
+                        for (AuditoriumState auditoriumState : auditoriumStates) {
+                            auditoriumState.setTotalScreeningsScheduled(0);
+                            auditoriumState.setLastScreeningsStartTime(newStartTime);
+                        }
+                        indexAuditorium = 0;
+                    }
+
+                    // create object schedule
+                    Showing showing = Showing.builder()
+                            .type(detailShowingType.getName())
+                            .startTime(auditoriumStates.get(indexAuditorium).getLastScreeningsStartTime())
+                            .auditoriumId(auditoriumStates.get(indexAuditorium).getAuditoriumId())
+                            .priceEachSeat(movie.getPriceEachSeat())
+                            .movie(movie)
+                            .build();
+
+                    showings.add(showing);
+                    screeningCount++;
+
+                    //update auditorium state
+                    LocalDateTime lScreeningStart = auditoriumStates.get(indexAuditorium).getLastScreeningsStartTime();
+                    int movieDuration = movie.getRuntime();
+                    auditoriumStates.get(indexAuditorium).setLastScreeningsStartTime(dateTimeTransfer.calculateDatePlusMinutes(lScreeningStart, movieDuration + restTime));
+                    auditoriumStates.get(indexAuditorium).setTotalScreeningsScheduled(auditoriumStates.get(indexAuditorium).getTotalScreeningsScheduled() + 1);
+
+                    // increase index to next auditorium
+                    indexAuditorium++;
+                    if (indexAuditorium == auditoriumIds.size()) {
+                        indexAuditorium = 0;
+                    }
+                }
+            }
+        }
+
+        return showingDao.saveAll(showings);
     }
 
     private Movie convertMovieRequestToMovie(MovieRequest movieRequest) {
@@ -131,6 +226,7 @@ public class MovieServiceImpl implements MovieService {
         movie.setBackdropPath(movieRequest.getBackdropPath());
         movie.setVoteAverage(movieRequest.getVoteAverage());
         movie.setVoteCount(movieRequest.getVoteCount());
+        movie.setRuntime(movieRequest.getRuntime());
         movie.setReleaseDate(movieRequest.getReleaseDate());
 
         List<Genre> genres = genreDao.findAllByIdIn(movieRequest.getGenreIds());
@@ -141,6 +237,7 @@ public class MovieServiceImpl implements MovieService {
         movie.setMonthToSchedule(movieRequest.getMonthToSchedule());
         movie.setYearToSchedule(movieRequest.getYearToSchedule());
         movie.setTotalShowings(movieRequest.getTotalShowings());
+        movie.setPriceEachSeat(movieRequest.getPriceEachSeat());
 
         return movie;
     }

@@ -28,5 +28,7 @@ public class MovieRequest {
     private int monthToSchedule;
     private int yearToSchedule = 2024;
     private int totalShowings;
+    private int priceEachSeat;
+
     private List<DetailShowingType> detailShowingTypes;
 }

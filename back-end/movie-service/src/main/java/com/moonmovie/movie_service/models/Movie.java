@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,9 +51,14 @@ public class Movie implements Serializable {
     private int monthToSchedule;
     private int yearToSchedule = 2024;
     private int totalShowings;
+    private int priceEachSeat;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
     private List<DetailShowingType> detailShowingTypes = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
+    @JsonIgnore
+    private List<Showing> showings = new ArrayList<>();
 
 }
 

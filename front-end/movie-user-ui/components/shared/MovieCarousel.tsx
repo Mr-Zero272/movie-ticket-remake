@@ -55,6 +55,14 @@ const carouselTestData = [
         overview:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
     },
+    {
+        id: '7lkj5',
+        title: "I've been reading books of old",
+        releaseDate: '2023-05-01',
+        runtime: 102,
+        overview:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
+    },
 ];
 
 type Props = {};
@@ -63,7 +71,7 @@ function MovieCarousel({}: Props) {
     const [api, setApi] = useState<CarouselApi>();
     const [current, setCurrent] = useState(0);
     const [count, setCount] = useState(0);
-    const plugin = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
+    const plugin = useRef(Autoplay({ delay: 5000 }));
 
     useEffect(() => {
         if (!api) {
@@ -77,6 +85,24 @@ function MovieCarousel({}: Props) {
             setCurrent(api.selectedScrollSnap() + 1);
         });
     }, [api]);
+
+    const renderDots = (dots: number = 5) => {
+        let dotElements = [];
+        for (let i = 0; i < dots; i++) {
+            dotElements.push(
+                <div
+                    key={i}
+                    className={cn(
+                        'h-2.5 w-2.5 cursor-pointer rounded-full border border-primary transition-all duration-300 ease-linear',
+                        { 'w-6 bg-primary': i + 1 === current },
+                    )}
+                    onClick={() => api?.scrollTo(i)}
+                />,
+            );
+        }
+        return dotElements;
+    };
+
     return (
         <div className="">
             <Carousel
@@ -122,32 +148,7 @@ function MovieCarousel({}: Props) {
                     ))}
                 </CarouselContent>
             </Carousel>
-            <div className="my-5 flex justify-center gap-x-2">
-                <div
-                    className={cn(
-                        'h-2.5 w-2.5 rounded-full border border-primary transition-all duration-300 ease-linear',
-                        { 'w-6 bg-primary': 1 === current },
-                    )}
-                ></div>
-                <div
-                    className={cn(
-                        'h-2.5 w-2.5 rounded-full border border-primary transition-all duration-300 ease-linear',
-                        { 'w-6 bg-primary': 2 === current },
-                    )}
-                ></div>
-                <div
-                    className={cn(
-                        'h-2.5 w-2.5 rounded-full border border-primary transition-all duration-300 ease-linear',
-                        { 'w-6 bg-primary': 3 === current },
-                    )}
-                ></div>
-                <div
-                    className={cn(
-                        'h-2.5 w-2.5 rounded-full border border-primary transition-all duration-300 ease-linear',
-                        { 'w-6 bg-primary': 4 === current },
-                    )}
-                ></div>
-            </div>
+            <div className="my-5 flex justify-center gap-x-2">{renderDots()}</div>
         </div>
     );
 }

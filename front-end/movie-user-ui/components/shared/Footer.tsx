@@ -9,8 +9,16 @@ function Footer({}: Props) {
         <footer className="body-font text-gray-600">
             <div className="container mx-auto flex flex-col items-center px-5 py-8 sm:flex-row">
                 <a className="title-font flex items-center justify-center font-medium text-gray-900 md:justify-start">
-                    <Image src="/assets/logo.svg" alt="logo" width={40} height={40} />
-                    <span className="ml-3 text-xl dark:text-white">MoonMovie</span>
+                    <Image
+                        src="/assets/logo.svg"
+                        className="hidden max-sm:inline-block"
+                        alt="logo"
+                        width={40}
+                        height={40}
+                    />
+                    <span className="ml-3 text-xl dark:text-white">
+                        Moon<span className="text-primary"> M</span>ovie
+                    </span>
                 </a>
                 <p className="mt-4 text-sm text-gray-500 sm:ml-4 sm:mt-0 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:pl-4">
                     © 2024 MoonMovie —
