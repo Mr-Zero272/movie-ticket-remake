@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { DropdownMenu, DropdownMenuItem } from '../ui/dropdown-menu-custom';
 import { LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { fetchRecommendKeywords } from '@/services/recommendServices';
 
 type Props = {
     className?: string;
@@ -46,6 +47,8 @@ function Search({ className }: Props) {
         const fetchApi = async () => {
             setLoading(true);
 
+            const res = await fetchRecommendKeywords(debounced);
+
             // const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${debounced}`, {
             //     headers: {
             //         Authorization:
@@ -54,14 +57,10 @@ function Search({ className }: Props) {
             // });
             // const data = await response.json();
             // TODO: delete this block code
-            const res = await new Promise<void>((resolve, reject) => {
-                setTimeout(() => {
-                    resolve();
-                }, 1000);
-            });
-            const fakeData = ['result 1', 'result 2'];
-            fakeData.push(debounced);
-            setSearchResult(fakeData);
+            console.log(res);
+
+            res.push(debounced);
+            setSearchResult(res);
 
             setLoading(false);
         };

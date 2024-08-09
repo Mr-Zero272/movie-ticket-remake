@@ -23,6 +23,7 @@ public class MovieRequest {
     private int runtime;
     private LocalDate releaseDate;
     private List<Integer> genreIds;
+    private List<String> galleries;
 
     // for schedule
     private int monthToSchedule;

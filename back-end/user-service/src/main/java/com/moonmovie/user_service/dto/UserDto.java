@@ -1,9 +1,12 @@
 package com.moonmovie.user_service.dto;
 
+import com.moonmovie.user_service.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * User Dto
@@ -22,4 +25,9 @@ public class UserDto {
     private String bio;
     private String avatar;
     private boolean onboarded;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
+
+    private Role role;
 }

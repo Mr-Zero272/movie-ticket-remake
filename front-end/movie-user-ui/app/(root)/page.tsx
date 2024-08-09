@@ -1,32 +1,22 @@
 import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
 import MovieCarousel from '@/components/shared/MovieCarousel';
 import ScrollList from '@/components/shared/ScrollList';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clapperboard, FileVideo, FileVolume, Headset, Ticket, Users } from 'lucide-react';
-import { useState } from 'react';
+import { fetchUser } from '@/services';
+import { currentUser } from '@clerk/nextjs/server';
+import { FileVideo, Headset, Ticket, Users } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
-    const slides = [
-        {
-            title: 'Slide 1',
-            description: 'This is the first slide',
-            imageBg: 'https://get.wallhere.com/photo/anime-anime-girls-blue-archive-2268408.jpg',
-        },
-        {
-            title: 'Slide 2',
-            description: 'This is the second slide',
-            imageBg:
-                'https://get.wallhere.com/photo/Omagari-Hare-Blue-Archive-blue-archive-anime-games-anime-anime-girls-gray-hair-green-eyes-2304886.jpg',
-        },
-        {
-            title: 'Slide 3',
-            description: 'This is the third slide',
-            imageBg:
-                'https://get.wallhere.com/photo/Honkai-Star-Rail-artwork-Robin-Honkai-Star-Rail-anime-anime-girls-gray-hair-green-eyes-flowers-dress-barefoot-earring-2301280.jpg',
-        },
-    ];
+export default async function Home() {
+    // const user = await currentUser();
 
+    // if (!user) return null;
+
+    // console.log(user.id);
+
+    // const userInfo = await fetchUser(user.id);
+
+    // if (!userInfo?.onboarded) redirect('/onboarding');
     return (
         <div className="p-4">
             <MovieCarousel />

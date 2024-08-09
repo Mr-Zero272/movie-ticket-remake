@@ -26,6 +26,18 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'i.pinimg.com',
             },
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+            },
+            {
+                protocol: 'https',
+                hostname: 'image.tmdb.org',
+            },
+            {
+                protocol: 'https',
+                hostname: 'utfs.io',
+            },
         ],
     },
 };

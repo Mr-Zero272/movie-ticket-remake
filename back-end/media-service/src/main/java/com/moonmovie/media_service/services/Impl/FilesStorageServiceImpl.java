@@ -3,6 +3,7 @@ package com.moonmovie.media_service.services.Impl;
 import com.moonmovie.media_service.constants.MediaErrorConstants;
 import com.moonmovie.media_service.exceptions.MediaException;
 import com.moonmovie.media_service.services.FilesStorageService;
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,9 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
@@ -58,7 +61,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
         List<String> pathsFileAfterSaved = new ArrayList<>();
         files.forEach(file -> {
             try {
-                String fileName = UUID.randomUUID() + file.getOriginalFilename();
+                String fileName = RandomStringUtils.random(28, true, true) + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                 Files.copy(file.getInputStream(), finalPath.resolve(fileName));
                 if (type.equals("image")) {
                     pathsFileAfterSaved.add("http://localhost:8272/api/v2/moon-movie/media/images/" + fileName);
@@ -73,6 +76,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
                 throw new MediaException(500, e.getMessage());
             }
         });
+
         return pathsFileAfterSaved;
     }
 
@@ -81,7 +85,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
         Path finalPath = getPath(type);
         String pathFileAfterSaved = "";
         try {
-            String fileName = UUID.randomUUID() + file.getOriginalFilename();
+            String fileName = RandomStringUtils.random(28, true, true) + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
             Files.copy(file.getInputStream(), finalPath.resolve(fileName));
             if (type.equals("image")) {
                 pathFileAfterSaved = "http://localhost:8272/api/v2/moon-movie/media/images/" + fileName;

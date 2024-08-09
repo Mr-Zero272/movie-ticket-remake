@@ -18,7 +18,7 @@ public interface UserService {
      * @return User info after update
      * @throws UserException if have any error occurs
      */
-    public UserDto updateUser(UserDto userInfo, String userClerkId);
+    public User updateUser(UserDto userInfo, String userClerkId);
 
     /**
      * Add new user.
@@ -27,7 +27,7 @@ public interface UserService {
      * @return User info after added
      * @throws UserException if have any error occurs
      */
-    public UserDto addUser(UserDto userInfo);
+    public User addUser(UserDto userInfo);
 
     /**
      * Get user info by user's id.

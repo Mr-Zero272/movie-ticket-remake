@@ -16,3 +16,11 @@ export function isBase64Image(imageData: string) {
 export function timeAgo(date: string) {
     return formatDistanceToNow(parseISO(date), { addSuffix: true });
 }
+
+export function formatCurrencyUSD(currency: number) {
+    let USDollar = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    return USDollar.format(currency);
+}

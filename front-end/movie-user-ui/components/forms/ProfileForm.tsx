@@ -12,6 +12,8 @@ import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
 import Image from 'next/image';
 import * as z from 'zod';
+import { addUser, updateClerkUserImage, updateClerkUserInfo, updateUser } from '@/services';
+import { useUser } from '@clerk/nextjs';
 
 type UserInfo = {
     username: string;
@@ -22,9 +24,21 @@ type UserInfo = {
 
 type Props = {
     user: User;
+    title: string;
+    sub: string;
+    type: 'create' | 'update';
 };
 
-function ProfileForm({ user }: Props) {
+export const UserSchema = z.object({
+    username: z.string().min(3).max(30),
+    name: z.string().min(3).max(30),
+    bio: z.string().min(3).max(1000),
+    avatar: z.string().url(),
+});
+
+function ProfileForm({ user, title, sub, type }: Props) {
+    const userObject = useUser();
+
     const [files, setFiles] = useState<File[]>([]);
     const { startUpload } = useUploadThing('media');
     const inputImageRef = useRef<HTMLInputElement>(null);
@@ -32,7 +46,7 @@ function ProfileForm({ user }: Props) {
     const pathname = usePathname();
 
     const form = useForm({
-        resolver: zodResolver(UserValidation),
+        resolver: zodResolver(UserSchema),
         defaultValues: {
             username: user.username || '',
             name: user.name || '',
@@ -65,33 +79,41 @@ function ProfileForm({ user }: Props) {
 
     const onSubmit = async (values: UserInfo) => {
         const blob = values.avatar;
-
         const hasImageChanged = isBase64Image(blob);
 
         if (hasImageChanged) {
+            console.log(files[0].name);
             const imgRes = await startUpload(files);
-
+            // await updateClerkUserImage(files[0], user.userClerkId);
+            await userObject.user?.setProfileImage({ file: files[0] });
             if (imgRes && imgRes[0].url) {
                 values.avatar = imgRes[0].url;
             }
         }
 
-        await setTimeout(() => {
-            console.log(123);
-        }, 1000);
-
-        // await updateUser({
-        //     userId: user.id,
-        //     username: values.username,
-        //     name: values.name,
-        //     bio: values.bio,
-        //     image: values.profile_photo,
-        //     path: pathname,
-        // });
-
-        if (pathname === '/profile/edit') {
-            router.back();
+        if (type === 'create') {
+            await addUser({
+                id: '',
+                userClerkId: user.userClerkId,
+                username: values.username,
+                name: values.name,
+                bio: values.bio,
+                avatar: values.avatar,
+                onboarded: true,
+                createdAt: '',
+                modifiedAt: '',
+                role: 'USER',
+            });
+            if (values.username !== user.username || values.name !== user.name) {
+                await updateClerkUserInfo(values.username, values.name, '', user.userClerkId);
+            }
         } else {
+            await setTimeout(() => {
+                console.log(123);
+            }, 1000);
+        }
+
+        if (!pathname.includes('/profile')) {
             router.push('/');
         }
     };
@@ -99,8 +121,8 @@ function ProfileForm({ user }: Props) {
     return (
         <div className="px-4 py-5">
             <div className="mb-5">
-                <h2 className="text-4xl">Your Profile</h2>
-                <p className="text-gray-500">Manage profile information for account security</p>
+                <h2 className="text-4xl">{title}</h2>
+                <p className="text-gray-500">{sub}</p>
             </div>
             <Form {...form}>
                 <form className="flex flex-col-reverse md:flex-row" onSubmit={form.handleSubmit(onSubmit)}>
@@ -111,10 +133,12 @@ function ProfileForm({ user }: Props) {
                             render={({ field }) => (
                                 <FormItem className="my-7 flex w-full items-center">
                                     <FormLabel className="w-1/4 text-right text-gray-400">Name: </FormLabel>
-                                    <FormControl>
-                                        <Input type="text" className="no-focus ml-7 w-3/4" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
+                                    <div className="flex w-3/4 flex-col">
+                                        <FormControl>
+                                            <Input type="text" className="no-focus ml-7" {...field} />
+                                        </FormControl>
+                                        <FormMessage className="mt-1 text-sm" />
+                                    </div>
                                 </FormItem>
                             )}
                         />
@@ -124,10 +148,12 @@ function ProfileForm({ user }: Props) {
                             render={({ field }) => (
                                 <FormItem className="my-7 flex w-full items-center">
                                     <FormLabel className="w-1/4 text-right text-gray-400">Username: </FormLabel>
-                                    <FormControl>
-                                        <Input type="text" className="no-focus ml-7 w-3/4" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
+                                    <div className="flex w-3/4 flex-col">
+                                        <FormControl>
+                                            <Input type="text" className="no-focus ml-7" {...field} />
+                                        </FormControl>
+                                        <FormMessage className="mt-1 text-sm" />
+                                    </div>
                                 </FormItem>
                             )}
                         />
@@ -137,10 +163,12 @@ function ProfileForm({ user }: Props) {
                             render={({ field }) => (
                                 <FormItem className="my-7 flex w-full items-center">
                                     <FormLabel className="w-1/4 text-right text-gray-400">Bio: </FormLabel>
-                                    <FormControl>
-                                        <Textarea rows={8} className="no-focus ml-7 w-3/4" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
+                                    <div className="flex w-3/4 flex-col">
+                                        <FormControl>
+                                            <Textarea rows={8} className="no-focus ml-7" {...field} />
+                                        </FormControl>
+                                        <FormMessage className="mt-1 text-sm" />
+                                    </div>
                                 </FormItem>
                             )}
                         />
@@ -148,7 +176,9 @@ function ProfileForm({ user }: Props) {
                             <div className="w-1/4 text-right"></div>
 
                             <div className="ml-7 w-3/4">
-                                <Button type="submit">Save</Button>
+                                <Button type="submit" loading={form.formState.isSubmitting}>
+                                    Save
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -182,7 +212,8 @@ function ProfileForm({ user }: Props) {
                                         )}
                                         <Button
                                             variant="outline"
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.preventDefault();
                                                 if (inputImageRef.current) {
                                                     inputImageRef.current.click();
                                                 }

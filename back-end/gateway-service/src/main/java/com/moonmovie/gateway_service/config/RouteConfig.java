@@ -33,9 +33,9 @@ public class RouteConfig {
                 .route("movie-service", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/movie/**")
                                 .uri("lb://movie-service"))
-                .route("search-service", predicateSpec ->
-                        predicateSpec.path("/api/v2/moon-movie/search/**")
-                                .uri("lb://search-service"))
+                .route("recommend-service", predicateSpec ->
+                        predicateSpec.path("/api/v2/moon-movie/recommend/**")
+                                .uri("lb://recommend-service"))
                 .build();
     }
 }

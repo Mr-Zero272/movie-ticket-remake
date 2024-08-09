@@ -1,9 +1,20 @@
 import { timeAgo } from '@/lib/utils';
+import { fetchUser } from '@/services';
+import { currentUser } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import React from 'react';
 
 type Props = {};
 
-const Page = (props: Props) => {
+const Page = async (props: Props) => {
+    const user = await currentUser();
+
+    if (!user) return null;
+
+    const userInfo = await fetchUser(user.id);
+    console.log(userInfo);
+
+    if (!userInfo?.onboarded) redirect('/onboarding');
     return (
         <div className="p-4">
             <div className="mb-5">

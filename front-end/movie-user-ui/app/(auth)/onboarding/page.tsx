@@ -1,31 +1,36 @@
-import AccountProfile from '@/components/forms/AccountProfile';
 import { currentUser } from '@clerk/nextjs/server';
 import { type User } from '@/types/user';
+import ProfileForm from '@/components/forms/ProfileForm';
 
 async function Page() {
     const user = await currentUser();
 
-    const userInfo = {
-        _id: '',
-        username: '',
-        name: '',
+    if (!user) {
+        return null;
+    }
+
+    const userInfo: User = {
+        id: '',
+        userClerkId: user.id || '',
+        username: user.username || '',
+        name: user.fullName || '',
         bio: '',
-        image: '',
+        avatar: user.imageUrl || '',
+        onboarded: false,
+        createdAt: '',
+        modifiedAt: '',
+        role: 'USER',
     };
-    const userData: User = {
-        id: user?.id || '',
-        objectId: userInfo?._id || '',
-        username: userInfo?.username || user?.username || '',
-        name: userInfo?.name || user?.firstName || '',
-        bio: userInfo?.bio || '',
-        image: userInfo?.image || user?.imageUrl || '',
-    };
+
     return (
-        <main className="mx-auto flex max-w-3xl flex-col justify-start px-10 py-20">
-            <h1 className="head-text">On boarding</h1>
-            <p className="text-base-regular text-light-2 mt-3">Complete your profile now to use Threads</p>
-            <section className="bg-dark-2 mt-9 p-10">
-                <AccountProfile user={userData} btnTitle="Continue" />
+        <main className="mx-auto flex w-3/4 flex-col justify-start px-10 py-10 max-xl:w-full max-lg:px-3">
+            <section className="p-10">
+                <ProfileForm
+                    title="On Boarding"
+                    sub="Complete your profile now to use Moon Movie"
+                    user={userInfo}
+                    type="create"
+                />
             </section>
         </main>
     );

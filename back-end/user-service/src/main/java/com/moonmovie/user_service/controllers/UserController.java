@@ -1,6 +1,7 @@
 package com.moonmovie.user_service.controllers;
 
 import com.moonmovie.user_service.dto.UserDto;
+import com.moonmovie.user_service.models.User;
 import com.moonmovie.user_service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +19,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<User> createUser(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.addUser(userDto));
     }
 
     @PutMapping("/{userClerkId}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable("userClerkId") String userClerkId, @RequestBody UserDto userDto) {
+    public ResponseEntity<User> updateUser(@PathVariable("userClerkId") String userClerkId, @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.updateUser(userDto, userClerkId));
     }
 }

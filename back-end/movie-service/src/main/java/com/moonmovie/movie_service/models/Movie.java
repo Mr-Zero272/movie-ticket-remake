@@ -32,6 +32,8 @@ public class Movie implements Serializable {
     private boolean adult;
     private int budget;
     private String originalLanguage;
+    @Lob
+    @Column(length = 1000)
     private String overview;
     private String status;
     private String video;
@@ -55,6 +57,9 @@ public class Movie implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
     private List<DetailShowingType> detailShowingTypes = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
+    private List<Gallery> galleries = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
     @JsonIgnore

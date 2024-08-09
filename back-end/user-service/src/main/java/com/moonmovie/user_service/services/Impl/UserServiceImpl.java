@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
      * @throws UserException if have any error occurs
      */
     @Override
-    public UserDto updateUser(UserDto userInfo, String userClerkId) {
+    public User updateUser(UserDto userInfo, String userClerkId) {
         Optional<User> userInDb = userDao.findByUserClerkId(userClerkId);
         if (userInDb.isPresent()) {
             userInDb.get().setUsername(userInfo.getUsername());
@@ -39,15 +39,15 @@ public class UserServiceImpl implements UserService {
             userInDb.get().setBio(userInfo.getBio());
             userInDb.get().setAvatar(userInfo.getAvatar());
             userInDb.get().setModifiedAt(LocalDateTime.now());
-            userDao.save(userInDb.get());
-            return userInfo;
+
+            return userDao.save(userInDb.get());
         } else {
             throw new UserException(UserErrorConstants.ERROR_USER_NOT_FOUND);
         }
     }
 
     @Override
-    public UserDto addUser(UserDto userInfo) {
+    public User addUser(UserDto userInfo) {
         Optional<User> userInDb = userDao.findByUsername(userInfo.getUsername());
         if (userInDb.isPresent()) {
             throw new UserException(UserErrorConstants.ERROR_USERNAME_EXISTS);
@@ -58,8 +58,7 @@ public class UserServiceImpl implements UserService {
         user.setRole(Role.USER);
         user.setOnboarded(true);
 
-        userDao.save(user);
-        return userInfo;
+        return userDao.save(user);
     }
 
     @Override
@@ -92,6 +91,9 @@ public class UserServiceImpl implements UserService {
         userDto.setAvatar(user.getAvatar());
         userDto.setUserClerkId(user.getUserClerkId());
         userDto.setOnboarded(user.isOnboarded());
+        userDto.setCreatedAt(user.getCreatedAt());
+        userDto.setModifiedAt(user.getModifiedAt());
+        userDto.setRole(user.getRole());
         return userDto;
     }
 }

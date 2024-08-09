@@ -24,7 +24,7 @@ const colors = [
 
 const carouselTestData = [
     {
-        id: 'f2a',
+        id: '1',
         title: 'Star Wars',
         releaseDate: '2024-05-01',
         runtime: 112,
@@ -32,7 +32,7 @@ const carouselTestData = [
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
     },
     {
-        id: 'f2asd',
+        id: '2',
         title: 'The king',
         releaseDate: '2018-05-01',
         runtime: 652,
@@ -40,7 +40,7 @@ const carouselTestData = [
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
     },
     {
-        id: 'f2jhg',
+        id: '3',
         title: 'Saw you on the night',
         releaseDate: '2022-05-01',
         runtime: 152,
@@ -48,15 +48,15 @@ const carouselTestData = [
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
     },
     {
-        id: 'f2tyh',
-        title: 'I miss you',
+        id: '4',
+        title: 'Please love your self more',
         releaseDate: '2023-05-01',
         runtime: 102,
         overview:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
     },
     {
-        id: '7lkj5',
+        id: '5',
         title: "I've been reading books of old",
         releaseDate: '2023-05-01',
         runtime: 102,

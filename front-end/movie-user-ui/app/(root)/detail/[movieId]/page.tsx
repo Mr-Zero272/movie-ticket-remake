@@ -1,11 +1,125 @@
 import React from 'react';
+import { fetchMovie, fetchUser } from '@/services';
+import Image from 'next/image';
+import Trailer from './trailer';
+import { format } from 'date-fns';
+import { formatCurrencyUSD } from '@/lib/utils';
+import Link from 'next/link';
+import { currentUser } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 
 type Props = {
     params: { movieId: string };
 };
 
-const Page = ({ params }: Props) => {
-    return <div>Page {params.movieId}</div>;
+const Page = async ({ params }: Props) => {
+    const user = await currentUser();
+
+    if (!user) return null;
+
+    const userInfo = await fetchUser(user.id);
+
+    if (!userInfo?.onboarded) '/onboarding';
+
+    const movieInfo = await fetchMovie(params.movieId);
+    return (
+        <div>
+            <Trailer
+                title={movieInfo.title}
+                video={movieInfo.video}
+                genres={movieInfo.genres}
+                backdropPath={movieInfo.backdropPath}
+            />
+            <section className="px-14">
+                <div className="mb-10 flex justify-between gap-x-36 max-lg:flex-col">
+                    <article className="w-1/2 max-lg:mb-10 max-lg:w-full">
+                        <h3 className="mb-7 text-xl">Detail</h3>
+                        <div className="flex flex-col gap-y-3">
+                            <div className="flex justify-between border-b border-b-gray-500 pb-1">
+                                <p className="text-gray-500">Budget</p>
+                                <p>{formatCurrencyUSD(movieInfo.budget)}</p>
+                            </div>
+                            <div className="flex justify-between border-b border-b-gray-500 pb-1">
+                                <p className="text-gray-500">Language</p>
+                                <p>{movieInfo.originalLanguage}</p>
+                            </div>
+                            <div className="flex justify-between border-b border-b-gray-500 pb-1">
+                                <p className="text-gray-500">Runtime</p>
+                                <p>{movieInfo.runtime} min</p>
+                            </div>
+                            <div className="flex justify-between border-b border-b-gray-500 pb-1">
+                                <p className="text-gray-500">Release</p>
+                                <p>{format(new Date(movieInfo.releaseDate), 'dd MMM yyyy')}</p>
+                            </div>
+                        </div>
+                    </article>
+                    <article className="w-1/2 max-lg:w-full">
+                        <h3 className="mb-7 text-xl">Overview</h3>
+                        <p className="text-gray-500">{movieInfo.overview}</p>
+                    </article>
+                </div>
+                <div className="mb-10">
+                    <h3 className="mb-3 text-xl">Gallery</h3>
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                        {movieInfo.galleries.map((gallery) => (
+                            <div key={gallery.id}>
+                                <Image
+                                    className='class="h-auto max-w-full rounded-lg'
+                                    src={gallery.imgUrl}
+                                    alt={'gallery' + movieInfo.title + gallery.id}
+                                    width={200}
+                                    height={200}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <h3 className="mb-3 text-xl">Shared</h3>
+                    <div className="flex gap-x-5">
+                        <Link href="www.facebook.com" className="text-gray-500">
+                            <svg
+                                fill="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                className="h-5 w-5 hover:text-primary"
+                                viewBox="0 0 24 24"
+                            >
+                                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+                            </svg>
+                        </Link>
+                        <Link href="www.twitter.com" className="ml-3 text-gray-500">
+                            <svg
+                                fill="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                className="h-5 w-5 hover:text-primary"
+                                viewBox="0 0 24 24"
+                            >
+                                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
+                            </svg>
+                        </Link>
+                        <Link href="www.instagram.com" className="ml-3 text-gray-500">
+                            <svg
+                                fill="none"
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                className="h-5 w-5 hover:text-primary"
+                                viewBox="0 0 24 24"
+                            >
+                                <rect width={20} height={20} x={2} y={2} rx={5} ry={5} />
+                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01" />
+                            </svg>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+        </div>
+    );
 };
 
 export default Page;

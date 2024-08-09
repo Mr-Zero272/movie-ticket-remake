@@ -1,10 +1,7 @@
 package com.moonmovie.movie_service.services.Impl;
 
 import com.moonmovie.movie_service.constants.MovieErrorConstants;
-import com.moonmovie.movie_service.dao.DetailShowingTypeDao;
-import com.moonmovie.movie_service.dao.GenreDao;
-import com.moonmovie.movie_service.dao.MovieDao;
-import com.moonmovie.movie_service.dao.ShowingDao;
+import com.moonmovie.movie_service.dao.*;
 import com.moonmovie.movie_service.dto.ShowingDto;
 import com.moonmovie.movie_service.exceptions.MovieException;
 import com.moonmovie.movie_service.helpers.DateTimeTransfer;
@@ -36,7 +33,11 @@ public class MovieServiceImpl implements MovieService {
     private DetailShowingTypeDao detailShowingTypeDao;
 
     @Autowired
+    private GalleryDao galleryDao;
+
+    @Autowired
     private DateTimeTransfer dateTimeTransfer;
+
     @Autowired
     private ShowingDao showingDao;
 
@@ -62,6 +63,11 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public Movie addMovie(MovieRequest request) {
+        // if this month was scheduled change to next month
+        if (showingDao.countByMonthAndYear(request.getMonthToSchedule(), request.getYearToSchedule()) > 0) {
+            throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
+        }
+
         // Check if max showings in the month
         int totalShowingsThisMoth = 0;
         try {
@@ -79,12 +85,25 @@ public class MovieServiceImpl implements MovieService {
         }
 
         Movie movie = convertMovieRequestToMovie(request);
-        movie.setDetailShowingTypes(request.getDetailShowingTypes());
         Movie moveSaved = movieDao.save(movie);
+
+        // add galleries
+        List<Gallery> galleriesSaved = new ArrayList<>();
+        for (String imgUrl: request.getGalleries()) {
+            Gallery g = new Gallery();
+            g.setImgUrl(imgUrl);
+            g.setMovie(movie);
+            galleriesSaved.add(galleryDao.save(g));
+        }
+
+        List<DetailShowingType> detailShowingTypesSaved = new ArrayList<>();
         for (DetailShowingType detailShowingType : request.getDetailShowingTypes()) {
             detailShowingType.setMovie(movie);
             detailShowingTypeDao.save(detailShowingType);
         }
+
+        moveSaved.setGalleries(galleriesSaved);
+        moveSaved.setDetailShowingTypes(detailShowingTypesSaved);
         return moveSaved;
     }
 
@@ -110,7 +129,19 @@ public class MovieServiceImpl implements MovieService {
             Set<Genre> setGenres = new HashSet<>(genres);
             movie.get().setGenres(setGenres);
 
-            return movieDao.save(movie.get());
+            Movie movieSaved = movieDao.save(movie.get());
+            // update galleries
+            List<Gallery> galleriesSaved = new ArrayList<>();
+            for (String imgUrl: request.getGalleries()) {
+                Gallery g = new Gallery();
+                g.setImgUrl(imgUrl);
+                g.setMovie(movieSaved);
+                galleriesSaved.add(galleryDao.save(g));
+            }
+            galleryDao.deleteAllByMovieId(id);
+
+            movieSaved.setGalleries(galleriesSaved);
+            return movieSaved;
         }
         return null;
     }

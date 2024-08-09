@@ -4,10 +4,11 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
 
 import '../globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-    title: 'Threads',
-    description: 'A Next.js 14 Meta Threads Application',
+    title: 'Moon Movie (Make your night bright)',
+    description: 'NextJs Moon Movie application',
 };
 
 const inter = Inter({ subsets: ['latin'] });
@@ -19,7 +20,9 @@ const RootLayout = ({ children }: Props) => {
         <ClerkProvider>
             <html lang="en">
                 <body className={`${inter.className} bg-dark-1`}>
-                    <div className="flex min-h-screen w-full items-center justify-center">{children}</div>
+                    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+                        <div className="flex min-h-screen w-full items-center justify-center">{children}</div>
+                    </ThemeProvider>
                 </body>
             </html>
         </ClerkProvider>
