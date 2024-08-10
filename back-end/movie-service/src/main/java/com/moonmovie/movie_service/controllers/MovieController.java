@@ -21,10 +21,11 @@ public class MovieController {
 
     @GetMapping
     public ResponseEntity<PaginationResponse<Movie>> getAllMovies(
+            @RequestParam(value = "q", defaultValue = "") String query,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(movieService.getAllMovies(page, size));
+        return ResponseEntity.ok(movieService.getAllMovies(query, page, size));
     }
 
     @GetMapping("/{movieId}")

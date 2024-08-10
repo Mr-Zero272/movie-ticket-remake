@@ -8,15 +8,15 @@ import { FileVideo, Headset, Ticket, Users } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 export default async function Home() {
-    // const user = await currentUser();
+    const user = await currentUser();
 
-    // if (!user) return null;
+    if (!user) return null;
 
-    // console.log(user.id);
+    console.log(user.id);
 
-    // const userInfo = await fetchUser(user.id);
+    const userInfo = await fetchUser(user.id);
 
-    // if (!userInfo?.onboarded) redirect('/onboarding');
+    if (!userInfo?.onboarded) redirect('/onboarding');
     return (
         <div className="p-4">
             <MovieCarousel />

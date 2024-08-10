@@ -42,9 +42,14 @@ public class MovieServiceImpl implements MovieService {
     private ShowingDao showingDao;
 
     @Override
-    public PaginationResponse<Movie> getAllMovies(int page, int size) {
+    public PaginationResponse<Movie> getAllMovies(String query, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Movie> pageMovie = movieDao.findAllByDeleteFlagIsFalse(pageable);
+        Page<Movie> pageMovie;
+        if (query.isEmpty()) {
+            pageMovie  = movieDao.findAllByDeleteFlagIsFalse(pageable);
+        } else {
+            pageMovie = movieDao.findALlByDeleteFlagIsFalseAndTitleContainingIgnoreCase(query, pageable);
+        }
         PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
                 .data(pageMovie.getContent())
                 .page(page)
@@ -57,25 +62,31 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie getMovieById(int id) {
-        return movieDao.findById(id).orElse(null);
+        return movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
     }
 
     @Override
     @Transactional
     public Movie addMovie(MovieRequest request) {
         // if this month was scheduled change to next month
-        if (showingDao.countByMonthAndYear(request.getMonthToSchedule(), request.getYearToSchedule()) > 0) {
-            throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
-        }
-
-        // Check if max showings in the month
-        int totalShowingsThisMoth = 0;
         try {
-         totalShowingsThisMoth = movieDao.sumTotalShowings(request.getMonthToSchedule(), request.getYearToSchedule());
+            if (showingDao.countByMonthAndYear(request.getMonthToSchedule(), request.getYearToSchedule()) > 0) {
+                throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (totalShowingsThisMoth > 30 * 8 * 10) {
+
+
+        // Check if max showings in the month
+        int totalShowingsThisMonth = 0;
+        try {
+            totalShowingsThisMonth = movieDao.sumTotalShowings(request.getMonthToSchedule(), request.getYearToSchedule());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (totalShowingsThisMonth > 30 * 8 * 10) {
             throw new MovieException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
         }
 
@@ -89,7 +100,7 @@ public class MovieServiceImpl implements MovieService {
 
         // add galleries
         List<Gallery> galleriesSaved = new ArrayList<>();
-        for (String imgUrl: request.getGalleries()) {
+        for (String imgUrl : request.getGalleries()) {
             Gallery g = new Gallery();
             g.setImgUrl(imgUrl);
             g.setMovie(movie);
@@ -132,7 +143,7 @@ public class MovieServiceImpl implements MovieService {
             Movie movieSaved = movieDao.save(movie.get());
             // update galleries
             List<Gallery> galleriesSaved = new ArrayList<>();
-            for (String imgUrl: request.getGalleries()) {
+            for (String imgUrl : request.getGalleries()) {
                 Gallery g = new Gallery();
                 g.setImgUrl(imgUrl);
                 g.setMovie(movieSaved);
@@ -203,7 +214,7 @@ public class MovieServiceImpl implements MovieService {
                 for (int i = 0; i < detailShowingType.getShowings(); i++) {
 
                     // if all auditorium are scheduled turn it to next date
-                    if(screeningCount == auditoriumIds.size() * maxScreeningsPerDay) {
+                    if (screeningCount == auditoriumIds.size() * maxScreeningsPerDay) {
                         screeningCount = 0;
                         LocalDateTime nextDay = dateTimeTransfer.getNextDay(auditoriumStates.get(0).getLastScreeningsStartTime());
                         LocalDateTime newStartTime = dateTimeTransfer.calculateDatePlusHours(nextDay, 7F);

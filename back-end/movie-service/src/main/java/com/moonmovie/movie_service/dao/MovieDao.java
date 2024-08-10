@@ -15,6 +15,8 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
 
     Page<Movie> findAllByDeleteFlagIsFalse(Pageable pageable);
 
+    Page<Movie> findALlByDeleteFlagIsFalseAndTitleContainingIgnoreCase(String title, Pageable pageable);
+
     @Query("SELECT SUM(m.totalShowings) FROM Movie m WHERE m.monthToSchedule = ?1 AND m.yearToSchedule = ?2")
     int sumTotalShowings(int month, int year);
 

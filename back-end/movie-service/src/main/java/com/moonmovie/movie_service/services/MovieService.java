@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public interface MovieService {
-    public PaginationResponse<Movie> getAllMovies(int page, int size);
+    public PaginationResponse<Movie> getAllMovies(String query, int page, int size);
 
     public Movie getMovieById(int id);
 

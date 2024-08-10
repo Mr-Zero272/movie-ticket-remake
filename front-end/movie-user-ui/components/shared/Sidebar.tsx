@@ -168,16 +168,32 @@ function Sidebar({}: Props) {
                     </SignedIn>
 
                     <SignedOut>
-                        <Link
-                            href="/sign-in"
-                            className={cn(
-                                'group flex items-center rounded-lg px-4 py-3 font-medium tracking-wide text-gray-500 hover:bg-accent',
-                            )}
-                        >
-                            <LogIn className="size-6" />
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Link
+                                        href="/sign-in"
+                                        className={cn(
+                                            'group flex items-center rounded-lg px-4 py-3 font-medium tracking-wide text-gray-500 hover:bg-accent',
+                                        )}
+                                    >
+                                        <LogIn className="size-6" />
 
-                            <p className={cn('ml-3 w-full text-gray-500 transition-all duration-150')}>Sign in</p>
-                        </Link>
+                                        <p
+                                            className={cn(
+                                                'ml-3 w-full text-gray-500 transition-all duration-150 max-lg:hidden',
+                                            )}
+                                        >
+                                            Sign in
+                                        </p>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent side="right" className="hidden max-lg:block">
+                                    <TooltipArrow className="fill-white" />
+                                    <p>Sign in</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </SignedOut>
                 </div>
             </div>

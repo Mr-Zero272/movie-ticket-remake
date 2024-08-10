@@ -48,7 +48,7 @@ function Header({}: Props) {
                     </div>
                     <div className="flex items-center gap-x-6">
                         <SignedIn>{isLoaded ? <UserButton /> : <Skeleton className="size-7 rounded-full" />}</SignedIn>
-                        <div className="hidden lg:block">
+                        <div className="hidden max-md:block">
                             <SignedOut>
                                 <Link href="/sign-in">
                                     <Button variant="link">Sign in</Button>
