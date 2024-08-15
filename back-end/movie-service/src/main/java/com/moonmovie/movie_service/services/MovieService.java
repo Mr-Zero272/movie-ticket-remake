@@ -4,6 +4,7 @@ import com.moonmovie.movie_service.models.Movie;
 import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
+import com.moonmovie.movie_service.responses.ResponseTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,5 +21,5 @@ public interface MovieService {
 
     public Movie updateMovieScheduleDetail(int id, MovieRequest movie);
 
-    public List<Showing> schedule(int month, int year, String role);
+    public ResponseTemplate schedule(int month, int year, String role);
 }

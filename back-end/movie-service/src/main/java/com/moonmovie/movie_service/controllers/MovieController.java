@@ -5,6 +5,7 @@ import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.requests.ScheduleRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
+import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class MovieController {
     }
 
     @PostMapping("/schedule")
-    public ResponseEntity<List<Showing>> scheduleMovie(@RequestBody ScheduleRequest request) {
+    public ResponseEntity<ResponseTemplate> scheduleMovie(@RequestBody ScheduleRequest request) {
         // TODO check role in the request
         return ResponseEntity.ok(movieService.schedule(request.getMonth(), request.getYear(), "ADMIN"));
     }

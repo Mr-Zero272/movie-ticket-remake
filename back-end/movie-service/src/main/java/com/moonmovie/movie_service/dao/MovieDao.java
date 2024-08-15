@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.dao;
 
+import com.moonmovie.movie_service.dto.ScheduleMovie;
 import com.moonmovie.movie_service.models.Movie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,4 +22,7 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
     int sumTotalShowings(int month, int year);
 
     List<Movie> findAllByMonthToScheduleAndYearToSchedule(int month, int year);
+
+    @Query("SELECT m FROM Movie m WHERE m.monthToSchedule = ?1 AND m.yearToSchedule = ?2")
+    List<ScheduleMovie> findAllScheduleMovies(int month, int year);
 }

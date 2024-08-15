@@ -2,12 +2,18 @@ package com.moonmovie.movie_service.services.Impl;
 
 import com.moonmovie.movie_service.constants.MovieErrorConstants;
 import com.moonmovie.movie_service.dao.*;
-import com.moonmovie.movie_service.dto.ShowingDto;
+import com.moonmovie.movie_service.dto.ScheduleMovie;
 import com.moonmovie.movie_service.exceptions.MovieException;
+import com.moonmovie.movie_service.feign.SeatServiceInterface;
 import com.moonmovie.movie_service.helpers.DateTimeTransfer;
+import com.moonmovie.movie_service.kafka.KafkaMessage;
+import com.moonmovie.movie_service.kafka.KafkaProducerService;
 import com.moonmovie.movie_service.models.*;
+import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
+import com.moonmovie.movie_service.responses.ResponseTemplate;
+import com.moonmovie.movie_service.responses.SuccessResponse;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,12 +47,18 @@ public class MovieServiceImpl implements MovieService {
     @Autowired
     private ShowingDao showingDao;
 
+    @Autowired
+    private SeatServiceInterface seatServiceInterface;
+
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
+
     @Override
     public PaginationResponse<Movie> getAllMovies(String query, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Movie> pageMovie;
         if (query.isEmpty()) {
-            pageMovie  = movieDao.findAllByDeleteFlagIsFalse(pageable);
+            pageMovie = movieDao.findAllByDeleteFlagIsFalse(pageable);
         } else {
             pageMovie = movieDao.findALlByDeleteFlagIsFalseAndTitleContainingIgnoreCase(query, pageable);
         }
@@ -69,31 +81,31 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public Movie addMovie(MovieRequest request) {
         // if this month was scheduled change to next month
-        try {
-            if (showingDao.countByMonthAndYear(request.getMonthToSchedule(), request.getYearToSchedule()) > 0) {
-                throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        // Check if max showings in the month
-        int totalShowingsThisMonth = 0;
-        try {
-            totalShowingsThisMonth = movieDao.sumTotalShowings(request.getMonthToSchedule(), request.getYearToSchedule());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (totalShowingsThisMonth > 30 * 8 * 10) {
-            throw new MovieException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
-        }
-
-        // Check if the movie has the same title
-        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
-            throw new MovieException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
-        }
+//        try {
+//            if (showingDao.countByMonthAndYear(request.getMonthToSchedule(), request.getYearToSchedule()) > 0) {
+//                throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        // Check if max showings in the month
+//        int totalShowingsThisMonth = 0;
+//        try {
+//            totalShowingsThisMonth = movieDao.sumTotalShowings(request.getMonthToSchedule(), request.getYearToSchedule());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (totalShowingsThisMonth > LocalDate.now().getMonthValue() * 8 * 10) {
+//            throw new MovieException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
+//        }
+//
+//        // Check if the movie has the same title
+//        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
+//            throw new MovieException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
+//        }
 
         Movie movie = convertMovieRequestToMovie(request);
         Movie moveSaved = movieDao.save(movie);
@@ -174,7 +186,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public List<Showing> schedule(int month, int year, String role) {
+    public ResponseTemplate schedule(int month, int year, String role) {
         if (!role.equalsIgnoreCase("ADMIN")) {
             throw new MovieException(MovieErrorConstants.ERROR_DO_NOT_HAVE_PERMISSION);
         }
@@ -183,76 +195,173 @@ public class MovieServiceImpl implements MovieService {
             throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
         }
 
-        final int restTime = 20;
-        final int maxScreeningsPerDay = 7;
-        LocalDateTime startDate = LocalDateTime.of(year, month, 1, 0, 0);
-        // start at 6:00 am
-        LocalDateTime startTimeToSchedule = dateTimeTransfer.calculateDatePlusHours(startDate, 6F);
+        List<Movie> movies = movieDao.findAllByMonthToScheduleAndYearToSchedule(month, year);
 
-        List<Movie> moviesToSchedule = movieDao.findAllByMonthToScheduleAndYearToSchedule(month, year);
-        List<List<DetailShowingType>> detailShowingTypes = moviesToSchedule.stream().map(movie -> movie.getDetailShowingTypes()).toList();
+        // 28 -> 31 days
+        final int totalDaysInThisMonth = LocalDate.now().lengthOfMonth();
+        final int restTime = 20;
+        final int maxScreeningsPerDay = 8;
+
+        List<ScheduleMovie> scheduleMovieInfo = movies.stream().map(ScheduleMovie::new).toList();
 
         // synchronous -> use http/https request to get auditorium id
-        // TODO replace this to a real call http to seat-service
-        List<String> auditoriumIds = List.of("aud1", "ud2");
+        List<String> auditoriumIds = new ArrayList<>();
+        try {
+            auditoriumIds = seatServiceInterface.getAvailableAuditorium(10).getBody();
+        } catch (Exception e) {
+            throw new MovieException(MovieErrorConstants.ERROR_SEAT_SERVICE_NOT_AVAILABLE);
+        }
 
-        List<AuditoriumState> auditoriumStates = new ArrayList<>();
-        for (String auditoriumId : auditoriumIds) {
-            AuditoriumState auditoriumState = new AuditoriumState(auditoriumId, startTimeToSchedule, 0);
-            auditoriumStates.add(auditoriumState);
+        List<List<AuditoriumState>> infoAuditoriumInThisMonth = new ArrayList<>();
+        for (int i = 0; i < totalDaysInThisMonth; i++) {
+            LocalDateTime startDateForAuditorium = LocalDateTime.of(year, month, i + 1, 6, 0);
+            List<AuditoriumState> auditoriumStates = new ArrayList<>();
+            for (String auditoriumId : auditoriumIds) {
+                AuditoriumState auditoriumState = new AuditoriumState(auditoriumId, startDateForAuditorium, 0);
+                auditoriumStates.add(auditoriumState);
+            }
+            infoAuditoriumInThisMonth.add(auditoriumStates);
         }
 
         List<Showing> showings = new ArrayList<>();
 
-        int indexAuditorium = 0;
-        int screeningCount = 0;
-        int breakState = 0;
-        // dell choi cai giai thuat cu nua
-        // mac du hoi cham hon nhung khoi ruom ra
-        for (Movie movie : moviesToSchedule) {
-            for (DetailShowingType detailShowingType : movie.getDetailShowingTypes()) {
-                for (int i = 0; i < detailShowingType.getShowings(); i++) {
+        // main movie schedule algorithm
+        int totalMovieToSchedule = movies.size();
+        for (int z = 0; z < totalMovieToSchedule; z++) {
+            int totalDays = scheduleMovieInfo.get(z).getTotalDateShowingsInMonth();
+            int showingsPerDay = scheduleMovieInfo.get(z).getTotalShowings() / totalDays;
+            int remainingShowings = scheduleMovieInfo.get(z).getTotalShowings() % totalDays;
+            int currentDate = 0;
+            for (int i = 0; i < totalDays; i++) {
+                int showingForToday = showingsPerDay;
+                if (remainingShowings > 0) {
+                    showingForToday++;
+                    remainingShowings--;
+                }
 
-                    // if all auditorium are scheduled turn it to next date
-                    if (screeningCount == auditoriumIds.size() * maxScreeningsPerDay) {
-                        screeningCount = 0;
-                        LocalDateTime nextDay = dateTimeTransfer.getNextDay(auditoriumStates.get(0).getLastScreeningsStartTime());
-                        LocalDateTime newStartTime = dateTimeTransfer.calculateDatePlusHours(nextDay, 7F);
-                        for (AuditoriumState auditoriumState : auditoriumStates) {
-                            auditoriumState.setTotalScreeningsScheduled(0);
-                            auditoriumState.setLastScreeningsStartTime(newStartTime);
+                int j = 0;
+                int checkedAu = 0;
+                while (showingForToday != 0) {
+                    int showings2D = scheduleMovieInfo.get(z).getDetailShowingTypes().get(0).getShowings();
+                    int showings2DSubtitles = scheduleMovieInfo.get(z).getDetailShowingTypes().get(1).getShowings();
+                    int showings3D = scheduleMovieInfo.get(z).getDetailShowingTypes().get(2).getShowings();
+                    int showings3DSubtitles = scheduleMovieInfo.get(z).getDetailShowingTypes().get(3).getShowings();
+
+
+                    if (infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() > maxScreeningsPerDay) {
+                        if (checkedAu == 10) {
+                            currentDate += 1;
+                            checkedAu = 0;
+                            continue;
                         }
-                        indexAuditorium = 0;
+
+                        if (j + 1 == 10) {
+                            j = 0;
+                        } else {
+                            j += 1;
+                        }
+
+                        checkedAu += 1;
+                        continue;
                     }
 
-                    // create object schedule
-                    Showing showing = Showing.builder()
-                            .type(detailShowingType.getName())
-                            .startTime(auditoriumStates.get(indexAuditorium).getLastScreeningsStartTime())
-                            .auditoriumId(auditoriumStates.get(indexAuditorium).getAuditoriumId())
-                            .priceEachSeat(movie.getPriceEachSeat())
-                            .movie(movie)
-                            .build();
+                    LocalDateTime lScreeningStart = infoAuditoriumInThisMonth.get(currentDate).get(j).getLastScreeningsStartTime();
 
-                    showings.add(showing);
-                    screeningCount++;
+                    if (showings2D > 0) {
+                        scheduleMovieInfo.get(z).getDetailShowingTypes().get(0).setShowings(showings2D - 1);
+                        Showing showing = Showing.builder()
+                                .type(scheduleMovieInfo.get(z).getDetailShowingTypes().get(0).getName())
+                                .startTime(lScreeningStart)
+                                .auditoriumId(infoAuditoriumInThisMonth.get(currentDate).get(j).getAuditoriumId())
+                                .priceEachSeat(scheduleMovieInfo.get(z).getPriceEachSeat())
+                                .movie(movies.get(z))
+                                .build();
+                        showings.add(showing);
 
-                    //update auditorium state
-                    LocalDateTime lScreeningStart = auditoriumStates.get(indexAuditorium).getLastScreeningsStartTime();
-                    int movieDuration = movie.getRuntime();
-                    auditoriumStates.get(indexAuditorium).setLastScreeningsStartTime(dateTimeTransfer.calculateDatePlusMinutes(lScreeningStart, movieDuration + restTime));
-                    auditoriumStates.get(indexAuditorium).setTotalScreeningsScheduled(auditoriumStates.get(indexAuditorium).getTotalScreeningsScheduled() + 1);
+                        infoAuditoriumInThisMonth.get(currentDate).get(j).setLastScreeningsStartTime(dateTimeTransfer.calculateDatePlusMinutes(lScreeningStart, movies.get(z).getRuntime() + restTime));
+                        infoAuditoriumInThisMonth.get(currentDate).get(j).setTotalScreeningsScheduled(infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() + 1);
 
-                    // increase index to next auditorium
-                    indexAuditorium++;
-                    if (indexAuditorium == auditoriumIds.size()) {
-                        indexAuditorium = 0;
+                        showingForToday--;
+
+                        continue;
                     }
+
+                    if (showings2DSubtitles > 0) {
+                        scheduleMovieInfo.get(z).getDetailShowingTypes().get(1).setShowings(showings2DSubtitles - 1);
+                        Showing showing = Showing.builder()
+                                .type(scheduleMovieInfo.get(z).getDetailShowingTypes().get(1).getName())
+                                .startTime(lScreeningStart)
+                                .auditoriumId(infoAuditoriumInThisMonth.get(currentDate).get(j).getAuditoriumId())
+                                .priceEachSeat(scheduleMovieInfo.get(z).getPriceEachSeat())
+                                .movie(movies.get(z))
+                                .build();
+                        showings.add(showing);
+
+                        infoAuditoriumInThisMonth.get(currentDate).get(j).setLastScreeningsStartTime(dateTimeTransfer.calculateDatePlusMinutes(lScreeningStart, movies.get(z).getRuntime() + restTime));
+                        infoAuditoriumInThisMonth.get(currentDate).get(j).setTotalScreeningsScheduled(infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() + 1);
+
+                        showingForToday--;
+
+                        continue;
+                    }
+
+                    if (showings3D > 0) {
+                        scheduleMovieInfo.get(z).getDetailShowingTypes().get(2).setShowings(showings3D - 1);
+                        Showing showing = Showing.builder()
+                                .type(scheduleMovieInfo.get(z).getDetailShowingTypes().get(2).getName())
+                                .startTime(lScreeningStart)
+                                .auditoriumId(infoAuditoriumInThisMonth.get(currentDate).get(j).getAuditoriumId())
+                                .priceEachSeat(scheduleMovieInfo.get(z).getPriceEachSeat())
+                                .movie(movies.get(z))
+                                .build();
+                        showings.add(showing);
+
+                        infoAuditoriumInThisMonth.get(currentDate).get(j).setLastScreeningsStartTime(dateTimeTransfer.calculateDatePlusMinutes(lScreeningStart, movies.get(z).getRuntime() + restTime));
+                        infoAuditoriumInThisMonth.get(currentDate).get(j).setTotalScreeningsScheduled(infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() + 1);
+
+                        showingForToday--;
+
+                        continue;
+                    }
+
+                    if (showings3DSubtitles > 0) {
+                        scheduleMovieInfo.get(z).getDetailShowingTypes().get(3).setShowings(showings3DSubtitles - 1);
+                        Showing showing = Showing.builder()
+                                .type(scheduleMovieInfo.get(z).getDetailShowingTypes().get(3).getName())
+                                .startTime(lScreeningStart)
+                                .auditoriumId(infoAuditoriumInThisMonth.get(currentDate).get(j).getAuditoriumId())
+                                .priceEachSeat(scheduleMovieInfo.get(z).getPriceEachSeat())
+                                .movie(movies.get(z))
+                                .build();
+                        showings.add(showing);
+
+                        infoAuditoriumInThisMonth.get(currentDate).get(j).setLastScreeningsStartTime(dateTimeTransfer.calculateDatePlusMinutes(lScreeningStart, movies.get(z).getRuntime() + restTime));
+                        infoAuditoriumInThisMonth.get(currentDate).get(j).setTotalScreeningsScheduled(infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() + 1);
+
+                        showingForToday--;
+                    }
+
+                }
+
+                if (currentDate + 1 == totalDaysInThisMonth) {
+                    currentDate = 0;
+                } else {
+                    currentDate += 1;
                 }
             }
         }
 
-        return showingDao.saveAll(showings);
+        // end movie schedule algorithm
+        List<Showing> showingsSaved = showingDao.saveAll(showings);
+        showingsSaved.forEach(showing -> {
+            KafkaMessage<GenerateSeatDetailRequest> message = KafkaMessage.<GenerateSeatDetailRequest>builder()
+                    .event("generate seat detail")
+                    .timestamp(LocalDateTime.now())
+                    .data(new GenerateSeatDetailRequest(showing.getId(), showing.getAuditoriumId(), showing.getPriceEachSeat()))
+                    .build();
+            kafkaProducerService.sendMessageGenerateSeatDetail("seat-generate", message);
+        });
+        return new ResponseTemplate("Schedule successfully!");
     }
 
     private Movie convertMovieRequestToMovie(MovieRequest movieRequest) {
@@ -277,6 +386,7 @@ public class MovieServiceImpl implements MovieService {
 
         // set data for schedule
         movie.setMonthToSchedule(movieRequest.getMonthToSchedule());
+        movie.setTotalDateShowingsInMonth(movieRequest.getTotalDateShowingsInMonth());
         movie.setYearToSchedule(movieRequest.getYearToSchedule());
         movie.setTotalShowings(movieRequest.getTotalShowings());
         movie.setPriceEachSeat(movieRequest.getPriceEachSeat());

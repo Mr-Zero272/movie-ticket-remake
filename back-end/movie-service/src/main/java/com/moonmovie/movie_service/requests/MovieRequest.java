@@ -28,6 +28,7 @@ public class MovieRequest {
     // for schedule
     private int monthToSchedule;
     private int yearToSchedule = 2024;
+    private int totalDateShowingsInMonth;
     private int totalShowings;
     private int priceEachSeat;
 

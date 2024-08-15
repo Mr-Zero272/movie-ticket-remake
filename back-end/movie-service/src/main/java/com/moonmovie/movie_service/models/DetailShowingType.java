@@ -31,4 +31,10 @@ public class DetailShowingType implements Serializable {
     @JsonIgnore
     private Movie movie;
 
+    public DetailShowingType(DetailShowingType detailShowingType) {
+        this.id = detailShowingType.getId();
+        this.name = detailShowingType.getName();
+        this.showings = detailShowingType.getShowings();
+        this.movie = detailShowingType.getMovie();
+    }
 }

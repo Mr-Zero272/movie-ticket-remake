@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -53,6 +54,7 @@ public class Movie implements Serializable {
     private int monthToSchedule;
     private int yearToSchedule = 2024;
     private int totalShowings;
+    private int totalDateShowingsInMonth;
     private int priceEachSeat;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
@@ -62,8 +64,24 @@ public class Movie implements Serializable {
     private List<Gallery> galleries = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
-    @JsonIgnore
+    @JsonBackReference
     private List<Showing> showings = new ArrayList<>();
+
+    @Override
+    public int hashCode() {
+        return 2023;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        return id != null && id.equals(((Movie) obj).id);
+    }
 
 }
 
