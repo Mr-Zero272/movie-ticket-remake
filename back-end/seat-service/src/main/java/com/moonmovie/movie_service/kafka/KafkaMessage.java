@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class KafkaMessageGenerateSeatDetail {
+public class KafkaMessage {
     private String event;
     private LocalDateTime timestamp;
     private GenerateSeatDetailRequest data;

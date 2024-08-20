@@ -16,7 +16,7 @@ export const GallerySchema = z.object({
     imgUrl: z.string(),
 });
 
-export const movieSchema = z.object({
+export const MovieSchema = z.object({
     id: z.number(),
     title: z.string(),
     adult: z.boolean(),
@@ -41,7 +41,7 @@ export const movieSchema = z.object({
     galleries: z.array(GallerySchema),
 });
 
-export type Movie = z.infer<typeof movieSchema>;
+export type Movie = z.infer<typeof MovieSchema>;
 
 export type DetailShowingType = z.infer<typeof DetailShowingTypeSchema>;
 

@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/moon-movie/seat/seat-detail")
-public class SeatStatusController {
+public class SeatDetailController {
     @Autowired
     private SeatDetailService seatDetailService;
 
-    @GetMapping("/{showingId}")
-    public ResponseEntity<List<SeatDetail>> fetchListSeatDetails(@PathVariable("showingId") int showingId) {
+    @GetMapping
+    public ResponseEntity<List<SeatDetail>> fetchListSeatDetails(@RequestParam("showingId") int showingId) {
         return ResponseEntity.ok(seatDetailService.getListSeatDetail(showingId));
     }
 

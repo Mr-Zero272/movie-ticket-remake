@@ -30,7 +30,7 @@ export default function RootLayout({
                             <Sidebar />
                             <section className="mb-16 w-[calc(100%_-_16rem)] flex-1 max-lg:w-[calc(100%_-_5rem)] max-md:w-full md:mb-0">
                                 <Header />
-                                <div className="min-h-[36rem] w-full">{children}</div>
+                                <div className="min-h-[35rem] w-full">{children}</div>
                                 <Footer />
                             </section>
                         </main>

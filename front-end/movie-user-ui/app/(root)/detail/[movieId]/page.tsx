@@ -1,15 +1,16 @@
-import React from 'react';
-import { fetchMovie, fetchUser } from '@/services';
-import Image from 'next/image';
-import Trailer from './trailer';
-import { format } from 'date-fns';
+import ShowingDetail from '@/components/shared/ShowingDetail';
 import { formatCurrencyUSD } from '@/lib/utils';
-import Link from 'next/link';
+import { fetchMovie } from '@/services/movieServices';
+import { fetchUser } from '@/services/userServices';
 import { currentUser } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
+import { format } from 'date-fns';
+import { LucideBarChart3, MessageCircleMore, UserRoundPen } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import Trailer from './trailer';
 
 type Props = {
-    params: { movieId: string };
+    params: { movieId: number };
 };
 
 const Page = async ({ params }: Props) => {
@@ -30,14 +31,36 @@ const Page = async ({ params }: Props) => {
                 genres={movieInfo.genres}
                 backdropPath={movieInfo.backdropPath}
             />
+
             <section className="px-14">
+                <article className="mb-5 flex justify-around rounded-md bg-gray-100 py-3 dark:bg-gray-900">
+                    <div className="flex items-center gap-3">
+                        <UserRoundPen className="size-6 dark:text-gray-500" />
+                        <p className="max-md:hidden">Average vote</p>
+                        <p className="rounded-sm bg-gray-600 p-1.5 text-xs text-white">
+                            {movieInfo.voteAverage.toFixed(1)}
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <LucideBarChart3 className="size-6 dark:text-gray-500" />
+                        <p className="max-md:hidden">Reviews</p>
+                        <p className="rounded-sm bg-gray-600 p-1.5 text-xs text-white">{123}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <MessageCircleMore className="size-6 dark:text-gray-500" />
+                        <p className="max-md:hidden">Rating now</p>
+                    </div>
+                </article>
+                <article>
+                    <ShowingDetail movieId={params.movieId} />
+                </article>
                 <div className="mb-10 flex justify-between gap-x-36 max-lg:flex-col">
                     <article className="w-1/2 max-lg:mb-10 max-lg:w-full">
-                        <h3 className="mb-7 text-xl">Detail</h3>
+                        <h3 className="mb-5 text-xl">Detail</h3>
                         <div className="flex flex-col gap-y-3">
                             <div className="flex justify-between border-b border-b-gray-500 pb-1">
                                 <p className="text-gray-500">Budget</p>
-                                <p>{formatCurrencyUSD(movieInfo.budget)}</p>
+                                <p>{movieInfo.budget === 0 ? '?' : formatCurrencyUSD(movieInfo.budget)}</p>
                             </div>
                             <div className="flex justify-between border-b border-b-gray-500 pb-1">
                                 <p className="text-gray-500">Language</p>
@@ -54,7 +77,7 @@ const Page = async ({ params }: Props) => {
                         </div>
                     </article>
                     <article className="w-1/2 max-lg:w-full">
-                        <h3 className="mb-7 text-xl">Overview</h3>
+                        <h3 className="mb-5 text-xl">Overview</h3>
                         <p className="text-gray-500">{movieInfo.overview}</p>
                     </article>
                 </div>

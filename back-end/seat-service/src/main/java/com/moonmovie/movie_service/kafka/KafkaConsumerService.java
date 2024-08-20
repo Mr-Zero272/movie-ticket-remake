@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.kafka;
 
+import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
 import com.moonmovie.movie_service.services.Impl.SeatDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -17,9 +18,15 @@ public class KafkaConsumerService {
     }
 
     @KafkaListener(topics = "seat-generate", groupId = "moon-movie")
-    public void listenOnSeatGenerateTopics(@Payload KafkaMessageGenerateSeatDetail message) {
+    public void listenOnSeatGenerateTopics(@Payload KafkaMessage message) {
         log.info("Event: " + message.getEvent());
         log.info("Timestamp: " + message.getTimestamp());
         seatDetailService.generateSeatDetails(message.getData());
+    }
+
+    @KafkaListener(topics = "choosing_seat",  groupId = "movie_booking_project")
+    public void consumeSeat(@Payload ChoosingSeatRequest seatStatus) {
+        log.info(String.format("Received: -> %s", seatStatus.toString()));
+        seatDetailService.updateSeatStatus(seatStatus);
     }
 }

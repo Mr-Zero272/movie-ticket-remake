@@ -1,13 +1,11 @@
 package com.moonmovie.movie_service.controllers;
 
+import com.moonmovie.movie_service.dto.ShowingDto;
 import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.services.ShowingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +18,12 @@ public class ShowingController {
     private ShowingService showingService;
 
     @GetMapping
-    public ResponseEntity<List<Showing>> getShowings(@RequestParam("startDate") LocalDateTime startDate, @RequestParam("movieId") int movieId) {
+    public ResponseEntity<List<ShowingDto>> getShowings(@RequestParam("startDate") LocalDateTime startDate, @RequestParam("movieId") int movieId) {
         return ResponseEntity.ok(showingService.getAllShowings(startDate, movieId));
+    }
+
+    @GetMapping("/{showingId}")
+    public ResponseEntity<Showing> getShowing(@PathVariable("showingId") int showingId) {
+        return ResponseEntity.ok(showingService.getShowing(showingId));
     }
 }

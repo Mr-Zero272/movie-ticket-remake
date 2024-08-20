@@ -39,12 +39,13 @@ public class AuditoriumServiceImpl implements AuditoriumService {
         }
 
         Auditorium auditoriumSaved = auditoriumDao.save(auditorium);
-        List<String> nameRows = List.of("A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M");
+        List<String> nameRows = List.of("A", "B", "C", "D", "E", "F", "G", "H", "I", "K");
         List<Seat> seats = new ArrayList<>();
-        for (int i = 0; i < 12; i++) {
-            int numberSeatInRow = 10;
-            if (nameRows.get(i).equals("A")) numberSeatInRow = 6;
-            if (nameRows.get(i).equals("B")) numberSeatInRow = 8;
+        for (int i = 0; i < 10; i++) {
+            int numberSeatInRow = 14;
+            if (nameRows.get(i).equals("A")) numberSeatInRow = 8;
+            if (nameRows.get(i).equals("B") || nameRows.get(i).equals("K")) numberSeatInRow = 10;
+            if (nameRows.get(i).equals("C") || nameRows.get(i).equals("D") || nameRows.get(i).equals("I")) numberSeatInRow = 12;
             for (int j = 0; j < numberSeatInRow; j++) {
                 Seat seat = new Seat(null, nameRows.get(i), (j+1), auditoriumSaved);
                 seats.add(seat);

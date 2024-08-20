@@ -1,5 +1,5 @@
 import { timeAgo } from '@/lib/utils';
-import { fetchUser } from '@/services';
+import { fetchUser } from '@/services/userServices';
 import { currentUser } from '@clerk/nextjs/server';
 import { MonitorCog } from 'lucide-react';
 import Image from 'next/image';

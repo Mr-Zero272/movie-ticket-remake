@@ -8,16 +8,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ShowingDto {
-    private Integer id;
-
-    private LocalDateTime startTime;
-    private String type;
-    private int auditoriumId;
-    private int priceEachSeat;
-    private int movieId;
+public interface ShowingDto {
+     public Integer getId();
+    public LocalDateTime getStartTime();
+    public String getType();
+    public String getAuditoriumId();
+    public int getPriceEachSeat();
+//    private int movieId;
 }

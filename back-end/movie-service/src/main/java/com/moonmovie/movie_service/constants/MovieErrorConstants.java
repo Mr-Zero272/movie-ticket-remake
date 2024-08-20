@@ -1,6 +1,7 @@
 package com.moonmovie.movie_service.constants;
 
 public enum MovieErrorConstants {
+    ERROR_SHOWING_NOT_EXISTS(400, "This showing does not exists"),
     ERROR_SEAT_SERVICE_NOT_AVAILABLE(500, "Seat service is not available"),
     ERROR_MOVIE_NOT_EXISTS(400, "This movie does not exists."),
     ERROR_THIS_MONTH_WAS_SCHEDULED(400, "This month was scheduled."),

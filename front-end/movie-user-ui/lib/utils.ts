@@ -24,3 +24,24 @@ export function formatCurrencyUSD(currency: number) {
     });
     return USDollar.format(currency);
 }
+
+export function formatCurrencyVND(currency: number) {
+    let USDollar = new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+    });
+    return USDollar.format(currency);
+}
+
+export const generateDateRangeNext = (date: string, n: number = 6) => {
+    const result = [];
+    const currentDate = new Date(date);
+
+    for (let i = 0; i <= n; i++) {
+        const newDate = new Date(currentDate);
+        newDate.setDate(currentDate.getDate() + i);
+        result.push(newDate.toISOString().split('T')[0] + 'T00:00:00');
+    }
+
+    return result;
+};

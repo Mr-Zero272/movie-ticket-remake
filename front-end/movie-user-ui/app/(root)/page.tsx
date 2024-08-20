@@ -2,7 +2,7 @@ import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
 import MovieCarousel from '@/components/shared/MovieCarousel';
 import ScrollList from '@/components/shared/ScrollList';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { fetchUser } from '@/services';
+import { fetchUser } from '@/services/userServices';
 import { currentUser } from '@clerk/nextjs/server';
 import { FileVideo, Headset, Ticket, Users } from 'lucide-react';
 import { redirect } from 'next/navigation';

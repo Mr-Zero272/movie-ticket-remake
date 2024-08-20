@@ -29,6 +29,15 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getAllMovies(query, page, size));
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<PaginationResponse<Movie>> getPopularMovies(
+            @RequestParam(value = "q", defaultValue = "") String query,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(movieService.getAllMovies(query, page, size));
+    }
+
     @GetMapping("/{movieId}")
     public ResponseEntity<Movie> getMovieById(@PathVariable("movieId") int movieId) {
         return ResponseEntity.ok(movieService.getMovieById(movieId));

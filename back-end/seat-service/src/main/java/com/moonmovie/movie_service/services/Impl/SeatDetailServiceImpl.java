@@ -61,12 +61,12 @@ public class SeatDetailServiceImpl implements SeatDetailService {
         if (seatStatus.isPresent()) {
             if (request.getStatus().equals("booked")) {
                 seatStatus.get().setStatus("booked");
-                seatStatus.get().setUserId(request.getUsername());
+                seatStatus.get().setUserId(request.getUserId());
                 request.setStatus("booked");
                 seatDetailDao.save(seatStatus.get());
                 sendDataToWebSocket("/topic/seat-state", request);
             } else {
-                if (seatStatus.get().getUserId().equals(request.getUsername())) {
+                if (seatStatus.get().getUserId().equals(request.getUserId())) {
                     if (request.getStatus().equals("choosing")) {
                         seatStatus.get().setStatus("available");
                         seatStatus.get().setUserId("");
@@ -76,7 +76,7 @@ public class SeatDetailServiceImpl implements SeatDetailService {
                     }
                 } else if (seatStatus.get().getUserId().isEmpty()) {
                     if (request.getStatus().equals("available")) {
-                        seatStatus.get().setUserId(request.getUsername());
+                        seatStatus.get().setUserId(request.getUserId());
                         seatStatus.get().setStatus("choosing");
                         request.setStatus("choosing");
                         seatDetailDao.save(seatStatus.get());
@@ -112,7 +112,7 @@ public class SeatDetailServiceImpl implements SeatDetailService {
             Optional<SeatDetail> seatStatus = seatDetailDao.findById(req.getId());
             if (seatStatus.isPresent()) {
                 if (seatStatus.get().getUserId().isEmpty() && seatStatus.get().getStatus().equals("available")) {
-                    seatStatus.get().setUserId(req.getUsername());
+                    seatStatus.get().setUserId(req.getUserId());
                     seatStatus.get().setStatus("choosing");
                     req.setStatus("choosing");
                     seatDetailDao.save(seatStatus.get());

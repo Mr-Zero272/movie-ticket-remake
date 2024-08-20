@@ -73,6 +73,21 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    public PaginationResponse<Movie> getPopularMovies(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Movie> pageMovie  = movieDao.findAllByVoteCountGreaterThanEqual(200, pageable);
+
+        PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
+                .data(pageMovie.getContent())
+                .page(page)
+                .size(size)
+                .totalPages(pageMovie.getTotalPages())
+                .totalElements(pageMovie.getTotalElements())
+                .build();
+        return resp;
+    }
+
+    @Override
     public Movie getMovieById(int id) {
         return movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
     }

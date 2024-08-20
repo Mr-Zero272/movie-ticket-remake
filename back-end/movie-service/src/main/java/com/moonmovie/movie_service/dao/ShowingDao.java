@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.dao;
 
+import com.moonmovie.movie_service.dto.ShowingDto;
 import com.moonmovie.movie_service.models.Showing;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,5 +16,7 @@ public interface ShowingDao extends JpaRepository<Showing, Integer> {
     int countByMonthAndYear(int month, int year);
 
     @Query("SELECT s FROM Showing s WHERE DAY(s.startTime) = ?2 AND s.startTime >= ?1 AND s.movie.id = ?3")
-    List<Showing> findAllByStartTimeGreaterThanEqualAndDateIsAndMovieIdIs(LocalDateTime startDate, int date, int movieId);
+    List<ShowingDto> findAllByStartTimeGreaterThanEqualAndDateIsAndMovieIdIs(LocalDateTime startDate, int date, int movieId);
+
+
 }

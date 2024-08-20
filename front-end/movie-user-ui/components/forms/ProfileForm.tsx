@@ -176,7 +176,11 @@ function ProfileForm({ user, title, sub, type }: Props) {
                             <div className="w-1/4 text-right"></div>
 
                             <div className="ml-7 w-3/4">
-                                <Button type="submit" loading={form.formState.isSubmitting}>
+                                <Button
+                                    type="submit"
+                                    loading={form.formState.isSubmitting}
+                                    disabled={form.formState.isSubmitting}
+                                >
                                     Save
                                 </Button>
                             </div>

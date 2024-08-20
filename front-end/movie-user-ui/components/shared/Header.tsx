@@ -22,7 +22,7 @@ function Header({}: Props) {
 
     return (
         <section className="sticky top-0 z-[100] w-full">
-            <div className="flex h-16 items-center justify-between bg-white px-4 shadow-md dark:bg-black">
+            <div className="flex h-16 items-center justify-between bg-white px-4 shadow-md dark:bg-[#121417]">
                 <Link href="/" className="hidden cursor-pointer max-md:block">
                     <Image src="/assets/logo.svg" alt="logo" width={40} height={40} />
                 </Link>

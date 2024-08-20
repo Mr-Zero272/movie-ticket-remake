@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class ChoosingSeatRequest {
     private String id;
     private String status;
-    private String username;
+    private String userId;
 }

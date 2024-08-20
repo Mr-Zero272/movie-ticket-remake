@@ -88,3 +88,31 @@ body {
 .no-focus {
     @apply focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
 }
+
+.available-seat {
+    @apply border-gray-600;
+}
+
+.reserved-seat {
+    @apply border-gray-600 bg-gray-600;
+}
+
+.others-seat {
+    @apply cursor-not-allowed border-red-500 bg-red-500;
+}
+
+.your-seat {
+    @apply border-primary bg-primary;
+}
+
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+}
