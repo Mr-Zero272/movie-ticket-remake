@@ -12,8 +12,10 @@ import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
 import Image from 'next/image';
 import * as z from 'zod';
-import { addUser, updateClerkUserImage, updateClerkUserInfo, updateUser } from '@/services';
+import { addUser, updateClerkUserInfo, updateUser } from '@/services/userServices';
 import { useUser } from '@clerk/nextjs';
+import { type CustomError } from '@/types/error';
+import { useToast } from '../ui/use-toast';
 
 type UserInfo = {
     username: string;
@@ -38,6 +40,7 @@ export const UserSchema = z.object({
 
 function ProfileForm({ user, title, sub, type }: Props) {
     const userObject = useUser();
+    const { toast } = useToast();
 
     const [files, setFiles] = useState<File[]>([]);
     const { startUpload } = useUploadThing('media');
@@ -92,7 +95,7 @@ function ProfileForm({ user, title, sub, type }: Props) {
         }
 
         if (type === 'create') {
-            await addUser({
+            const res = await addUser({
                 id: '',
                 userClerkId: user.userClerkId,
                 username: values.username,
@@ -104,14 +107,49 @@ function ProfileForm({ user, title, sub, type }: Props) {
                 modifiedAt: '',
                 role: 'USER',
             });
+
+            if ('httpStatusCode' in res && (res.httpStatusCode === 400 || res.httpStatusCode === 500)) {
+                form.setError('username', { type: 'custom', message: res?.message });
+                return;
+            }
+
             if (values.username !== user.username || values.name !== user.name) {
                 await updateClerkUserInfo(values.username, values.name, '', user.userClerkId);
             }
         } else {
-            await setTimeout(() => {
-                console.log(123);
-            }, 1000);
+            const res = await updateUser(
+                {
+                    id: '',
+                    userClerkId: user.userClerkId,
+                    username: values.username,
+                    name: values.name,
+                    bio: values.bio,
+                    avatar: values.avatar,
+                    onboarded: true,
+                    createdAt: '',
+                    modifiedAt: '',
+                    role: 'USER',
+                },
+                user.userClerkId,
+            );
+
+            if ('httpStatusCode' in res && (res.httpStatusCode === 400 || res.httpStatusCode === 500)) {
+                form.setError('username', { type: 'custom', message: res?.message });
+                return;
+            }
+
+            if (values.username !== user.username || values.name !== user.name) {
+                await updateClerkUserInfo(values.username, values.name, '', user.userClerkId);
+            }
+            // await setTimeout(() => {
+            //     console.log(123);
+            // }, 1000);
         }
+
+        toast({
+            title: 'Update profile',
+            description: 'Your profile has been updated successfully.',
+        });
 
         if (!pathname.includes('/profile')) {
             router.push('/');
@@ -137,7 +175,7 @@ function ProfileForm({ user, title, sub, type }: Props) {
                                         <FormControl>
                                             <Input type="text" className="no-focus ml-7" {...field} />
                                         </FormControl>
-                                        <FormMessage className="mt-1 text-sm" />
+                                        <FormMessage className="ml-7 mt-1 text-sm" />
                                     </div>
                                 </FormItem>
                             )}
@@ -152,7 +190,7 @@ function ProfileForm({ user, title, sub, type }: Props) {
                                         <FormControl>
                                             <Input type="text" className="no-focus ml-7" {...field} />
                                         </FormControl>
-                                        <FormMessage className="mt-1 text-sm" />
+                                        <FormMessage className="ml-7 mt-1 text-sm" />
                                     </div>
                                 </FormItem>
                             )}
@@ -167,7 +205,7 @@ function ProfileForm({ user, title, sub, type }: Props) {
                                         <FormControl>
                                             <Textarea rows={8} className="no-focus ml-7" {...field} />
                                         </FormControl>
-                                        <FormMessage className="mt-1 text-sm" />
+                                        <FormMessage className="ml-7 mt-1 text-sm" />
                                     </div>
                                 </FormItem>
                             )}

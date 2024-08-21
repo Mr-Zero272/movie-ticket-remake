@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import Sidebar from '@/components/shared/Sidebar';
 import Footerbar from '@/components/shared/Footerbar';
 import Footer from '@/components/shared/Footer';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
                             </section>
                         </main>
                         <Footerbar />
+                        <Toaster />
                     </ThemeProvider>
                 </body>
             </html>

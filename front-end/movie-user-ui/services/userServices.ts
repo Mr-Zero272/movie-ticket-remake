@@ -1,4 +1,5 @@
 'use server';
+import { CustomError } from '@/types/error';
 import { User, UserValidation } from '@/types/user';
 import { clerkClient } from '@clerk/nextjs/server';
 import axios, { isAxiosError } from 'axios';
@@ -39,7 +40,7 @@ export const fetchUser = async (userId: string) => {
     }
 };
 
-export const addUser = async (user: User) => {
+export const addUser = async (user: User): Promise<User | CustomError> => {
     const __sessionToken = getSessionToken();
     if (!__sessionToken) {
         throw new Error('User not sign in yet, cannot get session token');
@@ -58,12 +59,11 @@ export const addUser = async (user: User) => {
             throw new Error('Cannot add new user');
         }
     } catch (error: any) {
-        console.error('Error add new user:', error.message);
-        throw new Error('Cannot add new user');
+        return error.response?.data as CustomError;
     }
 };
 
-export const updateUser = async (user: User, userClerkId: string) => {
+export const updateUser = async (user: User, userClerkId: string): Promise<User | CustomError> => {
     const __sessionToken = getSessionToken();
     if (!__sessionToken) {
         throw new Error('User not sign in yet, cannot get session token');
@@ -80,13 +80,14 @@ export const updateUser = async (user: User, userClerkId: string) => {
             throw new Error('Cannot update user');
         }
     } catch (error: any) {
-        console.error('Error update user info:', error.message);
-        throw new Error('Cannot update user');
+        return error.response?.data as CustomError;
     }
 };
 
 export const updateClerkUserInfo = async (username: string, firstName: string, lastName: string, userId: string) => {
     const updatedUser = await clerkClient.users.updateUser(userId, { firstName, lastName, username });
+
+    console.log(updateUser);
 
     if (!updatedUser) {
         throw new Error('Update user information in Clerk error!');

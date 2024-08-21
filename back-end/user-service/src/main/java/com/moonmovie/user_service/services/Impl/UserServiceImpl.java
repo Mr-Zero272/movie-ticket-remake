@@ -34,7 +34,19 @@ public class UserServiceImpl implements UserService {
     public User updateUser(UserDto userInfo, String userClerkId) {
         Optional<User> userInDb = userDao.findByUserClerkId(userClerkId);
         if (userInDb.isPresent()) {
-            userInDb.get().setUsername(userInfo.getUsername());
+            if (!userInDb.get().getUsername().equalsIgnoreCase(userInfo.getUsername())) {
+                Optional<User> userSameUserNameExists = userDao.findByUsername(userInfo.getUsername());
+                if (userSameUserNameExists.isPresent()) {
+                    throw new UserException(UserErrorConstants.ERROR_USERNAME_EXISTS);
+                }
+                userInDb.get().setUsername(userInfo.getUsername());
+                userInDb.get().setName(userInfo.getName());
+                userInDb.get().setBio(userInfo.getBio());
+                userInDb.get().setAvatar(userInfo.getAvatar());
+                userInDb.get().setModifiedAt(LocalDateTime.now());
+
+                return userDao.save(userInDb.get());
+            }
             userInDb.get().setName(userInfo.getName());
             userInDb.get().setBio(userInfo.getBio());
             userInDb.get().setAvatar(userInfo.getAvatar());
