@@ -28,7 +28,7 @@ public interface MovieService {
      * @param size size of the page
      * @return PaginationResponse<Movie> list movies and pagination information
      */
-    public PaginationResponse<Movie> getPopularMovies(int page, int size);
+    public PaginationResponse<Movie> getPopularMovies(int page, int size, String sort, String genre);
 
     /**
      * Get a movie by id
@@ -54,7 +54,11 @@ public interface MovieService {
      */
     public Movie updateMovie(int id, MovieRequest movie);
 
+    public void deleteMovie(int id);
+
     public Movie updateMovieScheduleDetail(int id, MovieRequest movie);
 
     public ResponseTemplate schedule(int month, int year, String role);
+
+    PaginationResponse<Movie> getUpcomingMovies(int page, int size);
 }

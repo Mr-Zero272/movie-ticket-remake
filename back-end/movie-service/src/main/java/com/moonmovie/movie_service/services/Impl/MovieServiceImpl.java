@@ -13,18 +13,22 @@ import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
-import com.moonmovie.movie_service.responses.SuccessResponse;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -73,9 +77,14 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public PaginationResponse<Movie> getPopularMovies(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Movie> pageMovie  = movieDao.findAllByVoteCountGreaterThanEqual(200, pageable);
+    public PaginationResponse<Movie> getPopularMovies(int page, int size, String sort, String genre) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sort));
+        Page<Movie> pageMovie;
+        if (genre.equalsIgnoreCase("")) {
+            pageMovie = movieDao.findAllByVoteCountGreaterThanEqual(100, pageable);
+        } else {
+            pageMovie = movieDao.findAllByVoteCountGreaterThanEqualAndGenreIs(100, genre, pageable);
+        }
 
         PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
                 .data(pageMovie.getContent())
@@ -96,31 +105,30 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public Movie addMovie(MovieRequest request) {
         // if this month was scheduled change to next month
-//        try {
-//            if (showingDao.countByMonthAndYear(request.getMonthToSchedule(), request.getYearToSchedule()) > 0) {
-//                throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//        // Check if max showings in the month
-//        int totalShowingsThisMonth = 0;
-//        try {
-//            totalShowingsThisMonth = movieDao.sumTotalShowings(request.getMonthToSchedule(), request.getYearToSchedule());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        if (totalShowingsThisMonth > LocalDate.now().getMonthValue() * 8 * 10) {
-//            throw new MovieException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
-//        }
-//
-//        // Check if the movie has the same title
-//        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
-//            throw new MovieException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
-//        }
+        try {
+            if (showingDao.countByMonthAndYear(request.getMonthToSchedule(), request.getYearToSchedule()) > 0) {
+                throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Check if max showings in the month
+        int totalShowingsThisMonth = 0;
+        try {
+            totalShowingsThisMonth = movieDao.sumTotalShowings(request.getMonthToSchedule(), request.getYearToSchedule());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (totalShowingsThisMonth > LocalDate.now().getMonthValue() * 8 * 10) {
+            throw new MovieException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
+        }
+
+        // Check if the movie has the same title
+        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
+            throw new MovieException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
+        }
 
         Movie movie = convertMovieRequestToMovie(request);
         Movie moveSaved = movieDao.save(movie);
@@ -148,55 +156,68 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public Movie updateMovie(int id, MovieRequest request) {
-        Optional<Movie> movie = movieDao.findById(id);
-        if (movie.isPresent()) {
-            movie.get().setTitle(request.getTitle());
-            movie.get().setAdult(request.isAdult());
-            movie.get().setBudget(request.getBudget());
-            movie.get().setOriginalLanguage(request.getOriginalLanguage());
-            movie.get().setOverview(request.getOverview());
-            movie.get().setStatus(request.getStatus());
-            movie.get().setVideo(request.getVideo());
-            movie.get().setPosterPath(request.getPosterPath());
-            movie.get().setBackdropPath(request.getBackdropPath());
-            movie.get().setVoteAverage(request.getVoteAverage());
-            movie.get().setVoteCount(request.getVoteCount());
-            movie.get().setReleaseDate(request.getReleaseDate());
-
-            List<Genre> genres = genreDao.findAllByIdIn(request.getGenreIds());
-            Set<Genre> setGenres = new HashSet<>(genres);
-            movie.get().setGenres(setGenres);
-
-            Movie movieSaved = movieDao.save(movie.get());
-            // update galleries
-            List<Gallery> galleriesSaved = new ArrayList<>();
-            for (String imgUrl : request.getGalleries()) {
-                Gallery g = new Gallery();
-                g.setImgUrl(imgUrl);
-                g.setMovie(movieSaved);
-                galleriesSaved.add(galleryDao.save(g));
+        Movie movie = movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
+        List<String> fieldsSkip = List.of("genreIds", "galleries", "monthToSchedule", "yearToSchedule", "totalDateShowingsInMonth", "totalShowings", "priceEachSeat", "detailShowingTypes");
+        for (Field updateField : request.getClass().getDeclaredFields()) {
+            updateField.setAccessible(true);
+            try {
+                if (fieldsSkip.contains(updateField.getName())) continue;
+                Object value = updateField.get(request);
+                if (value != null) {
+                    try {
+                        Field entityField = movie.getClass().getDeclaredField(updateField.getName());
+                        entityField.setAccessible(true);
+                        entityField.set(movie, value);
+                    } catch (NoSuchFieldException e) {
+                        // Handle the case where the field does not exist in the User entity
+                        System.out.println("Field " + updateField.getName() + " does not exist in Movie entity, skipping...");
+                    }
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
-            galleryDao.deleteAllByMovieId(id);
-
-            movieSaved.setGalleries(galleriesSaved);
-            return movieSaved;
         }
-        return null;
+
+        // update genre
+        Set<Genre> genres = new HashSet<>(genreDao.findAllByIdIn(request.getGenreIds()));
+        movie.setGenres(genres);
+
+        // update galleries
+        List<Gallery> newGalleries = new ArrayList<>();
+        for (String gallery : request.getGalleries()) {
+            Gallery g = new Gallery();
+            g.setImgUrl(gallery);
+            g.setMovie(movie);
+            newGalleries.add(galleryDao.save(g));
+        }
+
+        movie.getGalleries().clear();
+        movie.getGalleries().addAll(newGalleries);
+        Movie movieSaved = movieDao.save(movie);
+
+        return movieSaved;
+    }
+
+    @Override
+    public void deleteMovie(int id) {
+        Movie movie = movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
+        movieDao.delete(movie);
     }
 
     @Override
     @Transactional
     public Movie updateMovieScheduleDetail(int id, MovieRequest request) {
-        Optional<Movie> movie = movieDao.findById(id);
-        if (movie.isPresent()) {
-            movie.get().setMonthToSchedule(request.getMonthToSchedule());
-            movie.get().setYearToSchedule(request.getYearToSchedule());
-            movie.get().setTotalShowings(request.getTotalShowings());
-            List<DetailShowingType> detailShowingTypes = request.getDetailShowingTypes();
-            movie.get().setDetailShowingTypes(detailShowingTypes);
-            return movieDao.save(movie.get());
+        Movie movie = movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
+
+        movie.setMonthToSchedule(request.getMonthToSchedule());
+        movie.setYearToSchedule(request.getYearToSchedule());
+        movie.setTotalShowings(request.getTotalShowings());
+        movie.setTotalDateShowingsInMonth(request.getTotalDateShowingsInMonth());
+        movie.setPriceEachSeat(request.getPriceEachSeat());
+        for (int i = 0; i < 4; i++) {
+            movie.getDetailShowingTypes().get(i).setShowings(request.getDetailShowingTypes().get(i).getShowings());
         }
-        return null;
+        return movieDao.save(movie);
     }
 
     @Override
@@ -377,6 +398,21 @@ public class MovieServiceImpl implements MovieService {
             kafkaProducerService.sendMessageGenerateSeatDetail("seat-generate", message);
         });
         return new ResponseTemplate("Schedule successfully!");
+    }
+
+    @Override
+    public PaginationResponse<Movie> getUpcomingMovies(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Movie> pageMovie = movieDao.findAllByStatus("Upcoming", pageable);
+
+        PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
+                .data(pageMovie.getContent())
+                .page(page)
+                .size(size)
+                .totalPages(pageMovie.getTotalPages())
+                .totalElements(pageMovie.getTotalElements())
+                .build();
+        return resp;
     }
 
     private Movie convertMovieRequestToMovie(MovieRequest movieRequest) {

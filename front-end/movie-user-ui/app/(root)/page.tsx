@@ -1,7 +1,9 @@
 import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
+import FilterMovie from '@/components/shared/FilterMovie';
 import MovieCarousel from '@/components/shared/MovieCarousel';
 import ScrollList from '@/components/shared/ScrollList';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { fetchMovies, fetchPopularMovies } from '@/services/movieServices';
 import { fetchUser } from '@/services/userServices';
 import { currentUser } from '@clerk/nextjs/server';
 import { FileVideo, Headset, Ticket, Users } from 'lucide-react';
@@ -12,73 +14,36 @@ export default async function Home() {
 
     if (!user) return null;
 
-    console.log(user.id);
-
     const userInfo = await fetchUser(user.id);
 
     if (!userInfo?.onboarded) redirect('/onboarding');
+
+    const popularMovies = await fetchPopularMovies({ page: 1, size: 20, sort: 'releaseDate', genre: '' });
+    const upcomingMovies = await fetchMovies({ type: 'upcoming', page: 1, size: 5 });
+
     return (
         <div className="p-4">
             <MovieCarousel />
             <ScrollList title="Opening this week">
-                <div className="mb-5 grid grid-cols-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-md:grid-cols-2">
-                    <div className="w-56 max-[500px]:w-48 max-[420px]:w-44 max-[385px]:w-40">
-                        <label htmlFor="choose-date" className="mb-3 text-xs text-gray-400">
-                            CHOOSE DATE
-                        </label>
-                        <Select>
-                            <SelectTrigger
-                                className="no-focus border-none bg-transparent outline-none"
-                                id="choose-date"
-                            >
-                                <SelectValue placeholder="Theme" />
-                            </SelectTrigger>
-                            <SelectContent className="border-none outline-none">
-                                <SelectItem value="light">Light</SelectItem>
-                                <SelectItem value="dark">Dark</SelectItem>
-                                <SelectItem value="system">System</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="w-56 max-[500px]:w-48 max-[420px]:w-44 max-[385px]:w-40">
-                        <label htmlFor="choose-cinema-type" className="mb-3 text-xs text-gray-400">
-                            CHOOSE CINEMA TYPE
-                        </label>
-                        <Select>
-                            <SelectTrigger
-                                className="no-focus border-none bg-transparent outline-none"
-                                id="choose-cinema-type"
-                            >
-                                <SelectValue placeholder="Theme" />
-                            </SelectTrigger>
-                            <SelectContent className="border-none outline-none">
-                                <SelectItem value="light">Light</SelectItem>
-                                <SelectItem value="dark">Dark</SelectItem>
-                                <SelectItem value="system">System</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <div className="grid grid-cols-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-md:grid-cols-2">
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                </div>
+                <FilterMovie
+                    initialData={popularMovies}
+                    type="popular"
+                    sort
+                    sortData={['releaseDate', 'budget', 'title']}
+                />
             </ScrollList>
             <ScrollList title="Coming soon">
                 <div className="grid grid-cols-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-md:grid-cols-2">
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
-                    <MovieCardItemVertical />
+                    {upcomingMovies.map((movie) => (
+                        <MovieCardItemVertical
+                            key={movie.id}
+                            movieId={movie.id}
+                            poster={movie.posterPath}
+                            title={movie.title}
+                            runtime={movie.runtime}
+                            firstGenre={movie.genres[0].name}
+                        />
+                    ))}
                 </div>
             </ScrollList>
             <section className="body-font text-gray-600">

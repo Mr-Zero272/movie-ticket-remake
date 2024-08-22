@@ -10,6 +10,7 @@ import { ShowingDto } from '@/types/showing';
 import { fetchSeatDetails } from '@/services/seatServices';
 import { format } from 'date-fns';
 import SeatSectionSkeleton from '@/components/ui/seat-section-skeletion';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Props = {
     userId: string;
@@ -18,6 +19,7 @@ type Props = {
     listSelectedSeats: string[];
     seatData: SeatDetail[];
     listShowTimes: ShowingDto[];
+    loading: boolean;
     onNextStep: () => void;
     onChooseSeat: (seatId: string) => void;
     onChangeShowing: (showingId: number) => void;
@@ -30,6 +32,7 @@ const Step1 = ({
     listSelectedSeats,
     seatData: seats,
     listShowTimes,
+    loading = false,
     onChooseSeat,
     onNextStep,
     onChangeDate,
@@ -148,37 +151,69 @@ const Step1 = ({
                         </div>
                     </div>
                     <div className="no-scrollbar mb-3 flex overflow-auto rounded-lg">
-                        {listShowTimes.length === 0 ? (
-                            <div className="cursor-pointer select-none rounded-lg border border-primary p-2 text-center text-sm">
-                                <div className="mb-2 flex w-20 justify-center truncate rounded-lg px-2 py-1 text-gray-500">
-                                    <Frown className="size-5" />
-                                </div>
-                                <div className={cn('w-20 truncate font-semibold')}>Empty</div>
-                            </div>
-                        ) : (
-                            listShowTimes.map((showtime) => {
-                                const active = showtime.id === showingId;
-                                return (
-                                    <div
-                                        key={showtime.id}
-                                        className={cn('cursor-pointer select-none rounded-lg p-2 text-center text-sm', {
-                                            'border border-primary': active,
-                                        })}
-                                        onClick={() => onChangeShowing(showtime.id)}
-                                    >
-                                        <div
-                                            className={cn('mb-2 w-20 truncate rounded-lg px-2 py-1 text-gray-500', {
-                                                'bg-primary text-white': active,
-                                            })}
-                                        >
-                                            {showtime.type}
-                                        </div>
-                                        <div className={cn('w-20 truncate font-semibold')}>
-                                            {format(showtime.startTime, 'HH:mm aa')}
-                                        </div>
+                        {!loading ? (
+                            listShowTimes.length === 0 ? (
+                                <div className="cursor-not-allowed select-none rounded-lg border border-primary p-2 text-center text-sm">
+                                    <div className="mb-2 flex w-20 justify-center truncate rounded-lg px-2 py-1 text-gray-500">
+                                        <Frown className="size-5" />
                                     </div>
-                                );
-                            })
+                                    <div className={cn('w-20 truncate font-semibold')}>Empty</div>
+                                </div>
+                            ) : (
+                                listShowTimes.map((showtime) => {
+                                    const active = showtime.id === showingId;
+                                    return (
+                                        <div
+                                            key={showtime.id}
+                                            className={cn(
+                                                'cursor-pointer select-none rounded-lg p-2 text-center text-sm',
+                                                {
+                                                    'border border-primary': active,
+                                                },
+                                            )}
+                                            onClick={() => onChangeShowing(showtime.id)}
+                                        >
+                                            <div
+                                                className={cn('mb-2 w-20 truncate rounded-lg px-2 py-1 text-gray-500', {
+                                                    'bg-primary text-white': active,
+                                                })}
+                                            >
+                                                {showtime.type}
+                                            </div>
+                                            <div className={cn('w-20 truncate font-semibold')}>
+                                                {format(showtime.startTime, 'HH:mm aa')}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )
+                        ) : (
+                            <>
+                                <div className="flex cursor-progress select-none flex-col items-center gap-y-3 rounded-lg border border-primary p-2 text-center text-sm">
+                                    <div>
+                                        <Skeleton className="h-5 w-20" />
+                                    </div>
+                                    <div>
+                                        <Skeleton className="h-5 w-20" />
+                                    </div>
+                                </div>
+                                <div className="flex cursor-progress select-none flex-col items-center gap-y-3 rounded-lg border border-primary p-2 text-center text-sm">
+                                    <div>
+                                        <Skeleton className="h-5 w-20" />
+                                    </div>
+                                    <div>
+                                        <Skeleton className="h-5 w-20" />
+                                    </div>
+                                </div>
+                                <div className="flex cursor-progress select-none flex-col items-center gap-y-3 rounded-lg border border-primary p-2 text-center text-sm">
+                                    <div>
+                                        <Skeleton className="h-5 w-20" />
+                                    </div>
+                                    <div>
+                                        <Skeleton className="h-5 w-20" />
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>

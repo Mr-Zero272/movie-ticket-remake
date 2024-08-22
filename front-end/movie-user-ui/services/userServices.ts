@@ -24,6 +24,7 @@ export const fetchUser = async (userId: string) => {
         });
 
         const result = UserValidation.safeParse(response.data);
+
         if (result.success) {
             return result.data;
         } else {
@@ -86,8 +87,6 @@ export const updateUser = async (user: User, userClerkId: string): Promise<User 
 
 export const updateClerkUserInfo = async (username: string, firstName: string, lastName: string, userId: string) => {
     const updatedUser = await clerkClient.users.updateUser(userId, { firstName, lastName, username });
-
-    console.log(updateUser);
 
     if (!updatedUser) {
         throw new Error('Update user information in Clerk error!');

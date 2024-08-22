@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.requests;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.moonmovie.movie_service.models.DetailShowingType;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MovieRequest {
 
     private String title;

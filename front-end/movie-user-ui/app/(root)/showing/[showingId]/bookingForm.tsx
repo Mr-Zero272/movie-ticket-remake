@@ -25,6 +25,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
     const [activeStep, setActiveStep] = useState(stepperShowing[0]);
     const [showingData, setShowingData] = useState<Showing | null>(showingInfo);
     const [showTimes, setShowTimes] = useState(listShowTimes);
+    const [loading, setLoading] = useState(false);
 
     const handleChooseStep = (step: Step) => {
         setActiveStep(step);
@@ -61,6 +62,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
     const handleChangeDate = useCallback(
         (date: string) => {
             const fetchShowingsApi = async () => {
+                setLoading(true);
                 if (showingData) {
                     const showTimes = await fetchShowings(date, showingData.movie.id);
 
@@ -79,6 +81,8 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                     const showingRes = await fetchShowing(showTimes[0].id);
                     setShowingData(showingRes);
                 }
+
+                setLoading(false);
             };
 
             fetchShowingsApi();
@@ -102,6 +106,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                                 listSelectedSeats={listSelectedSeats}
                                 seatData={listSeat}
                                 listShowTimes={showTimes}
+                                loading={loading}
                                 onChooseSeat={handleChooseSeat}
                                 onChangeShowing={handleChangeShowing}
                                 onChangeDate={handleChangeDate}
@@ -111,7 +116,13 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                         {activeStep.step === 2 && <Step2 onBackStep={() => setActiveStep(stepperShowing[0])} />}
                     </div>
                     <div className="flex w-1/4 justify-center max-[1200px]:hidden">
-                        <MovieCardItemVertical />
+                        <MovieCardItemVertical
+                            movieId={showingInfo.movie.id}
+                            poster={showingInfo.movie.posterPath}
+                            title={showingInfo.movie.title}
+                            runtime={showingInfo.movie.runtime}
+                            firstGenre={showingInfo.movie.genres[0].name}
+                        />
                     </div>
                 </div>
             </article>

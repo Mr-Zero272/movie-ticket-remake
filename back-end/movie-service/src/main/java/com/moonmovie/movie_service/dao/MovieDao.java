@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,12 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
     Page<Movie> findAllByDeleteFlagIsFalse(Pageable pageable);
 
     Page<Movie> findAllByVoteCountGreaterThanEqual(int voteCount, Pageable pageable);
+
+//    @Query(value = "SELECT DISTINCT m.* FROM Movie m JOIN MOVIE_GENRE mg ON m.id = mg.movie_id WHERE m.vote_count >= ?1 AND mg.genre_id = ?2", nativeQuery = true)
+    @Query("SELECT m FROM Movie m JOIN m.genres g WHERE m.voteCount >= ?1 AND g.id = ?2")
+    Page<Movie> findAllByVoteCountGreaterThanEqualAndGenreIs(int voteCount,  String genre, Pageable pageable);
+
+    Page<Movie> findAllByStatus(String status, Pageable pageable);
 
     Page<Movie> findALlByDeleteFlagIsFalseAndTitleContainingIgnoreCase(String title, Pageable pageable);
 

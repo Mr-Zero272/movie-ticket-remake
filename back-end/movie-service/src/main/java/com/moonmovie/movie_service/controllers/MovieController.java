@@ -31,11 +31,20 @@ public class MovieController {
 
     @GetMapping("/popular")
     public ResponseEntity<PaginationResponse<Movie>> getPopularMovies(
-            @RequestParam(value = "q", defaultValue = "") String query,
+            @RequestParam(value = "genre", defaultValue = "") String genre,
+            @RequestParam(value = "sort", defaultValue = "releaseDate") String sort,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(movieService.getAllMovies(query, page, size));
+        return ResponseEntity.ok(movieService.getPopularMovies(page, size, sort, genre));
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<PaginationResponse<Movie>> getUpcomingMovies(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(movieService.getUpcomingMovies( page, size));
     }
 
     @GetMapping("/{movieId}")
@@ -53,10 +62,21 @@ public class MovieController {
         return ResponseEntity.ok(movieService.updateMovie(id, request));
     }
 
+    @PutMapping("/schedule/{movieId}")
+    public ResponseEntity<Movie> updateScheduleInfo(@PathVariable("movieId") int id, @RequestBody MovieRequest request) {
+        return ResponseEntity.ok(movieService.updateMovieScheduleDetail(id, request));
+    }
+
     @PostMapping("/schedule")
     public ResponseEntity<ResponseTemplate> scheduleMovie(@RequestBody ScheduleRequest request) {
         // TODO check role in the request
         return ResponseEntity.ok(movieService.schedule(request.getMonth(), request.getYear(), "ADMIN"));
+    }
+
+    @DeleteMapping("/{movieId}")
+    public ResponseEntity<ResponseTemplate> deleteMovie(@PathVariable("movieId") int id) {
+        movieService.deleteMovie(id);
+        return  ResponseEntity.ok(new ResponseTemplate("Delete movie with id: " + id + " successfully!"));
     }
 
 }

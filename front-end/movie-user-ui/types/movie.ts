@@ -36,6 +36,7 @@ export const MovieSchema = z.object({
     monthToSchedule: z.number(),
     yearToSchedule: z.number(),
     totalShowings: z.number(),
+    totalDateShowingsInMonth: z.number(),
     priceEachSeat: z.number(),
     detailShowingTypes: z.array(DetailShowingTypeSchema),
     galleries: z.array(GallerySchema),
