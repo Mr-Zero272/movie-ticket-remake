@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public interface ShowingDto {
-     public Integer getId();
+    public Integer getId();
     public LocalDateTime getStartTime();
     public String getType();
     public String getAuditoriumId();

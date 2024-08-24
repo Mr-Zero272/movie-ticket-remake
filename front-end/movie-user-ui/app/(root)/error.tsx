@@ -23,8 +23,8 @@ function Error({ error }: Props) {
                 <p className="mx-auto mb-14 mt-8 text-[18px] font-normal text-gray-500 md:max-w-sm">
                     Don&apos;t worry, our team is already on it.Please try refreshing the page or come back later.
                 </p>
-                <Button color="gray" className="w-full px-4 md:w-[8rem]" onClick={() => route.push('/')}>
-                    Back home
+                <Button color="gray" className="w-full px-4 md:w-[8rem]" onClick={() => route.refresh()}>
+                    Refresh page
                 </Button>
             </div>
         </div>

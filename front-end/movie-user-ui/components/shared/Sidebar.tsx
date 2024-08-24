@@ -44,7 +44,7 @@ function Sidebar({}: Props) {
                                             <Link
                                                 className={cn(
                                                     'group flex items-center rounded-lg px-4 py-3 font-medium tracking-wide text-gray-500 hover:bg-accent',
-                                                    { 'bg-accent text-gray-950 dark:text-white': isActive },
+                                                    { 'bg-accent text-primary dark:text-white': isActive },
                                                 )}
                                                 href={link.route}
                                             >
@@ -54,7 +54,7 @@ function Sidebar({}: Props) {
                                                     className={cn(
                                                         'ml-3 w-full text-gray-500 transition-all duration-150 max-lg:hidden',
                                                         {
-                                                            'text-gray-950 dark:text-white': isActive,
+                                                            'text-primary dark:text-white': isActive,
                                                         },
                                                     )}
                                                 >

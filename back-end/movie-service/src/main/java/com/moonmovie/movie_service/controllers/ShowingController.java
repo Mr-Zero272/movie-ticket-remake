@@ -2,6 +2,7 @@ package com.moonmovie.movie_service.controllers;
 
 import com.moonmovie.movie_service.dto.ShowingDto;
 import com.moonmovie.movie_service.models.Showing;
+import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.ShowingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,14 @@ public class ShowingController {
     @GetMapping
     public ResponseEntity<List<ShowingDto>> getShowings(@RequestParam("startDate") LocalDateTime startDate, @RequestParam("movieId") int movieId) {
         return ResponseEntity.ok(showingService.getAllShowings(startDate, movieId));
+    }
+
+    @GetMapping("/schedule")
+    public ResponseEntity<PaginationResponse<Showing>> getScheduledShowings(
+            @RequestParam("startDate") LocalDateTime startDate,
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "20", required = false) int size) {
+        return ResponseEntity.ok(showingService.getPaginationShowings(startDate, page, size));
     }
 
     @GetMapping("/{showingId}")

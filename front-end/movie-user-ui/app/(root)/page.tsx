@@ -2,8 +2,7 @@ import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
 import FilterMovie from '@/components/shared/FilterMovie';
 import MovieCarousel from '@/components/shared/MovieCarousel';
 import ScrollList from '@/components/shared/ScrollList';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { fetchMovies, fetchPopularMovies } from '@/services/movieServices';
+import { fetchAllGenres, fetchPopularMovies, fetchUpcomingMovies } from '@/services/movieServices';
 import { fetchUser } from '@/services/userServices';
 import { currentUser } from '@clerk/nextjs/server';
 import { FileVideo, Headset, Ticket, Users } from 'lucide-react';
@@ -18,23 +17,28 @@ export default async function Home() {
 
     if (!userInfo?.onboarded) redirect('/onboarding');
 
-    const popularMovies = await fetchPopularMovies({ page: 1, size: 20, sort: 'releaseDate', genre: '' });
-    const upcomingMovies = await fetchMovies({ type: 'upcoming', page: 1, size: 5 });
+    const popularMovies = await fetchPopularMovies({ page: 1, size: 20, sort: 'releaseDate', genreId: 0 });
+    const upcomingMovies = await fetchUpcomingMovies({ page: 1, size: 5 });
+    const genreData = await fetchAllGenres();
 
     return (
         <div className="p-4">
-            <MovieCarousel />
+            <MovieCarousel data={popularMovies.data.slice(1, 6)} />
             <ScrollList title="Opening this week">
                 <FilterMovie
                     initialData={popularMovies}
                     type="popular"
-                    sort
-                    sortData={['releaseDate', 'budget', 'title']}
+                    sortData={[
+                        { label: 'Release data', value: 'releaseDate' },
+                        { label: 'Budget', value: 'budget' },
+                        { label: 'Title', value: 'title' },
+                    ]}
+                    genreData={genreData}
                 />
             </ScrollList>
             <ScrollList title="Coming soon">
                 <div className="grid grid-cols-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-md:grid-cols-2">
-                    {upcomingMovies.map((movie) => (
+                    {upcomingMovies.data.map((movie) => (
                         <MovieCardItemVertical
                             key={movie.id}
                             movieId={movie.id}

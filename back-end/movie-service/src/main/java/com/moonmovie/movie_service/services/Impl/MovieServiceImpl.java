@@ -25,10 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.YearMonth;
+import java.util.*;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -57,15 +55,20 @@ public class MovieServiceImpl implements MovieService {
     @Autowired
     private KafkaProducerService kafkaProducerService;
 
+    @Autowired
+    private MovieDaoCustom movieDaoCustom;
+
     @Override
-    public PaginationResponse<Movie> getAllMovies(String query, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Movie> pageMovie;
-        if (query.isEmpty()) {
-            pageMovie = movieDao.findAllByDeleteFlagIsFalse(pageable);
+    public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, int page, int size) {
+        if (genreId != null && genreId == 0) genreId = null;
+        List<String> queries = new ArrayList<>();
+        if (query == null || query.isEmpty()) {
+            queries = List.of("%");
         } else {
-            pageMovie = movieDao.findALlByDeleteFlagIsFalseAndTitleContainingIgnoreCase(query, pageable);
+            queries = Arrays.stream(query.split(" ")).toList();
         }
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Movie> pageMovie = movieDaoCustom.findAllWithFilters(queries, genreId, originalLanguage, status, sort, pageable);
         PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
                 .data(pageMovie.getContent())
                 .page(page)
@@ -77,13 +80,19 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public PaginationResponse<Movie> getPopularMovies(int page, int size, String sort, String genre) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sort));
+    public PaginationResponse<Movie> getPopularMovies(int page, int size, String sort, Integer genreId) {
+        Pageable pageable;
+        if (sort.equalsIgnoreCase("none")) {
+            pageable = PageRequest.of(page - 1, size);
+        } else {
+            pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sort));
+        }
+
         Page<Movie> pageMovie;
-        if (genre.equalsIgnoreCase("")) {
+        if (genreId == null || genreId == 0) {
             pageMovie = movieDao.findAllByVoteCountGreaterThanEqual(100, pageable);
         } else {
-            pageMovie = movieDao.findAllByVoteCountGreaterThanEqualAndGenreIs(100, genre, pageable);
+            pageMovie = movieDao.findAllByVoteCountGreaterThanEqualAndGenreIs(100, genreId, pageable);
         }
 
         PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
@@ -121,14 +130,14 @@ public class MovieServiceImpl implements MovieService {
             e.printStackTrace();
         }
 
-        if (totalShowingsThisMonth > LocalDate.now().getMonthValue() * 8 * 10) {
+        if (totalShowingsThisMonth > LocalDate.now().lengthOfMonth() * 8 * 10) {
             throw new MovieException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
         }
 
         // Check if the movie has the same title
-        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
-            throw new MovieException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
-        }
+//        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
+//            throw new MovieException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
+//        }
 
         Movie movie = convertMovieRequestToMovie(request);
         Movie moveSaved = movieDao.save(movie);
@@ -234,7 +243,8 @@ public class MovieServiceImpl implements MovieService {
         List<Movie> movies = movieDao.findAllByMonthToScheduleAndYearToSchedule(month, year);
 
         // 28 -> 31 days
-        final int totalDaysInThisMonth = LocalDate.now().lengthOfMonth();
+        YearMonth yearMonthObject = YearMonth.of(year, month);
+        final int totalDaysInThisMonth = yearMonthObject.lengthOfMonth();
         final int restTime = 20;
         final int maxScreeningsPerDay = 8;
 

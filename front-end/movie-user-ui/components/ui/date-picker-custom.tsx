@@ -3,7 +3,6 @@ import React, { useMemo, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { cn, generateDateRangeNext } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ScrollArea, ScrollBar } from './scroll-area';
 
 type Props = {
     initialDate: string;

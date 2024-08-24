@@ -22,7 +22,7 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
 
 //    @Query(value = "SELECT DISTINCT m.* FROM Movie m JOIN MOVIE_GENRE mg ON m.id = mg.movie_id WHERE m.vote_count >= ?1 AND mg.genre_id = ?2", nativeQuery = true)
     @Query("SELECT m FROM Movie m JOIN m.genres g WHERE m.voteCount >= ?1 AND g.id = ?2")
-    Page<Movie> findAllByVoteCountGreaterThanEqualAndGenreIs(int voteCount,  String genre, Pageable pageable);
+    Page<Movie> findAllByVoteCountGreaterThanEqualAndGenreIs(int voteCount,  Integer genre, Pageable pageable);
 
     Page<Movie> findAllByStatus(String status, Pageable pageable);
 
@@ -35,4 +35,7 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
 
     @Query("SELECT m FROM Movie m WHERE m.monthToSchedule = ?1 AND m.yearToSchedule = ?2")
     List<ScheduleMovie> findAllScheduleMovies(int month, int year);
+
+    @Query("SELECT DISTINCT m FROM Movie m JOIN m.genres g WHERE LOWER(m.title) LIKE LOWER(?1) AND g.id = ?2 AND m.originalLanguage = ?3 AND m.status = ?4 ")
+    Page<Movie> findAllPagination(Pageable pageable, String q, int genreId, String originalLanguage, String status);
 }

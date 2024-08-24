@@ -1,73 +1,31 @@
 'use client';
 
+import { cn } from '@/lib/utils';
+import { Movie } from '@/types/movie';
+import { format } from 'date-fns';
+import Autoplay from 'embla-carousel-autoplay';
+import { Play } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
-import { Play } from 'lucide-react';
-import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
-import { EmblaPluginType } from 'embla-carousel';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Carousel, CarouselApi, CarouselContent, CarouselItem } from '../ui/carousel';
 
 const colors = [
-    'bg-indigo-500',
-    'bg-yellow-500',
-    'bg-red-500',
-    'bg-purple-500',
-    'bg-pink-500',
-    'bg-blue-500',
-    'bg-green-500',
+    'bg-indigo-400',
+    'bg-yellow-400',
+    'bg-red-400',
+    'bg-green-400',
+    'bg-blue-400',
+    'bg-pink-400',
+    'bg-purple-400',
 ];
 
-const carouselTestData = [
-    {
-        id: '1',
-        title: 'Star Wars',
-        releaseDate: '2024-05-01',
-        runtime: 112,
-        overview:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
-    },
-    {
-        id: '2',
-        title: 'The king',
-        releaseDate: '2018-05-01',
-        runtime: 652,
-        overview:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
-    },
-    {
-        id: '3',
-        title: 'Saw you on the night',
-        releaseDate: '2022-05-01',
-        runtime: 152,
-        overview:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
-    },
-    {
-        id: '4',
-        title: 'Please love your self more',
-        releaseDate: '2023-05-01',
-        runtime: 102,
-        overview:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
-    },
-    {
-        id: '5',
-        title: "I've been reading books of old",
-        releaseDate: '2023-05-01',
-        runtime: 102,
-        overview:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam quisquam omnis cum. Recusandae ea modi ullam labore dignissimos sint nisi?',
-    },
-];
+type Props = {
+    data: Movie[];
+};
 
-type Props = {};
-
-function MovieCarousel({}: Props) {
+function MovieCarousel({ data }: Props) {
     const [api, setApi] = useState<CarouselApi>();
     const [current, setCurrent] = useState(0);
     const [count, setCount] = useState(0);
@@ -86,9 +44,9 @@ function MovieCarousel({}: Props) {
         });
     }, [api]);
 
-    const renderDots = (dots: number = 5) => {
+    const renderDots = () => {
         let dotElements = [];
-        for (let i = 0; i < dots; i++) {
+        for (let i = 0; i < count; i++) {
             dotElements.push(
                 <div
                     key={i}
@@ -112,36 +70,39 @@ function MovieCarousel({}: Props) {
                 setApi={setApi}
             >
                 <CarouselContent>
-                    {carouselTestData.map((item, index) => (
-                        <CarouselItem key={item.id}>
+                    {data.map((movie, index) => (
+                        <CarouselItem key={movie.id}>
                             <div
                                 className={cn(
-                                    'grid w-full grid-cols-3 items-center gap-x-5 rounded-xl px-16 shadow-md max-md:grid-cols-1 max-md:grid-rows-2 max-md:px-0',
+                                    'grid w-full grid-cols-3 items-center gap-x-5 rounded-xl pl-16 shadow-md max-md:grid-cols-1 max-md:grid-rows-2 max-md:px-0',
                                     {
                                         [colors[index]]: colors[index],
                                     },
                                 )}
                             >
                                 <div className="col-span-1 text-white max-md:order-last max-md:p-6">
-                                    <h2 className="text-3xl font-bold dark:text-gray-900">{item.title}</h2>
+                                    <h2 className="line-clamp-2 text-3xl font-bold dark:text-gray-900">
+                                        {movie.title}
+                                    </h2>
                                     <div className="mb-5 flex items-center gap-x-3 font-semibold dark:text-gray-900">
-                                        <span>{format(new Date(item.releaseDate), 'yyyy')}</span>
+                                        <span>{format(new Date(movie.releaseDate), 'yyyy')}</span>
                                         <span className="h-4 w-0.5 bg-white dark:bg-gray-900"></span>
-                                        <span>{item.runtime} minutes</span>
+                                        <span>{movie.runtime} minutes</span>
                                     </div>
-                                    <p className="mb-3 line-clamp-3 text-sm dark:text-gray-900">{item.overview}</p>
-                                    <Link href={`/detail/${item.id}`}>
+                                    <p className="mb-3 line-clamp-3 text-sm dark:text-gray-900">{movie.overview}</p>
+                                    <Link href={`/detail/${movie.id}`}>
                                         <Button className="dark:text-gray-900">
                                             <Play className="mr-2 h-4 w-4" /> More detail
                                         </Button>
                                     </Link>
                                 </div>
                                 <Image
-                                    src="https://i.pinimg.com/originals/3c/7c/86/3c7c86deebf7abfacad188fb67285c63.png"
+                                    src={movie.backdropPath}
                                     alt="backdrop"
                                     width={400}
                                     height={400}
-                                    className="col-span-2 h-72 w-full skew-x-[20deg] object-cover max-md:skew-x-0 max-md:rounded-t-md"
+                                    quality={100}
+                                    className="col-span-2 h-72 w-full rounded-r-xl object-cover max-md:skew-x-0 max-md:rounded-r-none max-md:rounded-t-md"
                                 />
                             </div>
                         </CarouselItem>

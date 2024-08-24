@@ -57,7 +57,6 @@ function Search({ className }: Props) {
             // });
             // const data = await response.json();
             // TODO: delete this block code
-            console.log(res);
 
             res.push(debounced);
             setSearchResult(res);
@@ -95,19 +94,9 @@ function Search({ className }: Props) {
                 setSearchValue(searchResult[indexSearchKeyword - 1]);
             }
         } else if (e.key === 'Enter') {
-            alert('submit');
+            router.replace('/search/' + searchValue);
+            setShowResult(false);
             e.preventDefault();
-        }
-    };
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        alert('submit');
-    };
-
-    const handleKeyPress = (event: React.KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            router.push('/search');
         }
     };
 
@@ -161,8 +150,16 @@ function Search({ className }: Props) {
                         title="Movie"
                         onOutSideClick={handleHideResult}
                     >
-                        {searchResult.slice(0, searchResult.length - 1).map((result) => (
-                            <DropdownMenuItem key={result} isFocused={searchValue === result}>
+                        {searchResult.slice(0, searchResult.length - 1).map((result, index) => (
+                            <DropdownMenuItem
+                                key={result + index}
+                                isFocused={searchValue === result}
+                                onClick={() => {
+                                    setSearchValue(result);
+                                    setShowResult(false);
+                                    router.replace('/search/' + result);
+                                }}
+                            >
                                 {result}
                             </DropdownMenuItem>
                         ))}

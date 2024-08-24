@@ -21,7 +21,7 @@ public class GenreServiceImpl implements GenreService {
     private GenreDao genreDao;
 
     @Override
-    public PaginationResponse<Genre> getAllGenres(int size, int page) {
+    public PaginationResponse<Genre> getAllGenres( int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Genre> pageGenre = genreDao.findAll(pageable);
         PaginationResponse<Genre> resp = PaginationResponse.<Genre>builder()

@@ -48,9 +48,10 @@ function DropdownMenu({ className = '', title, children, onOutSideClick }: Dropd
 
 type DropdownMenuItemProps = React.PropsWithChildren<{
     isFocused: boolean;
+    onClick?: () => void;
 }>;
 
-function DropdownMenuItem({ isFocused, children }: DropdownMenuItemProps) {
+function DropdownMenuItem({ onClick, isFocused, children }: DropdownMenuItemProps) {
     return (
         <div
             role="menuitem"
@@ -61,6 +62,7 @@ function DropdownMenuItem({ isFocused, children }: DropdownMenuItemProps) {
             tabIndex={-1}
             data-orientation="vertical"
             data-radix-collection-item=""
+            onClick={onClick}
         >
             {children}
         </div>

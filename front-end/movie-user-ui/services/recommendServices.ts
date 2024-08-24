@@ -10,8 +10,6 @@ export const fetchRecommendKeywords = async (query: string) => {
             },
         });
 
-        console.log(response);
-
         const result = response.data;
         return result;
     } catch (error: any) {

@@ -1,46 +1,52 @@
-import pandas as pd
+import mysql.connector
 
-movies = pd.read_csv('dataset.csv')
+conn = mysql.connector.connect(
+    host="localhost",       # e.g., "localhost"
+    user="root",   # e.g., "root"
+    password="Imgemini",
+    database="moonmovie-movie-service"  # e.g., "movies_db"
+)
 
-movies = movies[['title']]
+# Create a cursor object
+cursor = conn.cursor()
 
-movie_titles = [
-    "The Godfather",
-    "The Dark Knight",
-    "Pulp Fiction",
-    "The Lord of the Rings",
-    "Forrest Gump",
-    "Inception",
-    "Fight Club",
-    "The Matrix",
-    "Goodfellas",
-    "The Silence of the Lambs"
-]
+# Define the SQL query
+query = "SELECT title FROM movie"
 
-df = movies
+# Execute the query
+cursor.execute(query)
+
+# Fetch all results
+movie_titles = cursor.fetchall()
+
+movie_titles = [title[0] for title in movie_titles]
+
+# Close the cursor and connection
+cursor.close()
+conn.close()
 
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 vectorizer = TfidfVectorizer()
-tfidf_matrix = vectorizer.fit_transform(df['title'])
+tfidf_matrix = vectorizer.fit_transform(movie_titles)
 
-from sklearn.metrics.pairwise import cosine_similarity
 
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix);
 
-def recommend_keywords(user_input, df, cosine_sim):
-    user_inputJ_vectorized = vectorizer.transform([user_input])
-    similarity_scores = cosine_similarity(user_inputJ_vectorized, tfidf_matrix)
-    sorted_indices = similarity_scores.argsort()[0][::-1]
-    top_indices = sorted_indices[:5]
+def recommend_keywords(query):
+    user_query_vectorized = vectorizer.transform([query])
+    similarity_scores = cosine_similarity(user_query_vectorized, tfidf_matrix).flatten();
+    # Get indices of top matches
+    related_docs_indices = similarity_scores.argsort()[:-8:-1]
     
-    recommendations = df.iloc[top_indices]['title'].values
-    return recommendations
+    # Get suggestions
+    suggestions = [movie_titles[i] for i in related_docs_indices]
+    return suggestions
 
     
 from flask import Flask, request, jsonify
 import py_eureka_client.eureka_client as eureka_client
-from flask_cors import CORS, cross_origin
 
 rest_port = 5000
 eureka_client.init(eureka_server="http://localhost:8761/eureka",
@@ -53,8 +59,8 @@ app = Flask(__name__)
 @app.route('/api/v2/moon-movie/recommend', methods=['GET'])
 def recommend():
     user_input = request.args.get('query')
-    recommendations = recommend_keywords(user_input, df, cosine_sim)
-    return jsonify(recommendations.tolist())
+    recommendations = recommend_keywords(user_input)
+    return jsonify(recommendations)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port = rest_port)

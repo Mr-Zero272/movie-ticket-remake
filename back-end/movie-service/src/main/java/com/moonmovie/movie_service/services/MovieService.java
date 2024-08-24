@@ -1,13 +1,10 @@
 package com.moonmovie.movie_service.services;
 
 import com.moonmovie.movie_service.models.Movie;
-import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public interface MovieService {
@@ -15,20 +12,26 @@ public interface MovieService {
      * Get all movies
      *
      * @param query Query string from user
+     * @param genreId Genre's id
+     * @param originalLanguage Language
+     * @param status Movie's status
+     * @param sort Sort by
      * @param page current page
      * @param size size of the page
      * @return PaginationResponse<Movie> list movies and pagination information
      */
-    public PaginationResponse<Movie> getAllMovies(String query, int page, int size);
+    public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, int page, int size);
 
     /**
      * Get popular movies
      *
      * @param page current page
      * @param size size of the page
+     * @param sort Sort field
+     * @param genreId Genre's id
      * @return PaginationResponse<Movie> list movies and pagination information
      */
-    public PaginationResponse<Movie> getPopularMovies(int page, int size, String sort, String genre);
+    public PaginationResponse<Movie> getPopularMovies(int page, int size, String sort, Integer genreId);
 
     /**
      * Get a movie by id

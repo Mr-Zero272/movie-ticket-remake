@@ -1,5 +1,5 @@
-import { MovieSchema } from '@/types/movie';
-import { PaginationMovieSchema } from '@/types/pagination';
+import { GenreSchema, MovieSchema } from '@/types/movie';
+import { PaginationMovieSchema, PaginationShowingSchema } from '@/types/pagination';
 import { ShowingDtoSchema, ShowingSchema } from '@/types/showing';
 import axios from 'axios';
 import * as z from 'zod';
@@ -41,6 +41,28 @@ export const fetchShowings = async (startDate: string, movieId: number) => {
     }
 };
 
+export const fetchScheduleShowings = async (startDate: string, page: number = 1, size: number = 10) => {
+    try {
+        const response = await axios.get(`${API_URL}/showing/schedule`, {
+            params: {
+                startDate,
+                page,
+                size,
+            },
+        });
+
+        const result = PaginationShowingSchema.safeParse(response.data);
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid schedule showings information');
+        }
+    } catch (error: any) {
+        console.error('Error fetching schedule showings info:', error.message);
+        throw new Error('Cannot fetch schedule showings information');
+    }
+};
+
 export const fetchShowing = async (showingId: number) => {
     try {
         const response = await axios.get(`${API_URL}/showing/${showingId}`);
@@ -56,37 +78,23 @@ export const fetchShowing = async (showingId: number) => {
     }
 };
 
-export const fetchMovies = async (
-    param: { page: number; size: number; type: 'popular' | 'upcoming' } | { q: string; page: number; size: number },
-) => {
-    let apiUrl = API_URL;
-    let paramForApi = {};
-    if ('q' in param) {
-        paramForApi = { ...param };
-    } else {
-        if (param.type === 'popular') {
-            apiUrl += '/popular';
-        } else {
-            apiUrl += '/upcoming';
-        }
-        paramForApi = { page: param.page, size: param.size };
-    }
+export const fetchUpcomingMovies = async ({ size = 20, page = 1 }: { size: number; page: number }) => {
     try {
-        const response = await axios.get(apiUrl, {
+        const res = await axios.get(`${API_URL}/upcoming`, {
             params: {
-                ...paramForApi,
+                size,
+                page,
             },
         });
-
-        const result = z.array(MovieSchema).safeParse(response.data.data);
+        const result = PaginationMovieSchema.safeParse(res.data);
         if (result.success) {
             return result.data;
         } else {
-            throw new Error('Cannot valid list movies information');
+            throw new Error('Cannot valid list upcoming movies information');
         }
     } catch (error: any) {
-        console.error('Error fetching list movies info:', error.message);
-        throw new Error('Cannot fetch list movies information');
+        console.error('Error fetching list upcoming movies info:', error.message);
+        throw new Error('Cannot fetch list upcoming movies information');
     }
 };
 
@@ -94,12 +102,12 @@ export const fetchPopularMovies = async ({
     size = 20,
     page = 1,
     sort = 'releaseDate',
-    genre = '',
+    genreId = 0,
 }: {
     size: number;
     page: number;
     sort: string;
-    genre: string | number;
+    genreId: string | number;
 }) => {
     try {
         const res = await axios.get(`${API_URL}/popular`, {
@@ -107,7 +115,48 @@ export const fetchPopularMovies = async ({
                 size,
                 page,
                 sort,
-                genre,
+                genreId,
+            },
+        });
+        const result = PaginationMovieSchema.safeParse(res.data);
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid list popular movies information');
+        }
+    } catch (error: any) {
+        console.error('Error fetching list popular movies info:', error.message);
+        throw new Error('Cannot fetch list popular movies information');
+    }
+};
+
+export const fetchMovies = async ({
+    q = '',
+    originalLanguage = 'en',
+    status = 'Released',
+    sort = 'releaseDate',
+    genreId = 0,
+    page = 1,
+    size = 20,
+}: {
+    q: string;
+    originalLanguage: string;
+    status: string;
+    size: number;
+    page: number;
+    sort: string;
+    genreId: string | number;
+}) => {
+    try {
+        const res = await axios.get(`${API_URL}`, {
+            params: {
+                q,
+                originalLanguage,
+                status,
+                size,
+                page,
+                sort,
+                genreId,
             },
         });
         const result = PaginationMovieSchema.safeParse(res.data);
@@ -119,5 +168,25 @@ export const fetchPopularMovies = async ({
     } catch (error: any) {
         console.error('Error fetching list movies info:', error.message);
         throw new Error('Cannot fetch list movies information');
+    }
+};
+
+export const fetchAllGenres = async (page: number = 1, size: number = 30) => {
+    try {
+        const res = await axios.get(`${API_URL}/genre`, {
+            params: {
+                page,
+                size,
+            },
+        });
+        const result = z.array(GenreSchema).safeParse(res.data.data);
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid list genres information');
+        }
+    } catch (error: any) {
+        console.error('Error fetching list genres info:', error.message);
+        throw new Error('Cannot fetch list genres information');
     }
 };

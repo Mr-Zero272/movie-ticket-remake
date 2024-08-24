@@ -22,21 +22,25 @@ public class MovieController {
 
     @GetMapping
     public ResponseEntity<PaginationResponse<Movie>> getAllMovies(
-            @RequestParam(value = "q", defaultValue = "") String query,
+            @RequestParam(value = "q", defaultValue = "", required = false) String query,
+            @RequestParam(value = "genreId", required = false, defaultValue = "") Integer genreId,
+            @RequestParam(value = "sort", defaultValue = "none", required = false) String sort,
+            @RequestParam(value = "originalLanguage", defaultValue = "en", required = false) String originalLanguage,
+            @RequestParam(value = "status", defaultValue = "Released", required = false) String status,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(movieService.getAllMovies(query, page, size));
+        return ResponseEntity.ok(movieService.getAllMovies(query, genreId, originalLanguage, status, sort, page, size));
     }
 
     @GetMapping("/popular")
     public ResponseEntity<PaginationResponse<Movie>> getPopularMovies(
-            @RequestParam(value = "genre", defaultValue = "") String genre,
+            @RequestParam(value = "genreId", required = false, defaultValue = "") Integer genreId,
             @RequestParam(value = "sort", defaultValue = "releaseDate") String sort,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(movieService.getPopularMovies(page, size, sort, genre));
+        return ResponseEntity.ok(movieService.getPopularMovies(page, size, sort, genreId));
     }
 
     @GetMapping("/upcoming")
