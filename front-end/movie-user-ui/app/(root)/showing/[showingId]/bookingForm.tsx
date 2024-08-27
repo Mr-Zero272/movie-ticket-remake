@@ -117,11 +117,13 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                     </div>
                     <div className="flex w-1/4 justify-center max-[1200px]:hidden">
                         <MovieCardItemVertical
+                            userId={userInfo.userClerkId}
                             movieId={showingInfo.movie.id}
                             poster={showingInfo.movie.posterPath}
                             title={showingInfo.movie.title}
                             runtime={showingInfo.movie.runtime}
                             firstGenre={showingInfo.movie.genres[0].name}
+                            love={showingInfo.movie.userFavoriteMovies.some((s) => s.userId === userInfo.userClerkId)}
                         />
                     </div>
                 </div>

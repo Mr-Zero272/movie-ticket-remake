@@ -1,22 +1,33 @@
-import { format } from 'date-fns';
-import { Ellipsis, Heart, Play, PlayCircle } from 'lucide-react';
+'use client';
+import { cn } from '@/lib/utils';
+import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices';
+import { Ellipsis, Heart, Play } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import { useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 
 type Props = {
+    userId: string;
     movieId: number;
     poster: string;
     title: string;
     runtime: number;
     firstGenre: string;
+    love: boolean;
     className?: string;
 };
 
 const MovieCardItemVertical = (props: Props | { loading: boolean; className?: string }) => {
+    const [isFavorite, setIsFavorite] = useState(() => {
+        if ('love' in props) {
+            return props.love;
+        }
+        return false;
+    });
+
     if ('loading' in props) {
-        const { loading, className } = props;
+        const { className } = props;
         return (
             <figure
                 className={`w-56 animate-pulse max-[500px]:w-48 max-[420px]:w-44 max-[385px]:w-40 ${className as string}`}
@@ -42,7 +53,16 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
         );
     }
 
-    const { movieId, poster, title, runtime, firstGenre, className } = props;
+    const { userId, movieId, poster, title, runtime, firstGenre, className, love } = props;
+    const handleLoveClick = async () => {
+        if (isFavorite) {
+            await deleteFavoriteMovie({ movieId: movieId, userId: userId });
+        } else {
+            await addToFavorite({ movieId: movieId, userId: userId });
+        }
+        setIsFavorite((prev) => !prev);
+    };
+
     return (
         <figure className={`w-56 max-[500px]:w-48 max-[420px]:w-44 max-[385px]:w-40 ${className as string}`}>
             <div className="group relative cursor-pointer">
@@ -65,8 +85,13 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
             </div>
             <div className="px-3 py-5 text-sm">
                 <div className="mb-3 flex items-center justify-between">
-                    <h3 className="font-bold">{title}</h3>
-                    <Heart className="size-5 cursor-pointer text-red-500" />
+                    <h3 className="line-clamp-2 flex-1 font-bold">{title}</h3>
+                    <Heart
+                        className={cn('size-5 w-1/5 cursor-pointer text-red-500', {
+                            'fill-red-500 text-red-500': isFavorite,
+                        })}
+                        onClick={handleLoveClick}
+                    />
                 </div>
                 <div className="mb-3 flex items-center gap-x-3 text-xs text-gray-400">
                     <span>{runtime} MIN</span>

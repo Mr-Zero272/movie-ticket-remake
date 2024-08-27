@@ -22,7 +22,7 @@ function Tickets({}: Props) {
                     <TicketBase />
                 </div>
                 <div className="w-1/3">
-                    <div className="mb-5 flex items-center gap-x-5 rounded-md bg-accent p-5 shadow-md">
+                    <div className="mb-5 flex items-center gap-x-5 rounded-md bg-accent p-5 shadow-md dark:bg-[#1f1f1f]">
                         <Image src="assets/qr-code.svg" alt="qr-code" width={50} height={50} />
                         <div className="text-sm text-gray-500">
                             <p className="mb-3">Scan QR code at the entrance of the cinema hall</p>
@@ -31,7 +31,7 @@ function Tickets({}: Props) {
                             </p>
                         </div>
                     </div>
-                    <div className="rounded-md bg-accent p-5 shadow-md">
+                    <div className="rounded-md bg-accent p-5 shadow-md dark:bg-[#1f1f1f]">
                         <div className="mb-7 flex items-center gap-x-5">
                             <Image
                                 src="https://i.pinimg.com/originals/eb/61/63/eb61633611704442c0d3d5cabdc20b5d.jpg"

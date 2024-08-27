@@ -16,6 +16,11 @@ export const GallerySchema = z.object({
     imgUrl: z.string(),
 });
 
+export const UserFavoriteMovieSchema = z.object({
+    id: z.number(),
+    userId: z.string(),
+});
+
 export const MovieSchema = z.object({
     id: z.number(),
     title: z.string(),
@@ -40,6 +45,7 @@ export const MovieSchema = z.object({
     priceEachSeat: z.number(),
     detailShowingTypes: z.array(DetailShowingTypeSchema),
     galleries: z.array(GallerySchema),
+    userFavoriteMovies: z.array(UserFavoriteMovieSchema),
 });
 
 export type Movie = z.infer<typeof MovieSchema>;
@@ -49,3 +55,5 @@ export type DetailShowingType = z.infer<typeof DetailShowingTypeSchema>;
 export type Genre = z.infer<typeof GenreSchema>;
 
 export type Gallery = z.infer<typeof GenreSchema>;
+
+export type UserFavoriteMovie = z.infer<typeof UserFavoriteMovieSchema>;

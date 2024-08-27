@@ -1,4 +1,4 @@
-import { Bell, CalendarCheck2, House, ShoppingCart, UsersRound } from 'lucide-react';
+import { CalendarCheck2, Heart, House, ShoppingCart, UsersRound } from 'lucide-react';
 
 const props = { className: 'size-6' };
 
@@ -24,8 +24,8 @@ export const navbarLinks = [
         label: 'Profile',
     },
     {
-        icon: <Bell {...props} />,
-        route: '/notifications',
-        label: 'Notifications',
+        icon: <Heart {...props} />,
+        route: '/favorite',
+        label: 'Favorite',
     },
 ];

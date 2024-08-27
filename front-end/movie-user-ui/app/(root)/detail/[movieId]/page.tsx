@@ -8,6 +8,7 @@ import { LucideBarChart3, MessageCircleMore, UserRoundPen } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Trailer from './trailer';
+import { redirect } from 'next/navigation';
 
 type Props = {
     params: { movieId: number };
@@ -20,12 +21,15 @@ const Page = async ({ params }: Props) => {
 
     const userInfo = await fetchUser(user.id);
 
-    if (!userInfo?.onboarded) '/onboarding';
+    if (!userInfo?.onboarded) redirect('/onboarding');
 
     const movieInfo = await fetchMovie(params.movieId);
     return (
         <div>
             <Trailer
+                movieId={movieInfo.id}
+                userId={userInfo.userClerkId}
+                userFavoriteMovies={movieInfo.userFavoriteMovies}
                 title={movieInfo.title}
                 video={movieInfo.video}
                 genres={movieInfo.genres}

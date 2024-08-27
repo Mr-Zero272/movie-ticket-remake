@@ -1,24 +1,30 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Genre } from '@/types/movie';
+import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices';
+import { Genre, UserFavoriteMovie } from '@/types/movie';
 import { ChevronLeft, Heart, PauseCircle, PlayCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 
 type Props = {
+    movieId: number;
+    userId: string;
+    userFavoriteMovies: UserFavoriteMovie[];
     backdropPath: string;
     video: string;
     title: string;
     genres: Genre[];
 };
 
-function Trailer({ backdropPath, video, title, genres }: Props) {
+function Trailer({ backdropPath, video, title, genres, userFavoriteMovies, userId, movieId }: Props) {
     const router = useRouter();
     const videoRef = useRef<HTMLVideoElement>(null);
     const [playVideo, setPlayVideo] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
-    const [isLoved, setIsLoved] = useState(false);
+    const [isLoved, setIsLoved] = useState(() => {
+        return userFavoriteMovies.some((m) => m.userId === userId);
+    });
 
     useEffect(() => {
         if (videoRef.current) {
@@ -45,8 +51,13 @@ function Trailer({ backdropPath, video, title, genres }: Props) {
         setIsHovered(true);
     };
 
-    const handleLoveClick = () => {
-        setIsLoved(!isLoved);
+    const handleLoveClick = async () => {
+        if (isLoved) {
+            await deleteFavoriteMovie({ movieId: movieId, userId: userId });
+        } else {
+            await addToFavorite({ movieId: movieId, userId: userId });
+        }
+        setIsLoved((prev) => !prev);
     };
 
     const handleBack = () => {

@@ -62,8 +62,11 @@ function Sidebar({}: Props) {
                                                 </p>
                                             </Link>
                                         </TooltipTrigger>
-                                        <TooltipContent side="right" className="hidden max-lg:block">
-                                            <TooltipArrow className="fill-white" />
+                                        <TooltipContent
+                                            side="right"
+                                            className="z-[100] hidden dark:border-none max-lg:block"
+                                        >
+                                            <TooltipArrow className="fill-white dark:fill-black" />
                                             <p>{link.label}</p>
                                         </TooltipContent>
                                     </Tooltip>
@@ -130,8 +133,11 @@ function Sidebar({}: Props) {
                                     <TooltipTrigger asChild>
                                         <ThemeButton />
                                     </TooltipTrigger>
-                                    <TooltipContent side="right" className="hidden max-lg:block">
-                                        <TooltipArrow className="fill-white" />
+                                    <TooltipContent
+                                        side="right"
+                                        className="z-[100] hidden dark:border-none max-lg:block"
+                                    >
+                                        <TooltipArrow className="fill-white dark:fill-black" />
                                         <p>Dark mode</p>
                                     </TooltipContent>
                                 </Tooltip>
@@ -158,8 +164,11 @@ function Sidebar({}: Props) {
                                             </p>
                                         </div>
                                     </TooltipTrigger>
-                                    <TooltipContent side="right" className="hidden max-lg:block">
-                                        <TooltipArrow className="fill-white" />
+                                    <TooltipContent
+                                        side="right"
+                                        className="z-[100] hidden dark:border-none max-lg:block"
+                                    >
+                                        <TooltipArrow className="fill-white dark:fill-black" />
                                         <p>Sign out</p>
                                     </TooltipContent>
                                 </Tooltip>
@@ -188,8 +197,8 @@ function Sidebar({}: Props) {
                                         </p>
                                     </Link>
                                 </TooltipTrigger>
-                                <TooltipContent side="right" className="hidden max-lg:block">
-                                    <TooltipArrow className="fill-white" />
+                                <TooltipContent side="right" className="z-[100] hidden dark:border-none max-lg:block">
+                                    <TooltipArrow className="fill-white dark:fill-black" />
                                     <p>Sign in</p>
                                 </TooltipContent>
                             </Tooltip>

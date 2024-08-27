@@ -47,8 +47,8 @@ function Footerbar({}: Props) {
                                             </p>
                                         </Link>
                                     </TooltipTrigger>
-                                    <TooltipContent side="top" className="hidden max-sm:block">
-                                        <TooltipArrow className="fill-white" />
+                                    <TooltipContent side="top" className="hidden dark:border-none max-sm:block">
+                                        <TooltipArrow className="fill-white dark:fill-black" />
                                         <p>{link.label}</p>
                                     </TooltipContent>
                                 </Tooltip>

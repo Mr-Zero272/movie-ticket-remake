@@ -5,7 +5,7 @@ type Props = {};
 
 const TicketBase = (props: Props) => {
     return (
-        <div className="flex items-center gap-x-5 rounded-md border-l-2 border-l-primary p-5 shadow-lg dark:bg-[#121417]">
+        <div className="flex items-center gap-x-5 rounded-md border-l-2 border-l-primary p-5 shadow-lg dark:bg-[#1f1f1f]">
             <div className="w-1/3">
                 <h2 className="mb-2 font-bold">Wonder Woman 1984</h2>
                 <div>

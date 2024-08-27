@@ -1,7 +1,18 @@
 import FilterMovie from '@/components/shared/FilterMovie';
 import { fetchAllGenres, fetchMovies } from '@/services/movieServices';
+import { fetchUser } from '@/services/userServices';
+import { currentUser } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 
 const SearchPage = async () => {
+    const user = await currentUser();
+
+    if (!user) return null;
+
+    const userInfo = await fetchUser(user.id);
+
+    if (!userInfo?.onboarded) redirect('/onboarding');
+
     const popularMovies = await fetchMovies({
         q: '',
         originalLanguage: 'en',
@@ -16,6 +27,7 @@ const SearchPage = async () => {
     return (
         <div className="p-4">
             <FilterMovie
+                userId={userInfo.userClerkId}
                 type="normal"
                 initialData={popularMovies}
                 sortData={[

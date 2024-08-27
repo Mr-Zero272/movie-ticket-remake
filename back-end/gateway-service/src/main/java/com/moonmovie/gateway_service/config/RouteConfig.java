@@ -30,6 +30,10 @@ public class RouteConfig {
                         predicateSpec.path("/api/v2/moon-movie/movie/schedule")
                                 .filters(f -> f.filter(authenticationFilter))
                                 .uri("lb://movie-service"))
+                .route("movie-service-favorite", predicateSpec ->
+                        predicateSpec.path("/api/v2/moon-movie/movie/favorite/**")
+                                .filters(f -> f.filter(authenticationFilter))
+                                .uri("lb://movie-service"))
                 .route("movie-service", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/movie/**")
                                 .uri("lb://movie-service"))

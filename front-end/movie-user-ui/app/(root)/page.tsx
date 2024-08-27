@@ -26,6 +26,7 @@ export default async function Home() {
             <MovieCarousel data={popularMovies.data.slice(1, 6)} />
             <ScrollList title="Opening this week">
                 <FilterMovie
+                    userId={userInfo.userClerkId}
                     initialData={popularMovies}
                     type="popular"
                     sortData={[
@@ -41,11 +42,13 @@ export default async function Home() {
                     {upcomingMovies.data.map((movie) => (
                         <MovieCardItemVertical
                             key={movie.id}
+                            userId={userInfo.userClerkId}
                             movieId={movie.id}
                             poster={movie.posterPath}
                             title={movie.title}
                             runtime={movie.runtime}
                             firstGenre={movie.genres[0].name}
+                            love={movie.userFavoriteMovies.some((m) => m.userId === userInfo.userClerkId)}
                         />
                     ))}
                 </div>

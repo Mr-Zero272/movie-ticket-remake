@@ -22,21 +22,22 @@ type Select = {
     value: string;
 };
 
-interface PropsWithTypeNormal {
-    languageData: Select[];
+interface Props {
+    userId: string;
     sortData: Select[];
-    statusData: Select[];
     genreData: Genre[];
-    sizeData: Select[];
     initialData: PaginationMovie;
+}
+
+interface PropsWithTypeNormal extends Props {
+    languageData: Select[];
+    statusData: Select[];
+    sizeData: Select[];
     type: 'normal';
     pagination: boolean;
 }
 
-interface PropsWithTypePopular {
-    sortData: Select[];
-    genreData: Genre[];
-    initialData: PaginationMovie;
+interface PropsWithTypePopular extends Props {
     type: 'popular';
 }
 
@@ -269,11 +270,13 @@ const FilterMovie = (props: PropsWithTypeNormal | PropsWithTypePopular) => {
                     movieData.data.map((movie) => (
                         <MovieCardItemVertical
                             key={movie.id}
+                            userId={props.userId}
                             movieId={movie.id}
                             poster={movie.posterPath}
                             title={movie.title}
                             runtime={movie.runtime}
                             firstGenre={movie.genres[0].name}
+                            love={movie.userFavoriteMovies.some((m) => m.userId === props.userId)}
                         />
                     ))
                 ) : (

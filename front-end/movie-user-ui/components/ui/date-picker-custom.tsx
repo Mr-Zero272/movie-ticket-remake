@@ -71,10 +71,13 @@ const DatePickerCustom = ({ initialDate, className, onChooseDate }: Props) => {
             <div className="mb-3 flex w-full items-center justify-between">
                 <h4 className="font-semibold">{format(new Date(activeDate), 'EEEE, dd MMMM')}</h4>
                 <div className="flex">
-                    <button className="rounded-full p-1.5 hover:bg-accent" onClick={handleClickPreDate}>
+                    <button className="rounded-full p-1.5 hover:bg-accent active:scale-90" onClick={handleClickPreDate}>
                         <ChevronLeft />
                     </button>
-                    <button className="rounded-full p-1.5 hover:bg-accent" onClick={handleClickNextDate}>
+                    <button
+                        className="rounded-full p-1.5 hover:bg-accent active:scale-90"
+                        onClick={handleClickNextDate}
+                    >
                         <ChevronRight />
                     </button>
                 </div>
