@@ -48,6 +48,18 @@ export const MovieSchema = z.object({
     userFavoriteMovies: z.array(UserFavoriteMovieSchema),
 });
 
+export const FavoriteMovieDtosSchema = z.object({
+    runtime: z.number(),
+    id: z.number(),
+    title: z.string(),
+    movieId: z.number(),
+    releaseDate: z.string(),
+    posterPath: z.string(),
+    dateAdded: z.string(),
+});
+
+export type FavoriteMovieDtos = z.infer<typeof FavoriteMovieDtosSchema>;
+
 export type Movie = z.infer<typeof MovieSchema>;
 
 export type DetailShowingType = z.infer<typeof DetailShowingTypeSchema>;

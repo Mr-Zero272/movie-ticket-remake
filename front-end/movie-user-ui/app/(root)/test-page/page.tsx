@@ -72,13 +72,19 @@ const TestPage = (props: Props) => {
                         width={400}
                         height={400}
                         quality={100}
-                        className="h-72 w-full"
+                        className={cn('h-72 w-full rounded-lg transition-all duration-500 ease-linear', {
+                            'rounded-none': i === activeSlide,
+                        })}
                     />
-                    <div className="py-2">
+                    <div
+                        className={cn('py-2 opacity-0 transition-all duration-500 ease-linear', {
+                            'opacity-100': i === activeSlide,
+                        })}
+                    >
                         <h2 className="mb-3 line-clamp-2 text-2xl font-bold">
                             Lorem ipsum dolor, sit amet consectetur adipisicing.
                         </h2>
-                        <p className="mb-3 line-clamp-3 text-gray-500">
+                        <p className="mb-3 line-clamp-3 text-justify text-gray-500">
                             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nihil iure ad veniam amet alias
                             hic magnam aliquam sed consequatur expedita.
                         </p>

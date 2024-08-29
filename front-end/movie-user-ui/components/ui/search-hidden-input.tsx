@@ -1,14 +1,17 @@
 'use client';
 import { Search } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Input } from './input';
 import { cn } from '@/lib/utils';
 
 type Props = {
+    value: string;
+    onChange: (e: string) => void;
     widthResponsive?: string;
+    className?: string;
 };
 
-const SearchInputHidden = ({ widthResponsive }: Props) => {
+const SearchInputHidden = ({ value, onChange, widthResponsive, className }: Props) => {
     const [isOpen, setIsOpen] = useState(false);
     const searchInputRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +34,7 @@ const SearchInputHidden = ({ widthResponsive }: Props) => {
     // const widthSearch = width ? `w-${width}` : 'w-60'
 
     return (
-        <div className="flex items-center" ref={searchInputRef}>
+        <div className={`flex items-center ${className ?? ''}`} ref={searchInputRef}>
             <Search
                 className={cn('cursor-pointer opacity-100 transition-all duration-300 ease-linear', {
                     'hidden opacity-0': isOpen,
@@ -50,6 +53,8 @@ const SearchInputHidden = ({ widthResponsive }: Props) => {
                 <Input
                     className="no-focus mr-4 border-none bg-transparent outline-none focus:border-b"
                     placeholder="Search..."
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
                 />
             </div>
         </div>

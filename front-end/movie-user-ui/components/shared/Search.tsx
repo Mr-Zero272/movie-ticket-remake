@@ -39,6 +39,20 @@ function Search({ className }: Props) {
     };
 
     useEffect(() => {
+        const handleFocusSearchBar = (e: KeyboardEvent) => {
+            if (e.key === '/') {
+                e.preventDefault();
+                inputRef.current?.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleFocusSearchBar);
+        return () => {
+            document.removeEventListener('keydown', handleFocusSearchBar);
+        };
+    }, [inputRef]);
+
+    useEffect(() => {
         if (!debounced.trim()) {
             setSearchResult([]);
             return;

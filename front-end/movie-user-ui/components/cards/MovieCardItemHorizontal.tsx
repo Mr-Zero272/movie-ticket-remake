@@ -1,16 +1,69 @@
 import { Heart } from 'lucide-react';
 import Image from 'next/image';
+import { Skeleton } from '../ui/skeleton';
+import { useState } from 'react';
+import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 type Props = {
+    userId: string;
+    movieId: number;
+    poster: string;
+    title: string;
+    runtime: number;
+    firstGenre: string;
+    love: boolean;
     className?: string;
 };
 
-const MovieCardItemHorizontal = ({ className }: Props) => {
+const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: string }) => {
+    const [isFavorite, setIsFavorite] = useState(() => {
+        if ('love' in props) {
+            return props.love;
+        }
+        return false;
+    });
+
+    if ('loading' in props) {
+        const { className } = props;
+        return (
+            <figure className={`flex w-full gap-x-5 ${className as string}`}>
+                <div className="group relative flex-none cursor-pointer">
+                    <Skeleton className="rounded-m size-14" />
+                </div>
+                <div className="text-sm">
+                    <div className="mb-2 flex items-center justify-between">
+                        <Skeleton className="h-4 w-24" />
+                    </div>
+                    <div className="flex gap-x-5">
+                        <div className="mb-3 flex items-center gap-x-3 text-xs text-gray-400">
+                            <Skeleton className="h-3 w-14" />
+                            <span className="h-3 w-[0.1rem] rounded-full bg-gray-400 dark:bg-white"></span>
+                            <Skeleton className="h-3 w-14" />
+                        </div>
+                        <Heart className="size-4 animate-pulse cursor-pointer fill-gray-500 text-gray-500" />
+                    </div>
+                </div>
+            </figure>
+        );
+    }
+
+    const { userId, movieId, poster, title, runtime, firstGenre, className, love } = props;
+    const handleLoveClick = async () => {
+        if (isFavorite) {
+            await deleteFavoriteMovie({ movieId: movieId, userId: userId });
+        } else {
+            await addToFavorite({ movieId: movieId, userId: userId });
+        }
+        setIsFavorite((prev) => !prev);
+    };
+
     return (
-        <figure className={`flex w-full gap-x-5 ${className as string}`}>
+        <figure className={`flex w-full gap-x-5 ${props.className as string}`}>
             <div className="group relative flex-none cursor-pointer">
                 <Image
-                    src="https://i.pinimg.com/originals/7b/56/a4/7b56a49b35f83813563c5b4ea48b3b72.jpg"
+                    src={poster}
                     alt="movie 1 image"
                     width={500}
                     height={500}
@@ -20,15 +73,22 @@ const MovieCardItemHorizontal = ({ className }: Props) => {
             </div>
             <div className="text-sm">
                 <div className="mb-2 flex items-center justify-between">
-                    <h3 className="line-clamp-1 font-bold">Mission: Impossible - Fallout</h3>
+                    <Link href={`/detail/${movieId}`}>
+                        <h3 className="line-clamp-1 font-bold">{title}</h3>
+                    </Link>
                 </div>
                 <div className="flex gap-x-5">
                     <div className="mb-3 flex items-center gap-x-3 text-xs text-gray-400">
-                        <span>147 MIN</span>
+                        <span>{runtime} MIN</span>
                         <span className="h-3 w-[0.1rem] rounded-full bg-gray-400 dark:bg-white"></span>
-                        <span>ADVENTURE</span>
+                        <span>{firstGenre}</span>
                     </div>
-                    <Heart className="size-4 cursor-pointer text-gray-500" />
+                    <Heart
+                        className={cn('size-4 cursor-pointer text-gray-500', {
+                            'fill-red-500 text-red-500': isFavorite,
+                        })}
+                        onClick={handleLoveClick}
+                    />
                 </div>
             </div>
         </figure>

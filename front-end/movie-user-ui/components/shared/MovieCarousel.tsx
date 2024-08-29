@@ -14,51 +14,53 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick-theme.css';
 import 'slick-carousel/slick/slick.css';
 
-const colors = [
-    'bg-indigo-400',
-    'bg-yellow-400',
-    'bg-red-400',
-    'bg-green-400',
-    'bg-blue-400',
-    'bg-pink-400',
-    'bg-purple-400',
-];
-
 type Props = {
     data: Movie[];
 };
 
 function MovieCarousel({ data }: Props) {
-    const [api, setApi] = useState<CarouselApi>();
-    const [current, setCurrent] = useState(0);
-    const [count, setCount] = useState(0);
-    const plugin = useRef(Autoplay({ delay: 5000 }));
-
     const [activeSlide, setActiveSlide] = useState(0);
     let sliderRef = useRef<Slider | null>(null);
 
-    useEffect(() => {
-        if (!api) {
-            return;
-        }
-
-        setCount(api.scrollSnapList().length);
-        setCurrent(api.selectedScrollSnap() + 1);
-
-        api.on('select', () => {
-            setCurrent(api.selectedScrollSnap() + 1);
-        });
-    }, [api]);
-
     const settings = useMemo(
         () => ({
-            infinite: true,
-            slidesToShow: 1,
-            speed: 1000,
-            arrows: false,
+            className: 'center',
             autoplay: true,
+            centerMode: true,
+            infinite: true,
+            focusOnSelect: true,
+            centerPadding: '100px',
+            slidesToShow: 2,
+            speed: 2000,
             autoplaySpeed: 5000,
+            arrows: false,
             beforeChange: (current: number, next: number) => setActiveSlide(next),
+            responsive: [
+                {
+                    breakpoint: 1350,
+                    settings: {
+                        centerPadding: '60px',
+                    },
+                },
+                {
+                    breakpoint: 1200,
+                    settings: {
+                        slidesToShow: 1,
+                    },
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 2,
+                    },
+                },
+                {
+                    breakpoint: 660,
+                    settings: {
+                        slidesToShow: 1,
+                    },
+                },
+            ],
         }),
         [],
     );
@@ -81,88 +83,53 @@ function MovieCarousel({ data }: Props) {
     };
 
     return (
-        <div className="slider-container">
-            <Slider {...settings} ref={sliderRef}>
-                {data.map((movie, index) => (
-                    <div key={movie.id}>
-                        <div className="flex h-[36rem] gap-x-28 rounded-lg border shadow-lg dark:border-none max-md:flex-col-reverse">
-                            <div className="w-1/2 px-10 py-16 max-md:h-2/5 max-md:w-full max-md:p-5">
-                                <h1
-                                    className={cn(
-                                        'mb-20 line-clamp-2 text-3xl font-semibold transition-all duration-300 max-md:mb-2 max-md:line-clamp-1',
-                                        {
-                                            'opacity-100 delay-1000 animate-in slide-in-from-top':
-                                                index === activeSlide,
-                                            'translate-y-5 opacity-0 blur-md': index !== activeSlide,
-                                        },
-                                    )}
-                                >
-                                    {movie.title}
-                                </h1>
-                                <div className="mb-10 flex gap-x-10 text-sm text-gray-500 max-md:mb-4">
-                                    <div
-                                        className={cn('transition-all delay-300 duration-500', {
-                                            'opacity-100 delay-1000 animate-in slide-in-from-left':
-                                                index === activeSlide,
-                                            'translate-y-5 opacity-0 blur-md': index !== activeSlide,
-                                        })}
-                                    >
-                                        <p>RELEASED DATE</p>
-                                        <p className="text-base font-semibold italic text-gray-950 dark:text-white">
-                                            {format(new Date(movie.releaseDate), 'yyyy')}
-                                        </p>
-                                    </div>
-                                    <div
-                                        className={cn('transition-all delay-300 duration-500', {
-                                            'opacity-100 delay-1000 animate-in slide-in-from-right':
-                                                index === activeSlide,
-                                            'translate-y-5 opacity-0 blur-md': index !== activeSlide,
-                                        })}
-                                    >
-                                        <p>DURATION</p>
-                                        <p className="text-base font-semibold italic text-gray-950 dark:text-white">
-                                            {movie.runtime + ' minutes'}
-                                        </p>
-                                    </div>
-                                </div>
-                                <p
-                                    className={cn('mb-2 line-clamp-6 delay-300 duration-500 max-md:line-clamp-2', {
-                                        'opacity-100 delay-1000 animate-in slide-in-from-bottom': index === activeSlide,
-                                        'translate-y-5 opacity-0 blur-md': index !== activeSlide,
-                                    })}
-                                >
-                                    {movie.overview}
-                                </p>
-                                <Link
-                                    href="/detail/1"
-                                    className={cn(
-                                        'group flex w-fit cursor-pointer items-center gap-x-5 text-primary delay-300 duration-500',
-                                        {
-                                            'opacity-100 delay-1000 animate-in zoom-in': index === activeSlide,
-                                            'translate-y-5 opacity-0 blur-md': index !== activeSlide,
-                                        },
-                                    )}
-                                >
-                                    <p className="border-b border-white group-hover:border-primary dark:border-black">
-                                        DETAIL
-                                    </p>
-                                    <MoveRight />
+        <div className="flex px-4 pt-10">
+            <div className="flex flex-auto items-center justify-center max-md:hidden">
+                <h1 className="text-7xl font-extrabold tracking-wide max-[1300px]:-rotate-90">Cinema</h1>
+            </div>
+            <div
+                className="w-2/3 flex-none max-md:w-full"
+                // style={{
+                //     maskImage:
+                //         'linear-gradient(to right,transparent 0,transparent 10px,#000 50px,#000 50%,transparent 50%,transparent 100%),linear-gradient(to left,transparent 0,transparent 10px,#000 50px,#000 50%,transparent 50%,transparent 100%)',
+                // }}
+            >
+                <Slider {...settings} ref={sliderRef}>
+                    {data.map((movie, index) => (
+                        <div
+                            className={cn('scale-90 px-10 transition-all duration-500 ease-linear max-[1300px]:px-4', {
+                                'scale-100': index === activeSlide,
+                            })}
+                            key={movie.id}
+                        >
+                            <Image
+                                src={movie.posterPath}
+                                alt="poster"
+                                width={400}
+                                height={400}
+                                quality={100}
+                                className={cn('h-72 w-full rounded-lg transition-all duration-500 ease-linear', {
+                                    'rounded-none': index === activeSlide,
+                                })}
+                            />
+                            <div
+                                className={cn('py-2 opacity-0 transition-all duration-500 ease-linear', {
+                                    'opacity-100': index === activeSlide,
+                                })}
+                            >
+                                <h2 className="mb-3 line-clamp-2 text-2xl font-bold">{movie.title}</h2>
+                                <p className="mb-3 line-clamp-3 text-justify text-gray-500">{movie.overview}</p>
+
+                                <Link href={`/detail/${movie.id}`} className="flex items-center gap-x-3">
+                                    <p className="font-bold text-primary">More Details</p>{' '}
+                                    <MoveRight className="text-primary" />
                                 </Link>
                             </div>
-                            <div className="w-1/2 max-md:h-3/5 max-md:w-full">
-                                <Image
-                                    src={movie.posterPath}
-                                    alt={'poster' + movie.id}
-                                    width={500}
-                                    height={500}
-                                    className="h-full w-full rounded-lg max-md:object-top"
-                                />
-                            </div>
                         </div>
-                    </div>
-                ))}
-            </Slider>
-            <div className="my-5 flex justify-center gap-x-2">{renderDots()}</div>
+                    ))}
+                </Slider>
+                <div className="mt-3 flex gap-x-1 max-md:justify-center">{renderDots()}</div>
+            </div>
         </div>
     );
 }
