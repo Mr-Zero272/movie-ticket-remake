@@ -47,7 +47,7 @@ export const deleteFavoriteMovie = async ({ movieId, userId }: { movieId: number
         });
     } catch (error: any) {
         console.log(error);
-        throw new Error('Cannot add new favorite movie');
+        throw new Error('Cannot delete new favorite movie');
     }
 };
 

@@ -1,10 +1,10 @@
+import { cn } from '@/lib/utils';
+import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices';
 import { Heart } from 'lucide-react';
 import Image from 'next/image';
-import { Skeleton } from '../ui/skeleton';
-import { useState } from 'react';
-import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useRef, useState } from 'react';
+import { Skeleton } from '../ui/skeleton';
 
 type Props = {
     userId: string;
@@ -18,6 +18,7 @@ type Props = {
 };
 
 const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: string }) => {
+    const isApiCall = useRef(false);
     const [isFavorite, setIsFavorite] = useState(() => {
         if ('love' in props) {
             return props.love;
@@ -33,8 +34,8 @@ const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: 
                     <Skeleton className="rounded-m size-14" />
                 </div>
                 <div className="text-sm">
-                    <div className="mb-2 flex items-center justify-between">
-                        <Skeleton className="h-4 w-24" />
+                    <div className="my-2 flex items-center justify-between">
+                        <Skeleton className="h-3 w-24" />
                     </div>
                     <div className="flex gap-x-5">
                         <div className="mb-3 flex items-center gap-x-3 text-xs text-gray-400">
@@ -51,12 +52,15 @@ const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: 
 
     const { userId, movieId, poster, title, runtime, firstGenre, className, love } = props;
     const handleLoveClick = async () => {
+        if (isApiCall.current) return;
+        isApiCall.current = true;
         if (isFavorite) {
             await deleteFavoriteMovie({ movieId: movieId, userId: userId });
         } else {
             await addToFavorite({ movieId: movieId, userId: userId });
         }
         setIsFavorite((prev) => !prev);
+        isApiCall.current = false;
     };
 
     return (

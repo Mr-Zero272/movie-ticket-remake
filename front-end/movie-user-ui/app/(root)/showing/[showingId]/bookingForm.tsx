@@ -94,7 +94,15 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
             <article>
                 <Stepper value={activeStep.value} data={stepperShowing} onChooseStep={handleChooseStep} />
                 <div className="mt-5 hidden max-[1200px]:block">
-                    <MovieCardItemHorizontal />
+                    <MovieCardItemHorizontal
+                        userId={userInfo.userClerkId}
+                        movieId={showingInfo.movie.id}
+                        poster={showingInfo.movie.posterPath}
+                        title={showingInfo.movie.title}
+                        runtime={showingInfo.movie.runtime}
+                        firstGenre={showingInfo.movie.genres[0].name}
+                        love={showingInfo.movie.userFavoriteMovies.some((s) => s.userId === userInfo.userClerkId)}
+                    />
                 </div>
                 <div className="flex justify-between">
                     <div className="w-3/4 max-[1200px]:w-full">

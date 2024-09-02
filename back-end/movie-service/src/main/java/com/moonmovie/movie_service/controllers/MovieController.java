@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.controllers;
 
+import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.models.Movie;
 import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.requests.MovieRequest;
@@ -81,6 +82,11 @@ public class MovieController {
     public ResponseEntity<ResponseTemplate> deleteMovie(@PathVariable("movieId") int id) {
         movieService.deleteMovie(id);
         return  ResponseEntity.ok(new ResponseTemplate("Delete movie with id: " + id + " successfully!"));
+    }
+
+    @GetMapping("/movie-showing/{showingId}")
+    public ResponseEntity<MovieDto> getMovieInforFromShowing(@PathVariable("showingId") Integer showingId) {
+        return ResponseEntity.ok(movieService.getMovieByShowingId(showingId));
     }
 
 }

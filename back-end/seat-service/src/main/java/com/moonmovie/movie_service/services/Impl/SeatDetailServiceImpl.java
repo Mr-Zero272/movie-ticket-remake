@@ -2,6 +2,7 @@ package com.moonmovie.movie_service.services.Impl;
 
 import com.moonmovie.movie_service.dao.SeatDao;
 import com.moonmovie.movie_service.dao.SeatDetailDao;
+import com.moonmovie.movie_service.dto.SeatDetailDto;
 import com.moonmovie.movie_service.models.Seat;
 import com.moonmovie.movie_service.models.SeatDetail;
 import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
@@ -124,5 +125,26 @@ public class SeatDetailServiceImpl implements SeatDetailService {
         }
 
         return new ResponseEntity<>(listDisableIds, HttpStatus.OK);
+    }
+
+    @Override
+    public List<SeatDetailDto> getListSeatDetailDto(int showingId, String userId) {
+        List<SeatDetail> seatDetails = seatDetailDao.findAllByShowingIdAndUserIdAndStatus(showingId, userId, "choosing");
+        List<SeatDetailDto> seatDetailDtos = new ArrayList<>();
+        for (SeatDetail seatDetail : seatDetails) {
+            seatDetailDtos.add(convertSeatDetailToSeatDetailDto(seatDetail));
+        }
+        return seatDetailDtos;
+    }
+
+    private SeatDetailDto convertSeatDetailToSeatDetailDto(SeatDetail seatDetail) {
+        return SeatDetailDto.builder()
+                .id(seatDetail.getId())
+                .seatRow(seatDetail.getSeat().getRowSeat())
+                .seatNumber(seatDetail.getSeat().getNumberSeat())
+                .price(seatDetail.getPrice())
+                .hall(seatDetail.getSeat().getAuditorium().getName())
+                .address(seatDetail.getSeat().getAuditorium().getAddress())
+                .build();
     }
 }

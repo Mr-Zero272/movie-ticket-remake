@@ -66,3 +66,17 @@ export const paginate = ({ current, max }: { current: number; max: number }) => 
 
     return { current, prev, next, items };
 };
+
+export const formatMinutes = (minutes: number) => {
+    if (minutes < 60) {
+        if (minutes < 10) return '0' + minutes + ' min';
+        return minutes + ' min';
+    }
+
+    const hour = Math.floor(minutes / 60);
+    const minLeft = minutes - 60 * hour;
+    if (minLeft < 10) {
+        return hour + ':0' + minLeft + ' min';
+    }
+    return hour + ':' + minLeft + ' min';
+};

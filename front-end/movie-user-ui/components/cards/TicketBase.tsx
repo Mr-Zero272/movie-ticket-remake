@@ -1,37 +1,81 @@
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import React from 'react';
+import { Armchair, MonitorPlay, TableRowsSplit } from 'lucide-react';
 
-type Props = {};
+type Props = {
+    active?: boolean;
+    onClick?: () => void;
+};
 
-const TicketBase = (props: Props) => {
+const TicketBase = ({ active, onClick }: Props) => {
     return (
-        <div className="flex items-center gap-x-5 rounded-md border-l-2 border-l-primary p-5 shadow-lg dark:bg-[#1f1f1f]">
-            <div className="w-1/3">
-                <h2 className="mb-2 font-bold">Wonder Woman 1984</h2>
-                <div>
-                    <p className="text-xs text-gray-500">DATE & TIME</p>
-                    <p className="font-semibold">{format('2024-08-19T20:00:00', 'dd MMM - HH:mm')}</p>
+        <div
+            className={cn('relative rounded-xl bg-accent p-5 dark:bg-[#262626]', {
+                'bg-[#262626] dark:bg-white': active,
+            })}
+            onClick={onClick}
+        >
+            <div className="flex gap-x-5">
+                <div className="space-y-4">
+                    <p className="mb-3 text-sm text-gray-500">Time</p>
+                    <p
+                        className={cn('text-3xl font-semibold', {
+                            'text-white dark:text-black': active,
+                        })}
+                    >
+                        {format('2024-08-19T20:00:00', 'h:mm a')}
+                    </p>
+
+                    <p className="text-sm text-gray-500">
+                        {'Date: ' + format('2024-08-19T20:00:00', 'EEE - dd MMM, yyyy')}
+                    </p>
+                </div>
+                <div className="flex flex-1 items-center justify-end gap-x-4 max-sm:flex-col max-sm:items-end max-sm:gap-x-0 max-sm:gap-y-2">
+                    <div
+                        className={cn(
+                            'flex flex-col items-center justify-center rounded-lg bg-black p-3 text-sm text-white dark:bg-white dark:text-black max-sm:flex-row max-sm:gap-x-2 max-sm:py-0.5',
+                            {
+                                'bg-white text-black dark:bg-black dark:text-white': active,
+                            },
+                        )}
+                    >
+                        <Armchair className="h-10 w-7" />
+                        <p className="font-bold">Seat</p>
+                        <p>10</p>
+                    </div>
+                    <div
+                        className={cn(
+                            'flex flex-col items-center justify-center rounded-lg bg-black p-3 text-sm text-white dark:bg-white dark:text-black max-sm:flex-row max-sm:gap-x-2 max-sm:py-0.5',
+                            {
+                                'bg-white text-black dark:bg-black dark:text-white': active,
+                            },
+                        )}
+                    >
+                        <TableRowsSplit className="h-10 w-7" />
+                        <p className="font-bold">Row</p>
+                        <p>A</p>
+                    </div>
+                    <div
+                        className={cn(
+                            'flex flex-col items-center justify-center rounded-lg bg-black p-3 text-sm text-white dark:bg-white dark:text-black max-sm:flex-row max-sm:gap-x-2 max-sm:py-0.5',
+                            {
+                                'bg-white text-black dark:bg-black dark:text-white': active,
+                            },
+                        )}
+                    >
+                        <MonitorPlay className="h-10 w-7" />
+                        <p className="font-bold">Hall</p>
+                        <p>Alpha</p>
+                    </div>
                 </div>
             </div>
-            <div className="flex flex-1 flex-col justify-between border-l-2 pl-5">
-                <div className="mb-2 flex items-center gap-x-5">
-                    <div>
-                        <p className="text-xs text-gray-500">ROW</p>
-                        <p className="font-semibold">10</p>
-                    </div>
-                    <div>
-                        <p className="text-xs text-gray-500">SEAT</p>
-                        <p className="font-semibold">10</p>
-                    </div>
-                    <div>
-                        <p className="text-xs text-gray-500">HALL</p>
-                        <p className="font-semibold">H2</p>
-                    </div>
-                </div>
-                <div>
-                    <p className="text-xs text-gray-500">CINEMA</p>
-                    <p className="font-semibold">Moon Movie</p>
-                </div>
+            <div className="my-5 border-b-2 border-dashed pt-5">
+                <div className="absolute -left-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
+                <div className="absolute -right-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
+            </div>
+            <div className={cn('flex justify-between gap-x-5 font-bold', { 'text-white dark:text-black': active })}>
+                <p>Movie:</p>
+                <p className="line-clamp-1">The Lord of the Rings: The Rings of Power</p>
             </div>
         </div>
     );

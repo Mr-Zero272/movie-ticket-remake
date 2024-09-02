@@ -2,6 +2,7 @@ package com.moonmovie.movie_service.services.Impl;
 
 import com.moonmovie.movie_service.constants.MovieErrorConstants;
 import com.moonmovie.movie_service.dao.*;
+import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.dto.ScheduleMovie;
 import com.moonmovie.movie_service.exceptions.MovieException;
 import com.moonmovie.movie_service.feign.SeatServiceInterface;
@@ -423,6 +424,32 @@ public class MovieServiceImpl implements MovieService {
                 .totalElements(pageMovie.getTotalElements())
                 .build();
         return resp;
+    }
+
+    @Override
+    public MovieDto getMovieByShowingId(int showingId) {
+        Showing showing = showingDao.findById(showingId).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_SHOWING_NOT_EXISTS));
+        return convertMovieToMovieDto(showing.getMovie());
+    }
+
+    private MovieDto convertMovieToMovieDto(Movie movie) {
+        return MovieDto.builder()
+                .id(movie.getId())
+                .title(movie.getTitle())
+                .adult(movie.isAdult())
+                .budget(movie.getBudget())
+                .originalLanguage(movie.getOriginalLanguage())
+                .overview(movie.getOverview())
+                .status(movie.getStatus())
+                .video(movie.getVideo())
+                .posterPath(movie.getPosterPath())
+                .backdropPath(movie.getBackdropPath())
+                .voteAverage(movie.getVoteAverage())
+                .voteCount(movie.getVoteCount())
+                .runtime(movie.getRuntime())
+                .releaseDate(movie.getReleaseDate())
+                .deleteFlag(movie.isDeleteFlag())
+                .build();
     }
 
     private Movie convertMovieRequestToMovie(MovieRequest movieRequest) {

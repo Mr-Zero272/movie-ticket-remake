@@ -27,6 +27,7 @@ type Props = {
 };
 
 const Step1 = ({
+    userId,
     showingId,
     showingDate,
     listSelectedSeats,
@@ -235,7 +236,9 @@ const Step1 = ({
                                         let choosing = false;
 
                                         if (!booked) {
-                                            active = listSelectedSeats.includes(s.id);
+                                            active =
+                                                listSelectedSeats.includes(s.id) ||
+                                                (s.status === 'choosing' && s.userId === userId);
                                             if (!active) {
                                                 choosing = s.status === 'choosing';
                                             }

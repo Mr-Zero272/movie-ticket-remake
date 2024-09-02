@@ -10,6 +10,5 @@ import java.util.List;
 @FeignClient("SEAT-SERVICE")
 public interface SeatServiceInterface {
     @GetMapping("/api/v2/moon-movie/seat/auditorium/available-auditorium")
-
     public ResponseEntity<List<String>> getAvailableAuditorium(@RequestParam(name = "numAuditoriums", defaultValue = "10") Integer numAuditoriums);
 }

@@ -2,14 +2,12 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import { useDebounce } from '@/hooks';
-import Image from 'next/image';
-import { DropdownMenu, DropdownMenuItem } from '../ui/dropdown-menu-custom';
-import { LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { fetchRecommendKeywords } from '@/services/recommendServices';
+import { LoaderCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { DropdownMenu, DropdownMenuItem } from '../ui/dropdown-menu-custom';
 
 type Props = {
     className?: string;
@@ -130,20 +128,7 @@ function Search({ className }: Props) {
                     stroke="currentColor"
                     className="size-6 dark:fill-white"
                 >
-                    <motion.path
-                        variants={{
-                            hidden: {
-                                pathLength: 0,
-                                fill: 'rgba(255, 255, 255, 0)',
-                            },
-                            visible: {
-                                pathLength: 1,
-                                fill: 'rgba(255, 255, 255, 1)',
-                            },
-                        }}
-                        initial="hidden"
-                        animate="visible"
-                        transition={{ duration: 0.5 }}
+                    <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"

@@ -182,7 +182,7 @@ const FavoriteMain = ({ username, userId, listFavoriteMovies, listPopularMovies 
                                                 </TableCell>
                                                 <TableCell>
                                                     <MovieCardItemHorizontal
-                                                        movieId={movie.id}
+                                                        movieId={movie.movieId}
                                                         userId={userId}
                                                         title={movie.title}
                                                         poster={movie.posterPath}

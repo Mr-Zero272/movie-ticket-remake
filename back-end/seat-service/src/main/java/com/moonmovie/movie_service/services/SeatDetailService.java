@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.services;
 
+import com.moonmovie.movie_service.dto.SeatDetailDto;
 import com.moonmovie.movie_service.response.ResponseMessage;
 import com.moonmovie.movie_service.models.SeatDetail;
 import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
@@ -18,4 +19,6 @@ public interface SeatDetailService {
 
     List<SeatDetail> findAllSeatByIds(List<String> seatIds);
     public ResponseEntity<List<String>> checkoutSeat(List<ChoosingSeatRequest> requests);
+
+    List<SeatDetailDto> getListSeatDetailDto(int showingId, String userId);
 }

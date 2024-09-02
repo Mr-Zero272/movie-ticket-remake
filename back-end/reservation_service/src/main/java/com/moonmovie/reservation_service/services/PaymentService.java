@@ -1,0 +1,16 @@
+package com.moonmovie.reservation_service.services;
+
+import com.moonmovie.reservation_service.models.Payment;
+import com.moonmovie.reservation_service.requests.PaymentMethodRequest;
+import com.moonmovie.reservation_service.requests.PaymentRequest;
+import com.moonmovie.reservation_service.responses.PaymentMethodResponse;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+public interface PaymentService {
+    public Payment addPayment(PaymentRequest request);
+
+    public PaymentMethodResponse getPaymentForVnPay(PaymentMethodRequest request) throws UnsupportedEncodingException;
+    public PaymentMethodResponse getPaymentForZaloPay(PaymentMethodRequest request) throws IOException;
+}

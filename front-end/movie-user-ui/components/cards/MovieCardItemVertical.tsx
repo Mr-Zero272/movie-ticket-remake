@@ -4,7 +4,7 @@ import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices'
 import { Ellipsis, Heart, Play } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 
 type Props = {
@@ -19,6 +19,7 @@ type Props = {
 };
 
 const MovieCardItemVertical = (props: Props | { loading: boolean; className?: string }) => {
+    const isApiCall = useRef(false);
     const [isFavorite, setIsFavorite] = useState(() => {
         if ('love' in props) {
             return props.love;
@@ -55,12 +56,15 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
 
     const { userId, movieId, poster, title, runtime, firstGenre, className, love } = props;
     const handleLoveClick = async () => {
+        if (isApiCall.current) return;
+        isApiCall.current = true;
         if (isFavorite) {
             await deleteFavoriteMovie({ movieId: movieId, userId: userId });
         } else {
             await addToFavorite({ movieId: movieId, userId: userId });
         }
         setIsFavorite((prev) => !prev);
+        isApiCall.current = false;
     };
 
     return (

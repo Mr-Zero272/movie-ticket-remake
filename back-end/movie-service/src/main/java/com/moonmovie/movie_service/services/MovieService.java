@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.services;
 
+import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.models.Movie;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
@@ -64,4 +65,6 @@ public interface MovieService {
     public ResponseTemplate schedule(int month, int year, String role);
 
     PaginationResponse<Movie> getUpcomingMovies(int page, int size);
+
+    MovieDto getMovieByShowingId(int showingId);
 }
