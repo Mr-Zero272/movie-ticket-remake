@@ -5,8 +5,8 @@ import { Input } from './input';
 import { cn } from '@/lib/utils';
 
 type Props = {
-    value: string;
-    onChange: (e: string) => void;
+    value: string | number;
+    onChange: (e: string | number) => void;
     widthResponsive?: string;
     className?: string;
 };
