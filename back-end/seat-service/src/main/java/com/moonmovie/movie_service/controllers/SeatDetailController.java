@@ -2,8 +2,10 @@ package com.moonmovie.movie_service.controllers;
 
 import com.moonmovie.movie_service.dto.SeatDetailDto;
 import com.moonmovie.movie_service.models.SeatDetail;
+import com.moonmovie.movie_service.requests.RefreshSeatStateRequest;
 import com.moonmovie.movie_service.response.ResponseMessage;
 import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
+import com.moonmovie.movie_service.response.ResponseTemplate;
 import com.moonmovie.movie_service.services.SeatDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +30,8 @@ public class SeatDetailController {
     }
 
     @PostMapping("/refresh-state")
-    public ResponseEntity<ResponseMessage> refreshSeatState(@RequestBody List<String> listSeatIds) {
-        return seatDetailService.refreshSeatState(listSeatIds);
+    public ResponseEntity<ResponseTemplate> refreshSeatState(@RequestBody RefreshSeatStateRequest request) {
+        return ResponseEntity.ok(seatDetailService.refreshSeatState(request.getShowingId(), request.getUserId()));
     }
 
     @GetMapping("/list")

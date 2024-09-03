@@ -19,8 +19,8 @@ const Stepper = ({ value, data, onChooseStep }: Props) => {
     }, [value]);
 
     const handleChooseStep = (stepInfo: Step) => {
-        setStep(stepInfo.value);
         onChooseStep(stepInfo);
+        // setStep(stepInfo.value);
     };
 
     return (

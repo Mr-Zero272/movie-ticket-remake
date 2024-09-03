@@ -19,8 +19,8 @@ export default async function Home() {
 
     const popularMovies = await fetchPopularMovies({ page: 1, size: 20, sort: 'releaseDate', genreId: 0 });
     const upcomingMovies = await fetchUpcomingMovies({ page: 1, size: 5 });
-    const genreData = await fetchAllGenres();
-
+    let genreData = await fetchAllGenres();
+    genreData = [{ id: 0, name: 'None' }, ...genreData];
     return (
         <div className="p-4">
             <MovieCarousel data={popularMovies.data.slice(1, 6)} />

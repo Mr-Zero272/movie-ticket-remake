@@ -9,8 +9,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Image from 'next/image';
 import { formatCurrencyVND } from '@/lib/utils';
+import { Input } from '../ui/input';
 
 const FormSchema = z.object({
+    email: z
+        .string({ message: 'This email is used to send you ticket information!' })
+        .email({ message: 'This email is not valid!' }),
     type: z.enum(['zalopay', 'vnpay'], {
         required_error: 'You need to select a payment method.',
     }),
@@ -40,6 +44,21 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem className="flex w-full items-center">
+                            <FormLabel className="text-right text-gray-400">Email: </FormLabel>
+                            <div className="flex flex-1 flex-col">
+                                <FormControl>
+                                    <Input type="text" className="no-focus ml-7" {...field} />
+                                </FormControl>
+                                <FormMessage className="ml-7 mt-1 text-sm" />
+                            </div>
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="type"
@@ -87,7 +106,7 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
                     )}
                 />
                 <div className="flex items-center gap-x-5">
-                    <Button type="submit">Pay now</Button>
+                    <Button type="submit">Submit</Button>
                     {haveBackBtn && (
                         <Button
                             variant="outline"

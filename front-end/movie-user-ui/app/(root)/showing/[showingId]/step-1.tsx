@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import DatePickerCustom from '@/components/ui/date-picker-custom';
 import { cn } from '@/lib/utils';
 import { Flag, Frown, Info } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { SeatDetail } from '@/types/seat';
@@ -11,9 +11,11 @@ import { fetchSeatDetails } from '@/services/seatServices';
 import { format } from 'date-fns';
 import SeatSectionSkeleton from '@/components/ui/seat-section-skeletion';
 import { Skeleton } from '@/components/ui/skeleton';
+import { seatService } from '@/services';
 
 type Props = {
     userId: string;
+    amount: number;
     showingId: number | null;
     showingDate: string | null;
     listSelectedSeats: string[];
@@ -21,13 +23,14 @@ type Props = {
     listShowTimes: ShowingDto[];
     loading: boolean;
     onNextStep: () => void;
-    onChooseSeat: (seatId: string) => void;
+    onChooseSeat: (seatId: string, amount: number) => void;
     onChangeShowing: (showingId: number) => void;
     onChangeDate: (date: string) => void;
 };
 
 const Step1 = ({
     userId,
+    amount,
     showingId,
     showingDate,
     listSelectedSeats,
@@ -66,6 +69,29 @@ const Step1 = ({
     }, [showingId]);
 
     useEffect(() => {
+        const refreshSState = async () => {
+            if (showingId) {
+                await seatService.refreshSeatState(showingId, userId);
+            }
+        };
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            refreshSState();
+
+            event.preventDefault();
+            // event.returnValue = '';
+            // alert('Confirm refresh');
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        // Cleanup the event listener when the component is unmounted
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
         const sock = new SockJS('http://localhost:8085/ws');
         const stompClient = Stomp.over(sock);
         stompClient.connect({}, (frame: any) => {
@@ -94,34 +120,39 @@ const Step1 = ({
                             return {
                                 ...seat,
                                 status: seatInfo.status,
+                                userId: seatInfo.userId,
                             };
                         } else {
                             return seat;
                         }
                     });
+
                     return listSeatUpdated;
                 });
-                // handleEditListSeat(seatInfo.id, seatInfo.status);
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [seatData]);
 
     const handleChooseSeat = useCallback(
-        (seatId: string, seatStatus: string) => {
+        (seatId: string, seatStatus: string, price: number) => {
             if (seatStatus === 'booked') return;
             // console.log(!listSeatSelected.some((seat) => seat.id === seatId && seatStatus === 'choosing'));
             if (!seatData.some((seat) => seat.id === seatId) && seatStatus === 'choosing') return;
             if (myStompClient !== null) {
                 myStompClient.publish({
                     destination: '/app/choosing-seat-ws',
-                    body: JSON.stringify({ id: seatId, status: seatStatus, userId: '123' }),
+                    body: JSON.stringify({ id: seatId, status: seatStatus, userId: userId }),
                 });
-                onChooseSeat(seatId);
+                if (seatStatus === 'choosing') {
+                    onChooseSeat(seatId, amount - price);
+                } else {
+                    onChooseSeat(seatId, amount + price);
+                }
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [myStompClient, seatData],
+        [myStompClient, seatData, amount],
     );
 
     return (
@@ -236,9 +267,7 @@ const Step1 = ({
                                         let choosing = false;
 
                                         if (!booked) {
-                                            active =
-                                                listSelectedSeats.includes(s.id) ||
-                                                (s.status === 'choosing' && s.userId === userId);
+                                            active = s.status === 'choosing' && s.userId === userId;
                                             if (!active) {
                                                 choosing = s.status === 'choosing';
                                             }
@@ -253,142 +282,250 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(8, 18).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(18, 30).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(30, 42).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(42, 56).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(56, 70).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(70, 84).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(84, 98).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(98, 110).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex justify-center gap-0.5">
                                     {seatData.slice(110, 120).map((s) => {
-                                        const active = listSelectedSeats.includes(s.id);
+                                        const booked = s.status === 'booked';
+                                        let active = false;
+                                        let choosing = false;
+
+                                        if (!booked) {
+                                            active = s.status === 'choosing' && s.userId === userId;
+                                            if (!active) {
+                                                choosing = s.status === 'choosing';
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={s.id}
                                                 className={cn('size-4 cursor-pointer rounded-sm border', {
+                                                    'reserved-seat': booked,
+                                                    'others-seat': choosing,
                                                     'available-seat': !active,
-                                                    'your-seat': active,
+                                                    'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status)}
+                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
                                             />
                                         );
                                     })}

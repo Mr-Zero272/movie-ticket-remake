@@ -5,6 +5,7 @@ import com.moonmovie.movie_service.response.ResponseMessage;
 import com.moonmovie.movie_service.models.SeatDetail;
 import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
 import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
+import com.moonmovie.movie_service.response.ResponseTemplate;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface SeatDetailService {
 
     List<SeatDetail> getListSeatDetail(int showingId);
     public void updateSeatStatus(ChoosingSeatRequest request);
-    public ResponseEntity<ResponseMessage> refreshSeatState(List<String> listSeatIds);
+    public ResponseTemplate refreshSeatState(int showingId, String userId);
 
     List<SeatDetail> findAllSeatByIds(List<String> seatIds);
     public ResponseEntity<List<String>> checkoutSeat(List<ChoosingSeatRequest> requests);

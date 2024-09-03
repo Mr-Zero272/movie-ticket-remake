@@ -35,3 +35,27 @@ export const fetchSeatDetails = async (showingId: number) => {
         throw new Error('Cannot fetch seat details information');
     }
 };
+
+export const refreshSeatState = async (showingId: number, userId: string) => {
+    const cookieStore = cookies();
+    const __sessionToken = cookieStore.get('__session');
+
+    try {
+        await axios.post(
+            `${API_URL}/seat-detail/refresh-state`,
+            {
+                showingId,
+                userId,
+            },
+            {
+                params: {
+                    showingId,
+                },
+                headers: { Authorization: 'Bearer ' + __sessionToken?.value },
+            },
+        );
+    } catch (error: any) {
+        console.error('Error refresh seat state:', error.message);
+        throw new Error('Cannot refresh seat state');
+    }
+};

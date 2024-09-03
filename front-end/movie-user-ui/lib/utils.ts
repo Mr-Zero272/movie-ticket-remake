@@ -1,5 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
-import { formatDistanceToNow, parseISO } from 'date-fns';
+import { format, formatDistanceToNow, parseISO } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -79,4 +79,22 @@ export const formatMinutes = (minutes: number) => {
         return hour + ':0' + minLeft + ' min';
     }
     return hour + ':' + minLeft + ' min';
+};
+
+export const maskPrivateString = (inputString: string) => {
+    // Extract the first three characters
+    const firstThreeCharacters = inputString.slice(0, 3);
+
+    // Create a string of asterisks of the same length as the original string
+    const asterisks = '*'.repeat(inputString.length - 3);
+
+    // Concatenate the first three characters with the asterisks
+    const maskedString = firstThreeCharacters + asterisks;
+
+    return maskedString;
+};
+
+export const createRandomTransId = () => {
+    const transID = Math.floor(Math.random() * 1000000);
+    return `${format(new Date(), 'yyMMdd')}_${transID}`;
 };

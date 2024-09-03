@@ -12,6 +12,8 @@ import { SeatDetail } from '@/types/seat';
 import { User } from '@/types/user';
 import { userInfo } from 'os';
 import { fetchShowing, fetchShowings } from '@/services/movieServices';
+import { useToast } from '@/components/ui/use-toast';
+import { seatService } from '@/services';
 
 type Props = {
     userInfo: User;
@@ -21,17 +23,34 @@ type Props = {
 };
 
 const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) => {
+    const { toast } = useToast();
     const [listSelectedSeats, setListSelectedSeats] = useState<string[]>([]);
     const [activeStep, setActiveStep] = useState(stepperShowing[0]);
     const [showingData, setShowingData] = useState<Showing | null>(showingInfo);
     const [showTimes, setShowTimes] = useState(listShowTimes);
+    const [amount, setAmount] = useState(() => {
+        const sum = listSeat.reduce((accumulator, currentValue) => {
+            if (currentValue.userId === userInfo.userClerkId && currentValue.status === 'choosing') {
+                return accumulator + currentValue.price;
+            }
+            return accumulator;
+        }, 0);
+        return sum;
+    });
     const [loading, setLoading] = useState(false);
 
     const handleChooseStep = (step: Step) => {
+        if (step.step === 2 && amount === 0) {
+            toast({
+                title: 'Error!',
+                description: 'You need to choose at least 1 seat to continue!',
+            });
+            return;
+        }
         setActiveStep(step);
     };
 
-    const handleChooseSeat = (seatId: string) => {
+    const handleChooseSeat = useCallback((seatId: string, amount: number) => {
         setListSelectedSeats((prev) => {
             if (prev.includes(seatId)) {
                 return prev.filter((s) => s !== seatId);
@@ -39,15 +58,17 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                 return [seatId, ...prev];
             }
         });
-    };
+        setAmount(amount);
+    }, []);
 
     const handleChangeShowing = useCallback(
-        (showingId: number) => {
+        async (showingId: number) => {
             if (showingData) {
                 if (showingId === showingData.id) {
                     return;
                 }
-
+                await seatService.refreshSeatState(showingData.id, userInfo.userClerkId);
+                setAmount(0);
                 const fetchShowingApi = async () => {
                     const res = await fetchShowing(showingId);
                     setShowingData(res);
@@ -74,11 +95,14 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                     } else {
                         setShowingData(null);
                     }
+                    await seatService.refreshSeatState(showingData.id, userInfo.userClerkId);
+                    setAmount(0);
                 } else {
                     const showTimes = await fetchShowings(date, showingInfo.movie.id);
 
                     setShowTimes(showTimes);
                     const showingRes = await fetchShowing(showTimes[0].id);
+                    // await seatService.refreshSeatState(showingRes.id, userInfo.userClerkId);
                     setShowingData(showingRes);
                 }
 
@@ -108,7 +132,8 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                     <div className="w-3/4 max-[1200px]:w-full">
                         {activeStep.step === 1 && (
                             <Step1
-                                userId={userInfo.id}
+                                userId={userInfo.userClerkId}
+                                amount={amount}
                                 showingId={showingData ? showingData.id : null}
                                 showingDate={showingData ? showingData.startTime : null}
                                 listSelectedSeats={listSelectedSeats}
@@ -118,10 +143,21 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                                 onChooseSeat={handleChooseSeat}
                                 onChangeShowing={handleChangeShowing}
                                 onChangeDate={handleChangeDate}
-                                onNextStep={() => setActiveStep(stepperShowing[1])}
+                                onNextStep={() => {
+                                    if (amount === 0) {
+                                        toast({
+                                            title: 'Error!',
+                                            description: 'You need to choose at least 1 seat to continue!',
+                                        });
+                                        return;
+                                    }
+                                    setActiveStep(stepperShowing[1]);
+                                }}
                             />
                         )}
-                        {activeStep.step === 2 && <Step2 onBackStep={() => setActiveStep(stepperShowing[0])} />}
+                        {activeStep.step === 2 && (
+                            <Step2 amount={amount} onBackStep={() => setActiveStep(stepperShowing[0])} />
+                        )}
                     </div>
                     <div className="flex w-1/4 justify-center max-[1200px]:hidden">
                         <MovieCardItemVertical

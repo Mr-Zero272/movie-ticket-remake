@@ -118,6 +118,7 @@ export const fetchPopularMovies = async ({
                 genreId,
             },
         });
+
         const result = PaginationMovieSchema.safeParse(res.data);
         if (result.success) {
             return result.data;

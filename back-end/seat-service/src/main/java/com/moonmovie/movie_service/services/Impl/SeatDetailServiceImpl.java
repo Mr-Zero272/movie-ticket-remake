@@ -8,6 +8,7 @@ import com.moonmovie.movie_service.models.SeatDetail;
 import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
 import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
 import com.moonmovie.movie_service.response.ResponseMessage;
+import com.moonmovie.movie_service.response.ResponseTemplate;
 import com.moonmovie.movie_service.services.SeatDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -89,17 +90,17 @@ public class SeatDetailServiceImpl implements SeatDetailService {
     }
 
     @Transactional
-    public ResponseEntity<ResponseMessage> refreshSeatState(List<String> listSeatIds) {
-        ResponseMessage responseMessage = new ResponseMessage();
-        List<SeatDetail> seatDetailList = seatDetailDao.findAllById(listSeatIds);
+    public ResponseTemplate refreshSeatState(int showingId, String userId){
+        ResponseTemplate res = new ResponseTemplate();
+        List<SeatDetail> seatDetailList = seatDetailDao.findAllByShowingIdAndUserIdAndStatus(showingId, userId, "choosing");
         seatDetailList.forEach(seatStatus -> {
             seatStatus.setStatus("available");
             seatStatus.setUserId("");
         });
         seatDetailDao.saveAll(seatDetailList);
 
-        responseMessage.setMessage("Refresh state successfully!");
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+        res.setMessage("Refresh state successfully!");
+        return res;
     }
 
     public List<SeatDetail> findAllSeatByIds(List<String> seatIds) {

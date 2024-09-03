@@ -45,7 +45,7 @@ export const MovieSchema = z.object({
     priceEachSeat: z.number(),
     detailShowingTypes: z.array(DetailShowingTypeSchema),
     galleries: z.array(GallerySchema),
-    userFavoriteMovies: z.array(UserFavoriteMovieSchema),
+    userFavoriteMovies: z.array(UserFavoriteMovieSchema).default([]),
 });
 
 export const FavoriteMovieDtosSchema = z.object({
