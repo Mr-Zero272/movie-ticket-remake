@@ -2,11 +2,12 @@ package com.moonmovie.reservation_service.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
-@Builder
+@NoArgsConstructor
 public class MovieDto {
     private Integer id;
     private String title;

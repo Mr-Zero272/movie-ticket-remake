@@ -21,9 +21,11 @@ public class TicketController {
 
     @GetMapping
     public ResponseEntity<PaginationResponse<Ticket>> fetchTickets(
+            @RequestHeader("user-id")  String userId,
+            @RequestParam("orderStatus") String orderStatus,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(ticketService.getTickets(page, size));
+        return ResponseEntity.ok(ticketService.getTickets(page, size, orderStatus, userId));
     }
 }

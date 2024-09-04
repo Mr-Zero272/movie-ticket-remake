@@ -1,9 +1,11 @@
 package com.moonmovie.reservation_service.services.Impl;
 
+import com.moonmovie.reservation_service.constants.ReservationErrorConstants;
 import com.moonmovie.reservation_service.dao.OrderDao;
 import com.moonmovie.reservation_service.dao.TicketDao;
 import com.moonmovie.reservation_service.dto.MovieDto;
 import com.moonmovie.reservation_service.dto.SeatDetailDto;
+import com.moonmovie.reservation_service.exceptions.ReservationException;
 import com.moonmovie.reservation_service.feign.MovieServiceInterface;
 import com.moonmovie.reservation_service.feign.SeatServiceInterface;
 import com.moonmovie.reservation_service.models.Order;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,21 +38,46 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order addNewOrder(OrderRequest request) {
-//        List<Ticket> ticketsSaved = ticketDao.saveAll(request.getTickets());
-//        Order order = Order.builder()
-//                .amount(request.getAmount())
-//                .serviceFee((int) (request.getAmount() * 0.05))
-//                .customerId(request.getCustomerId())
-//                .timestamp(LocalDateTime.now())
-//                .orderStatus("pending")
-//                .tickets(ticketsSaved)
-//                .build();
-//        return orderDao.save(order);
-        MovieDto movieDto = movieServiceInterface.getMovieInforFromShowing(request.getShowingId()).getBody();
-        List<SeatDetailDto> seatDetailDtos = seatServiceInterface.fetchInfoSeatDetail(request.getShowingId(), request.getCustomerId()).getBody();
-        System.out.println(movieDto);
-        System.out.println(seatDetailDtos);
-        return null;
+        List<Ticket> tickets = new ArrayList<>();
+        MovieDto movieDto = new MovieDto();
+        List<SeatDetailDto> seatDetailDtos = new ArrayList<>();
+        try {
+         movieDto = movieServiceInterface.getMovieInforFromShowing(request.getShowingId()).getBody();
+         seatDetailDtos = seatServiceInterface.fetchInfoSeatDetail(request.getShowingId(), request.getCustomerId()).getBody();
+
+        } catch (Exception e) {
+            throw new ReservationException(ReservationErrorConstants.ERROR_UNABLE_TO_COMMUNICATE_WITH_OTHER_SERVICE);
+        }
+
+        int amount = seatDetailDtos.stream().mapToInt(SeatDetailDto::getPrice).sum();
+
+
+        Order order = new Order();
+        order.setAmount(amount);
+        order.setServiceFee((int) (amount * 0.05));
+        order.setCustomerId(request.getCustomerId());
+        order.setOrderStatus("pending");
+        order.setTimestamp(LocalDateTime.now());
+
+        Order orderSaved = orderDao.save(order);
+
+        for (SeatDetailDto seatDetailDto : seatDetailDtos) {
+            tickets.add(Ticket.builder()
+                    .movieTitle(movieDto.getTitle())
+                    .moviePoster(movieDto.getPosterPath())
+                    .date(request.getShowingTime())
+                    .runtime(movieDto.getRuntime())
+                    .seatNumber(seatDetailDto.getSeatNumber())
+                    .seatRow(seatDetailDto.getSeatRow())
+                    .price(seatDetailDto.getPrice())
+                    .hall(seatDetailDto.getHall())
+                    .address(seatDetailDto.getAddress())
+                    .showingId(request.getShowingId())
+                    .orderId(orderSaved.getId())
+                    .build());
+        }
+
+        return orderSaved;
     }
 
     @Override

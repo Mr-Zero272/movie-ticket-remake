@@ -1,7 +1,10 @@
 package com.moonmovie.reservation_service.services.Impl;
 
-import com.moonmovie.reservation_service.dao.PaymentDao;
+import com.moonmovie.reservation_service.constants.ReservationErrorConstants;
+import com.moonmovie.reservation_service.dao.OrderDao;
+import com.moonmovie.reservation_service.exceptions.ReservationException;
 import com.moonmovie.reservation_service.helpers.HelpersService;
+import com.moonmovie.reservation_service.models.Order;
 import com.moonmovie.reservation_service.models.Payment;
 import com.moonmovie.reservation_service.requests.PaymentMethodRequest;
 import com.moonmovie.reservation_service.requests.PaymentRequest;
@@ -33,13 +36,14 @@ import java.util.*;
 public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
-    private PaymentDao paymentDao;
+    private OrderDao orderDao;
 
     @Autowired
     private HelpersService helpersService;
 
     @Override
     public Payment addPayment(PaymentRequest request) {
+        Order order = orderDao.findById(request.getOrderId()).orElseThrow(() -> new ReservationException(ReservationErrorConstants.ERROR_ORDER_NOT_EXIST));
         Payment payment = Payment.builder()
                 .invoiceId(request.getInvoiceId())
                 .total(request.getTotal())
@@ -48,7 +52,11 @@ public class PaymentServiceImpl implements PaymentService {
                 .description(request.getDescription())
                 .timestamp(LocalDateTime.now())
                 .build();
-        return paymentDao.save(payment);
+        List<Payment> oldPayments = order.getPayments();
+        oldPayments.add(payment);
+        order.setPayments(oldPayments);
+        orderDao.save(order);
+        return payment;
     }
 
     @Override

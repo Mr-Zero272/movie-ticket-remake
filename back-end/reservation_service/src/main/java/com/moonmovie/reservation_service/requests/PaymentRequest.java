@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class PaymentRequest {
+    private String orderId;
     private String invoiceId;
     private int total;
     private int paymentStatus;

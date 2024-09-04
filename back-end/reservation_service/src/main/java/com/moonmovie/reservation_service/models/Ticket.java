@@ -30,7 +30,7 @@ public class Ticket {
     private int price;
     private String hall;
     private String address;
-    private String showingId;
+    private int showingId;
     private String orderId;
 
     @Override

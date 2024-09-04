@@ -8,11 +8,11 @@ import com.moonmovie.reservation_service.models.Ticket;
 import com.moonmovie.reservation_service.responses.PaginationResponse;
 import com.moonmovie.reservation_service.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -27,16 +27,18 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public PaginationResponse<Ticket> getTickets(int page, int size) {
+    public PaginationResponse<Ticket> getTickets(int page, int size, String orderStatus, String userId) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "date"));
-        Page<Ticket> orderPage = ticketDao.findAll(pageable);
+        List<Ticket> ticketList = ticketDao.findPaidTicketsByUserId(userId, orderStatus, LocalDateTime.now(), pageable);
+        Integer ticketsCount = ticketDao.countPaidTicketsByUserId(userId, orderStatus, LocalDateTime.now(), pageable);
+        Page<Ticket> ticketPage = new PageImpl<>(ticketList, pageable, ticketsCount);
 
         PaginationResponse<Ticket> resp = PaginationResponse.<Ticket>builder()
-                .data(orderPage.getContent())
+                .data(ticketPage.getContent())
                 .page(page)
                 .size(size)
-                .totalPages(orderPage.getTotalPages())
-                .totalElements(orderPage.getTotalElements())
+                .totalPages(ticketPage.getTotalPages())
+                .totalElements(ticketPage.getTotalElements())
                 .build();
         return resp;
     }
