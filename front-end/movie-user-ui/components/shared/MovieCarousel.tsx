@@ -83,8 +83,8 @@ function MovieCarousel({ data }: Props) {
     };
 
     return (
-        <div className="flex px-4 pt-10">
-            <div className="flex flex-auto items-center justify-center max-md:hidden">
+        <div className="mb-5 flex px-4 pt-10">
+            <div className="flex w-1/3 items-center justify-center max-md:hidden">
                 <h1 className="text-7xl font-extrabold tracking-wide max-[1300px]:-rotate-90">Cinema</h1>
             </div>
             <div

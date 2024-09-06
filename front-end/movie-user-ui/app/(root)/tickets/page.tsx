@@ -120,7 +120,7 @@ function Tickets({}: Props) {
                     </DialogHeader>
                 </DialogContent>
             </Dialog>
-            <div className="max-sm:h-70rem flex max-h-[35rem] gap-3 rounded-lg bg-black p-4 dark:bg-white max-sm:max-h-[70rem]">
+            <div className="flex max-h-[35rem] gap-3 rounded-lg bg-black p-4 dark:bg-white max-md:max-h-[100rem]">
                 <div className="w-1/2 flex-none rounded-lg bg-white p-5 dark:bg-[#121212] max-[1490px]:w-2/3 max-md:w-full">
                     <h1 className="my-5 text-3xl font-bold">Your tickets</h1>
                     <div className="mb-5 flex gap-x-2">
@@ -135,8 +135,11 @@ function Tickets({}: Props) {
                         <div className="cursor-pointer rounded-full border p-1.5 px-3 dark:border-none dark:bg-white dark:text-black">
                             Expired
                         </div>
+                        <div className="cursor-pointer rounded-full border p-1.5 px-3 dark:border-none dark:bg-white dark:text-black">
+                            Unpaid
+                        </div>
                     </div>
-                    <ul className="max-h-[23rem] space-y-3 overflow-x-hidden overflow-y-scroll">
+                    <ul className="max-h-[23rem] space-y-3 overflow-x-hidden overflow-y-scroll max-md:max-h-[80rem]">
                         {/* <li>
                             <div className="flex flex-col items-center gap-y-3 text-center text-gray-500">
                                 <SearchX strokeWidth={1} className="size-20 text-primary" />
@@ -293,7 +296,7 @@ function Tickets({}: Props) {
                         <div className="mt-3 flex flex-col items-center space-y-2 rounded-lg bg-white p-4 dark:bg-[#121212]">
                             <BadgeHelp className="size-10 text-gray-500" />
                             <p className="text-center font-bold">Some thing wrong with the tickets!</p>
-                            <button className="w-full rounded-full bg-primary py-1.5 text-white dark:bg-black">
+                            <button className="w-full rounded-full bg-primary py-1.5 text-white dark:bg-white dark:text-black">
                                 Contact now!
                             </button>
                         </div>

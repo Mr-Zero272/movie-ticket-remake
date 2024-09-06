@@ -27,9 +27,12 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public PaginationResponse<Ticket> getTickets(int page, int size, String orderStatus, String userId) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "date"));
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         List<Ticket> ticketList = ticketDao.findPaidTicketsByUserId(userId, orderStatus, LocalDateTime.now(), pageable);
-        Integer ticketsCount = ticketDao.countPaidTicketsByUserId(userId, orderStatus, LocalDateTime.now());
+        Integer ticketsCount = 0;
+        if (!ticketList.isEmpty()) {
+            ticketsCount = ticketDao.countPaidTicketsByUserId(userId, orderStatus, LocalDateTime.now());
+        }
         Page<Ticket> ticketPage = new PageImpl<>(ticketList, pageable, ticketsCount);
 
         PaginationResponse<Ticket> resp = PaginationResponse.<Ticket>builder()

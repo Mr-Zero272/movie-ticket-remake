@@ -33,7 +33,7 @@ export const addNewOrder = async ({
         const res = await axios.post(
             `${API_URL}/order`,
             {
-                startTime,
+                showingTime: startTime,
                 customerId,
                 showingId,
             },

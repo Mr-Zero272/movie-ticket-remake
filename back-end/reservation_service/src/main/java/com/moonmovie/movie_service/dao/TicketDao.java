@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface TicketDao extends MongoRepository<Ticket, String> {
     @Aggregation(pipeline = {
-            "{ '$match': { 'date': { $gte: ?2 }}}",
+//            "{ '$match': { 'date': { $gte: ?2 }}}",
             "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { 'order.customerId': ?0, 'order.orderStatus':  ?1 } }"
@@ -20,7 +20,7 @@ public interface TicketDao extends MongoRepository<Ticket, String> {
     List<Ticket> findPaidTicketsByUserId(String userId, String orderStatus, LocalDateTime currentDate, Pageable pageable);
 
     @Aggregation(pipeline = {
-            "{ '$match': { 'date': { $gte: ?2 }}}",
+//            "{ '$match': { 'date': { $gte: ?2 }}}",
             "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { 'order.customerId': ?0, 'order.orderStatus': ?1 } }",

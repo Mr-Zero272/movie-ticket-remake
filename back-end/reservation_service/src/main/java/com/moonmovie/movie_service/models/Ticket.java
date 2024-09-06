@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -32,7 +33,8 @@ public class Ticket {
     private String hall;
     private String address;
     private int showingId;
-    private String orderId;
+    private ObjectId orderId;
+    private LocalDateTime createdAt;
 
     @Override
     public int hashCode() {

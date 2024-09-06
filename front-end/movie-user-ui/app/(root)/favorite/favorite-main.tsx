@@ -217,7 +217,7 @@ const FavoriteMain = ({ username, userId, listFavoriteMovies, listPopularMovies 
     return (
         <>
             <div className="relative flex gap-x-2 p-4">
-                <article className="max-h-[33rem] min-h-96 flex-1 overflow-x-hidden overflow-y-scroll rounded-lg">
+                <article className="max-h-[33rem] min-h-96 flex-1 overflow-x-hidden overflow-y-scroll rounded-lg max-md:max-h-[100rem]">
                     <div className="flex h-56 items-end gap-x-5 rounded-t-lg bg-[#0093E9] bg-[linear-gradient(160deg,#0093E9_0%,#80D0C7_100%)] p-5">
                         <div className="w-fit rounded-md bg-[#0093E9] bg-[linear-gradient(160deg,#0093E9_0%,#80D0C7_50%,#ffffff_100%)] p-16 max-md:p-10">
                             <Heart className="size-14 fill-white text-white dark:fill-black dark:text-black" />
