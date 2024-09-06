@@ -14,6 +14,7 @@ import { TooltipArrow } from '@radix-ui/react-tooltip';
 import Image from 'next/image';
 import ThemeButton from '../ui/theme-button';
 import HiddenSearch from './HiddenSearch';
+import MyUserButton from './MyUserButton';
 
 type Props = {};
 
@@ -47,7 +48,9 @@ function Header({}: Props) {
                         </TooltipProvider>
                     </div>
                     <div className="flex items-center gap-x-6">
-                        <SignedIn>{isLoaded ? <UserButton /> : <Skeleton className="size-7 rounded-full" />}</SignedIn>
+                        <SignedIn>
+                            {isLoaded ? <MyUserButton /> : <Skeleton className="size-7 rounded-full" />}
+                        </SignedIn>
                         <div className="hidden max-md:block">
                             <SignedOut>
                                 <Link href="/sign-in">

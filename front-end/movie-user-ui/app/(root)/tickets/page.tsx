@@ -120,7 +120,7 @@ function Tickets({}: Props) {
                     </DialogHeader>
                 </DialogContent>
             </Dialog>
-            <div className="max-sm:h-70rem flex max-h-[35rem] gap-3 rounded-lg bg-primary p-4 dark:bg-white max-sm:max-h-[70rem]">
+            <div className="max-sm:h-70rem flex max-h-[35rem] gap-3 rounded-lg bg-black p-4 dark:bg-white max-sm:max-h-[70rem]">
                 <div className="w-1/2 flex-none rounded-lg bg-white p-5 dark:bg-[#121212] max-[1490px]:w-2/3 max-md:w-full">
                     <h1 className="my-5 text-3xl font-bold">Your tickets</h1>
                     <div className="mb-5 flex gap-x-2">

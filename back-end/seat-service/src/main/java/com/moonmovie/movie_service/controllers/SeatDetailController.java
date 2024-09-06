@@ -24,11 +24,6 @@ public class SeatDetailController {
         return ResponseEntity.ok(seatDetailService.getListSeatDetail(showingId));
     }
 
-    @PostMapping
-    public ResponseEntity<List<String>> checkoutSeat(@RequestBody List<ChoosingSeatRequest> request) {
-        return seatDetailService.checkoutSeat(request);
-    }
-
     @PostMapping("/refresh-state")
     public ResponseEntity<ResponseTemplate> refreshSeatState(@RequestBody RefreshSeatStateRequest request) {
         return ResponseEntity.ok(seatDetailService.refreshSeatState(request.getShowingId(), request.getUserId()));

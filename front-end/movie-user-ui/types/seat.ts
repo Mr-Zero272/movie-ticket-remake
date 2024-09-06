@@ -17,7 +17,7 @@ export const SeatDetailSchema = z.object({
     id: z.string(),
     status: z.string(),
     price: z.number(),
-    userId: z.string(),
+    userId: z.string().nullable(),
     showingId: z.number(),
     seat: SeatSchema,
 });

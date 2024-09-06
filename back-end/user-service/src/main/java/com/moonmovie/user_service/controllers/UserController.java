@@ -13,18 +13,20 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/{userClerkId}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("userClerkId") String userId) {
-            return ResponseEntity.ok(userService.getUser(userId));
+    @GetMapping
+    public ResponseEntity<UserDto> getUser(@RequestHeader("user-id") String userId) {
+        UserDto user = userService.getUser(userId);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.addUser(userDto));
+        User user = userService.addUser(userDto);
+        return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userClerkId}")
-    public ResponseEntity<User> updateUser(@PathVariable("userClerkId") String userClerkId, @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.updateUser(userDto, userClerkId));
+    @PutMapping
+    public ResponseEntity<User> updateUser(@RequestHeader("user-id") String userId, @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.updateUser(userDto, userId));
     }
 }

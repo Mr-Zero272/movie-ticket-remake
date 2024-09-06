@@ -4,6 +4,12 @@ import { fetchUser } from '@/services/userServices';
 import { redirect } from 'next/navigation';
 import { fetchShowing, fetchShowings } from '@/services/movieServices';
 import { fetchSeatDetails } from '@/services/seatServices';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Booking your tickets',
+    description: 'Booking your ticket with realtime choosing seat',
+};
 
 type Props = {
     params: { showingId: number };

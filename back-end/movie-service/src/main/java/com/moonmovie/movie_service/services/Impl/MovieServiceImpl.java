@@ -63,6 +63,7 @@ public class MovieServiceImpl implements MovieService {
     public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, int page, int size) {
         if (genreId != null && genreId == 0) genreId = null;
         List<String> queries = new ArrayList<>();
+        queries.add(query);
         if (query == null || query.isEmpty()) {
             queries = List.of("%");
         } else {

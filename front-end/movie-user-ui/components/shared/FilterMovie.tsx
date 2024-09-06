@@ -252,7 +252,7 @@ const FilterMovie = (props: PropsWithTypeNormal | PropsWithTypePopular) => {
                     </PaginationContent>
                 </Pagination>
             )}
-            <div className="grid grid-cols-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-md:grid-cols-2">
+            <div className="grid grid-cols-5 gap-x-3 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-md:grid-cols-2">
                 {loading ? (
                     <>
                         <MovieCardItemVertical loading />

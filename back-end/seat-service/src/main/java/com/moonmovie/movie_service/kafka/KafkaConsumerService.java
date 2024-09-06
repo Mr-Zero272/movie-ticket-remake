@@ -7,6 +7,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class KafkaConsumerService {
@@ -24,9 +26,15 @@ public class KafkaConsumerService {
         seatDetailService.generateSeatDetails(message.getData());
     }
 
-    @KafkaListener(topics = "choosing_seat",  groupId = "movie_booking_project")
+    @KafkaListener(topics = "choosing_seat",  groupId = "moon-movie")
     public void consumeSeat(@Payload ChoosingSeatRequest seatStatus) {
         log.info(String.format("Received: -> %s", seatStatus.toString()));
         seatDetailService.updateSeatStatus(seatStatus);
+    }
+
+    @KafkaListener(topics = "checkout_seat",  groupId = "moon-movie")
+    public void checkoutSeat(@Payload List<String> seatIds) {
+        log.info(String.format("Received: -> %s", seatIds.toString()));
+        seatDetailService.checkoutSeat(seatIds);
     }
 }

@@ -24,7 +24,7 @@ type Props = {
 
 const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) => {
     const { toast } = useToast();
-    const [listSelectedSeats, setListSelectedSeats] = useState<string[]>([]);
+    const [listSelectedSeats, setListSelectedSeats] = useState<SeatDetail[]>([]);
     const [activeStep, setActiveStep] = useState(stepperShowing[0]);
     const [showingData, setShowingData] = useState<Showing | null>(showingInfo);
     const [showTimes, setShowTimes] = useState(listShowTimes);
@@ -50,12 +50,12 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
         setActiveStep(step);
     };
 
-    const handleChooseSeat = useCallback((seatId: string, amount: number) => {
+    const handleChooseSeat = useCallback((s: SeatDetail, amount: number) => {
         setListSelectedSeats((prev) => {
-            if (prev.includes(seatId)) {
-                return prev.filter((s) => s !== seatId);
+            if (prev.some((so) => so.id === s.id)) {
+                return prev.filter((so) => so.id !== s.id);
             } else {
-                return [seatId, ...prev];
+                return [s, ...prev];
             }
         });
         setAmount(amount);
@@ -136,7 +136,6 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                                 amount={amount}
                                 showingId={showingData ? showingData.id : null}
                                 showingDate={showingData ? showingData.startTime : null}
-                                listSelectedSeats={listSelectedSeats}
                                 seatData={listSeat}
                                 listShowTimes={showTimes}
                                 loading={loading}
@@ -156,11 +155,26 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                             />
                         )}
                         {activeStep.step === 2 && (
-                            <Step2 amount={amount} onBackStep={() => setActiveStep(stepperShowing[0])} />
+                            <Step2
+                                userId={userInfo.userClerkId}
+                                userName={userInfo.username}
+                                dateTime={showingData?.startTime || ''}
+                                showingId={showingData?.id || 0}
+                                seats={listSelectedSeats}
+                                hallName={
+                                    listSelectedSeats.length !== 0 ? listSelectedSeats[0].seat.auditorium.name : ''
+                                }
+                                hallAddress={
+                                    listSelectedSeats.length !== 0 ? listSelectedSeats[0].seat.auditorium.address : ''
+                                }
+                                amount={amount}
+                                onBackStep={() => setActiveStep(stepperShowing[0])}
+                            />
                         )}
                     </div>
                     <div className="flex w-1/4 justify-center max-[1200px]:hidden">
                         <MovieCardItemVertical
+                            className="w-56"
                             userId={userInfo.userClerkId}
                             movieId={showingInfo.movie.id}
                             poster={showingInfo.movie.posterPath}

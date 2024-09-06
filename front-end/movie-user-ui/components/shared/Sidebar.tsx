@@ -18,7 +18,7 @@ type Props = {};
 
 function Sidebar({}: Props) {
     const pathname = usePathname();
-    const { userId } = useAuth();
+    // const { userId } = useAuth();
     return (
         <div className="sticky left-0 top-0 h-screen w-64 p-3 shadow-md dark:shadow-none max-lg:w-20 max-md:hidden">
             <div className="flex h-16 items-center max-lg:justify-center">
@@ -35,7 +35,7 @@ function Sidebar({}: Props) {
                         const isActive =
                             (pathname.includes(link.route) && link.route.length > 1) || pathname === link.route;
 
-                        if (link.route === '/profile') link.route = `${link.route}/${userId}`;
+                        // if (link.route === '/profile') link.route = `${link.route}/${userId}`;
                         return (
                             <Fragment key={link.label}>
                                 <TooltipProvider>

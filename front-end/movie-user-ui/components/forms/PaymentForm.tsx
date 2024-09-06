@@ -10,6 +10,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Image from 'next/image';
 import { formatCurrencyVND } from '@/lib/utils';
 import { Input } from '../ui/input';
+import { reservationServices } from '@/services';
+import { toast } from '../ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
     email: z
@@ -21,13 +24,26 @@ const FormSchema = z.object({
 });
 
 type PropsWithBackBtn = {
+    invoiceId: string;
+    total: number;
+    startTime: string;
+    customerId: string;
+    showingId: number;
     backBtn: boolean;
     onBack: () => void;
 };
 
-type Props = {};
+type Props = {
+    invoiceId: string;
+    total: number;
+    startTime: string;
+    customerId: string;
+    showingId: number;
+};
 
 const PaymentForm = (props: Props | PropsWithBackBtn) => {
+    const router = useRouter();
+    const { invoiceId, total, startTime, customerId, showingId } = props;
     let haveBackBtn = false;
     let backFun: () => void;
     if ('backBtn' in props) {
@@ -39,7 +55,19 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
     });
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
-        alert(data.type);
+        const addNewOrder = async () => {
+            const order = await reservationServices.addNewOrder({ startTime, customerId, showingId });
+
+            const paymentMethod = await reservationServices.createPaymentToCheckout({
+                method: data.type,
+                amount: total,
+                description: 'Pay for Moon Movie tickets',
+                returnUrl: `http://localhost:3000/payment?mm_method=${data.type}&mm_cemail=${data.email}&mm_amount=${total}&mm_orderId=${order.id}&mm_invoiceId=${invoiceId}`,
+                transactionId: invoiceId,
+            });
+            router.replace(paymentMethod.urlPayment);
+        };
+        addNewOrder();
     };
     return (
         <Form {...form}>
@@ -106,7 +134,9 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
                     )}
                 />
                 <div className="flex items-center gap-x-5">
-                    <Button type="submit">Submit</Button>
+                    <Button type="submit" loading={form.formState.isSubmitting} disabled={form.formState.isSubmitting}>
+                        Submit
+                    </Button>
                     {haveBackBtn && (
                         <Button
                             variant="outline"

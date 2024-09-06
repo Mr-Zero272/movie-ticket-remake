@@ -19,8 +19,9 @@ export const fetchUser = async (userId: string) => {
     const __sessionToken = cookieStore.get('__session');
 
     try {
-        const response = await axios.get(`${API_URL}/${userId}`, {
+        const response = await axios.get(`${API_URL}`, {
             headers: { Authorization: 'Bearer ' + __sessionToken?.value },
+            withCredentials: true,
         });
 
         const result = UserValidation.safeParse(response.data);
@@ -28,7 +29,7 @@ export const fetchUser = async (userId: string) => {
         if (result.success) {
             return result.data;
         } else {
-            throw new Error('Cannot fetch user information');
+            throw new Error('Cannot valid user information');
         }
     } catch (error: any) {
         if (isAxiosError(error)) {
@@ -36,7 +37,7 @@ export const fetchUser = async (userId: string) => {
                 return null;
             }
         } else {
-            throw new Error('Cannot fetch user information');
+            throw new Error(error.message);
         }
     }
 };
@@ -52,6 +53,7 @@ export const addUser = async (user: User): Promise<User | CustomError> => {
     try {
         const response = await axios.post(`${API_URL}`, user, {
             headers: { Authorization: 'Bearer ' + __sessionToken },
+            withCredentials: true,
         });
         const result = UserValidation.safeParse(response.data);
         if (result.success) {
@@ -73,6 +75,7 @@ export const updateUser = async (user: User, userClerkId: string): Promise<User 
     try {
         const response = await axios.put(`${API_URL}/${userClerkId}`, user, {
             headers: { Authorization: 'Bearer ' + __sessionToken },
+            withCredentials: true,
         });
         const result = UserValidation.safeParse(response.data);
         if (result.success) {

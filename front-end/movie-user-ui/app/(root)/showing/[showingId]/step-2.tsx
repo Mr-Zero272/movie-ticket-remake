@@ -4,16 +4,29 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { createRandomTransId, formatCurrencyVND } from '@/lib/utils';
+import { SeatDetail } from '@/types/seat';
 import { format } from 'date-fns';
 import { Armchair, Calendar, MapPin, Projector, X } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
+
+const formatter = new Intl.ListFormat('en', {
+    style: 'long',
+    type: 'conjunction',
+});
 
 type Props = {
+    userId: string;
+    userName: string;
+    showingId: number;
     amount: number;
+    dateTime: string;
+    seats: SeatDetail[];
+    hallName: string;
+    hallAddress: string;
     onBackStep: () => void;
 };
 
-const Step2 = ({ amount, onBackStep }: Props) => {
+const Step2 = ({ userId, showingId, userName, amount, dateTime, seats, hallName, hallAddress, onBackStep }: Props) => {
     const [transId, setTransId] = useState(() => createRandomTransId());
     return (
         <div className="mt-5">
@@ -23,7 +36,9 @@ const Step2 = ({ amount, onBackStep }: Props) => {
                         <Calendar className="size-6 w-1/5 text-gray-500" />
                         <div className="w-4/5 border-b border-b-gray-500 pb-3">
                             <p className="text-xs text-gray-500">DATE & TIME</p>
-                            <p className="font-semibold">{format('2024-08-19T20:00:00', 'dd MMM - HH:mm')}</p>
+                            <p className="font-semibold">
+                                {dateTime !== '' ? format(dateTime, 'dd MMM - HH:mm') : 'xx XXX - XX:xx'}
+                            </p>
                         </div>
                     </div>
                     <div className="flex items-center">
@@ -37,14 +52,16 @@ const Step2 = ({ amount, onBackStep }: Props) => {
                         <Armchair className="size-6 w-1/5 text-gray-500" />
                         <div className="w-4/5 border-b border-b-gray-500 pb-3">
                             <p className="text-xs text-gray-500">Hall & Seat</p>
-                            <p className="font-semibold">Alpha Hall - A5, A6, B1</p>
+                            <p className="font-semibold">
+                                {hallName} - {formatter.format(seats.map((s) => s.seat.numberSeat.toString()))}
+                            </p>
                         </div>
                     </div>
                     <div className="flex items-center">
                         <MapPin className="size-6 w-1/5 text-gray-500" />
                         <div className="w-4/5 border-b border-b-gray-500 pb-3">
                             <p className="text-xs text-gray-500">Location</p>
-                            <p className="font-semibold">xxx 3/2 Lorem, ipsum dolor.</p>
+                            <p className="font-semibold">{hallAddress}</p>
                         </div>
                     </div>
                 </div>
@@ -62,7 +79,7 @@ const Step2 = ({ amount, onBackStep }: Props) => {
                             </div>
                             <div className="text-gray-500">
                                 <p>Customer</p>
-                                <p className="font-semibold text-black dark:text-white">mr-zero272</p>
+                                <p className="font-semibold text-black dark:text-white">{userName}</p>
                             </div>
                             <div className="text-gray-500">
                                 <p>Total</p>
@@ -72,7 +89,15 @@ const Step2 = ({ amount, onBackStep }: Props) => {
                     </div>
                     <div>
                         <h2 className="mb-2 text-base font-bold text-gray-500">PAYMENT FORM</h2>
-                        <PaymentForm backBtn onBack={onBackStep} />
+                        <PaymentForm
+                            invoiceId={transId}
+                            total={amount}
+                            startTime={dateTime}
+                            showingId={showingId}
+                            customerId={userId}
+                            backBtn
+                            onBack={onBackStep}
+                        />
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 public class RouteConfig {
@@ -21,7 +22,7 @@ public class RouteConfig {
                                         .rewritePath("/api/v2/moon-movie/media/images//(?<segment>.*)", "/images/${segment}")
                                         .rewritePath("/api/v2/moon-movie/media/videos//(?<segment>.*)", "/videos/${segment}"))
                                 .uri("lb://media-service"))
-                .route("user-service", predicateSpec ->
+                .route("user-service-auth", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/user/**")
                                 .filters(f -> f.rewritePath("/api/v2/moon-movie/user//(?<segment>.*)", "/user/${segment}")
                                         .filter(authenticationFilter))

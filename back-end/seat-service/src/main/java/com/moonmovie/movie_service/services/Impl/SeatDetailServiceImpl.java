@@ -107,25 +107,13 @@ public class SeatDetailServiceImpl implements SeatDetailService {
         return seatDetailDao.findAllById(seatIds);
     }
 
+    @Override
     @Transactional
-    public ResponseEntity<List<String>> checkoutSeat(List<ChoosingSeatRequest> requests) {
-        List<String> listDisableIds = new ArrayList<>();
-        for (ChoosingSeatRequest req : requests) {
-            Optional<SeatDetail> seatStatus = seatDetailDao.findById(req.getId());
-            if (seatStatus.isPresent()) {
-                if (seatStatus.get().getUserId().isEmpty() && seatStatus.get().getStatus().equals("available")) {
-                    seatStatus.get().setUserId(req.getUserId());
-                    seatStatus.get().setStatus("choosing");
-                    req.setStatus("choosing");
-                    seatDetailDao.save(seatStatus.get());
-                    sendDataToWebSocket("/topic/seat-state", seatStatus);
-                } else {
-                    listDisableIds.add(req.getId());
-                }
-            }
-        }
-
-        return new ResponseEntity<>(listDisableIds, HttpStatus.OK);
+    public List<String> checkoutSeat(List<String> seatIds) {
+        List<SeatDetail> seatDetails = seatDetailDao.findAllById(seatIds);
+        seatDetails.forEach(seatDetail -> seatDetail.setStatus("booked"));
+        seatDetailDao.saveAll(seatDetails);
+        return seatIds;
     }
 
     @Override

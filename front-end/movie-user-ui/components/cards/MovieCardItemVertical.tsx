@@ -68,14 +68,14 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
     };
 
     return (
-        <figure className={`w-56 max-[500px]:w-48 max-[420px]:w-44 max-[385px]:w-40 ${className as string}`}>
+        <figure className={`max-[500px]:w-48 max-[420px]:w-44 max-[385px]:w-40 ${className as string}`}>
             <div className="group relative cursor-pointer">
                 <Image
                     src={poster}
                     alt="movie 1 image"
                     width={500}
                     height={500}
-                    className="h-72 w-full object-cover"
+                    className="h-72 w-full"
                     quality={100}
                 />
                 <div className="absolute right-0 top-0 hidden h-72 w-full items-center justify-center bg-gray-700 bg-opacity-35 group-hover:flex">

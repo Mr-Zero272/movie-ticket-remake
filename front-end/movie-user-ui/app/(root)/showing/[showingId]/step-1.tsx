@@ -5,7 +5,7 @@ import { Flag, Frown, Info } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
-import { SeatDetail } from '@/types/seat';
+import { Seat, SeatDetail } from '@/types/seat';
 import { ShowingDto } from '@/types/showing';
 import { fetchSeatDetails } from '@/services/seatServices';
 import { format } from 'date-fns';
@@ -18,12 +18,11 @@ type Props = {
     amount: number;
     showingId: number | null;
     showingDate: string | null;
-    listSelectedSeats: string[];
     seatData: SeatDetail[];
     listShowTimes: ShowingDto[];
     loading: boolean;
     onNextStep: () => void;
-    onChooseSeat: (seatId: string, amount: number) => void;
+    onChooseSeat: (s: SeatDetail, amount: number) => void;
     onChangeShowing: (showingId: number) => void;
     onChangeDate: (date: string) => void;
 };
@@ -33,7 +32,6 @@ const Step1 = ({
     amount,
     showingId,
     showingDate,
-    listSelectedSeats,
     seatData: seats,
     listShowTimes,
     loading = false,
@@ -135,19 +133,19 @@ const Step1 = ({
     }, [seatData]);
 
     const handleChooseSeat = useCallback(
-        (seatId: string, seatStatus: string, price: number) => {
-            if (seatStatus === 'booked') return;
+        (s: SeatDetail) => {
+            if (s.status === 'booked') return;
             // console.log(!listSeatSelected.some((seat) => seat.id === seatId && seatStatus === 'choosing'));
-            if (!seatData.some((seat) => seat.id === seatId) && seatStatus === 'choosing') return;
+            if (!seatData.some((seat) => seat.id === s.id) && s.status === 'choosing') return;
             if (myStompClient !== null) {
                 myStompClient.publish({
                     destination: '/app/choosing-seat-ws',
-                    body: JSON.stringify({ id: seatId, status: seatStatus, userId: userId }),
+                    body: JSON.stringify({ id: s.id, status: s.status, userId: userId }),
                 });
-                if (seatStatus === 'choosing') {
-                    onChooseSeat(seatId, amount - price);
+                if (s.status === 'choosing') {
+                    onChooseSeat(s, amount - s.price);
                 } else {
-                    onChooseSeat(seatId, amount + price);
+                    onChooseSeat(s, amount + s.price);
                 }
             }
         },
@@ -282,7 +280,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -309,7 +307,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -336,7 +334,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -363,7 +361,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -390,7 +388,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -417,7 +415,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -444,7 +442,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -471,7 +469,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -498,7 +496,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}
@@ -525,7 +523,7 @@ const Step1 = ({
                                                     'available-seat': !active,
                                                     'your-seat cursor-pointer': active,
                                                 })}
-                                                onClick={() => handleChooseSeat(s.id, s.status, s.price)}
+                                                onClick={() => handleChooseSeat(s)}
                                             />
                                         );
                                     })}

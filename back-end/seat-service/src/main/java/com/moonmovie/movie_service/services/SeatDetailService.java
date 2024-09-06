@@ -19,7 +19,7 @@ public interface SeatDetailService {
     public ResponseTemplate refreshSeatState(int showingId, String userId);
 
     List<SeatDetail> findAllSeatByIds(List<String> seatIds);
-    public ResponseEntity<List<String>> checkoutSeat(List<ChoosingSeatRequest> requests);
+    public List<String> checkoutSeat(List<String> seatIds);
 
     List<SeatDetailDto> getListSeatDetailDto(int showingId, String userId);
 }
