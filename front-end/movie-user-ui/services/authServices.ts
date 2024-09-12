@@ -1,4 +1,4 @@
-import { AuthError, ResponseAuthTypeSchema, SignInInfo } from '@/types/auth';
+import { ResponseApiTemplate, ResponseAuthTypeSchema, SignInInfo } from '@/types/auth';
 import axios, { isAxiosError } from 'axios';
 
 const instanceAuthService = axios.create({
@@ -24,7 +24,7 @@ export const authenticate = async (signInInFor: SignInInfo) => {
         console.log(error);
         if (isAxiosError(error)) {
             if (error.response?.data) {
-                return error.response.data as AuthError;
+                return error.response.data as ResponseApiTemplate;
             }
         } else {
             throw new Error('Cannot authenticate user!');

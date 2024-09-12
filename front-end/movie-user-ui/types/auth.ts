@@ -21,7 +21,13 @@ export const SignInFormSchema = z.object({
 
 export type SignInInfo = z.infer<typeof SignInFormSchema>;
 
-export type AuthError = {
-    status: number;
-    message: string;
-};
+export interface ErrorDetail {
+    [field: string]: string; // Each error object has a field name as key and a string message as value
+}
+
+export interface ResponseApiTemplate {
+    status: number; // The status code from the server
+    message: string; // The message from the server (success or error)
+    errors?: ErrorDetail[];
+    generalErrors?: string[]; // The errors array, optional, can be 1 to many error objects or undefined
+}

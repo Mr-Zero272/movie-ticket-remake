@@ -1,24 +1,21 @@
 'use client';
+import { ResponseApiTemplate, SignInFormSchema, SignInInfo } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { redirect, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
-import { SignInFormSchema, SignInInfo } from '@/types/auth';
-import { authenticate } from '@/services/authServices';
-import { useCookies } from 'react-cookie';
 
 type Props = {};
 
 const SignInForm = (props: Props) => {
-    const [cookies, setCookie, removeCookie] = useCookies(['mmtk']);
+    const router = useRouter();
     const searchParams = useSearchParams();
     const authGoogleCode = searchParams.get('code');
     const [googleLoading, setGoogleLoading] = useState(false);
@@ -43,20 +40,35 @@ const SignInForm = (props: Props) => {
     });
 
     const onSubmit = async (values: SignInInfo) => {
-        const res = await authenticate(values);
-        console.log(res);
+        const res = await fetch('http://localhost:3000/api/user/auth', {
+            method: 'POST',
+            body: JSON.stringify({
+                ...values,
+            }),
+            credentials: 'include',
+        });
 
-        if (res && 'token' in res) {
-            alert('cuc');
-            localStorage.setItem('token', res.token);
-            setCookie('mmtk', res.token, { path: '/', domain: 'localhost', secure: false, httpOnly: true });
+        const resJson = (await res.json()) as ResponseApiTemplate;
+        if (resJson.status >= 400) {
+            if ('errors' in resJson) {
+                if (resJson.errors?.length !== 0) {
+                    resJson.errors?.forEach((error) => {
+                        for (const field in error) {
+                            if (error.hasOwnProperty(field)) {
+                                form.setError(
+                                    field as 'usernameOrEmail' | 'password' | 'keepLogin' | 'root' | `root.${string}`,
+                                    { message: error[field] },
+                                );
+                            }
+                        }
+                    });
+                    return;
+                }
+            }
+            form.setError('usernameOrEmail', { message: resJson.message });
         }
-        if (res && 'status' in res) {
-            form.setError('usernameOrEmail', { message: res.message });
-            return;
-        }
-        alert('login success');
-        // redirect('/oauth2');
+
+        // router.push('/');
     };
 
     return (
@@ -166,9 +178,9 @@ const SignInForm = (props: Props) => {
                             </FormItem>
                         )}
                     />
-                    <a href="javascript:void(0)" className="text-purple-blue-500 mr-4 text-sm font-medium">
+                    <Link href="/" className="text-purple-blue-500 mr-4 text-sm font-medium">
                         Forget password?
-                    </a>
+                    </Link>
                 </div>
                 <Button
                     className="mb-5"
