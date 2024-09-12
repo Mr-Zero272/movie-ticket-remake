@@ -1,8 +1,7 @@
 package com.moonmovie.gateway_service.filters;
 
-
 import com.moonmovie.gateway_service.utils.JwtService;
-import com.nimbusds.jwt.JWTClaimsSet;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -22,9 +21,7 @@ public class AuthenticationFilter implements GatewayFilter {
     @Autowired
     private JwtService jwtService;
 
-    //    @Value("${jwt.prefix}")
     private final String TOKEN_PREFIX = "Bearer ";
-
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -36,10 +33,9 @@ public class AuthenticationFilter implements GatewayFilter {
 
             final String token = this.getAuthHeader(request);
 
-            if(!jwtService.validateToken(token)) {
-                System.out.println("Token is invalid");
+            // call user service de lay thong tin user roi sau do truyen no vao header request de tiep tuc chuyen den
+            if(!jwtService.isTokenValid(token))
                 return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
-            }
 
             this.populateRequestWithHeaders(exchange, token);
         }
@@ -69,10 +65,10 @@ public class AuthenticationFilter implements GatewayFilter {
     }
 
     private void populateRequestWithHeaders(ServerWebExchange exchange, String token) {
-        JWTClaimsSet claims = jwtService.getClaims(token);
-//        System.out.println(exchange.getRequest().getCookies());
+        Claims claims = jwtService.extractAllClaims(token);
         exchange.getRequest().mutate()
-                .header("user-id", claims.getSubject())
+                .header("user-id", String.valueOf(claims.getSubject()))
+                .header("role", String.valueOf(claims.get("role")))
                 .build();
     }
 }

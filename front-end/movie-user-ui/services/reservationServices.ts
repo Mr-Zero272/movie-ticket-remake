@@ -1,10 +1,12 @@
 'use server';
 import { CustomError } from '@/types/error';
 import { OrderSchema, PaymentMethodSchema, PaymentSchema } from '@/types/order';
+import { TicketSchema } from '@/types/ticket';
 import { User, UserValidation } from '@/types/user';
 import { clerkClient } from '@clerk/nextjs/server';
 import axios, { isAxiosError } from 'axios';
 import { cookies } from 'next/headers';
+import { z } from 'zod';
 
 const API_URL = 'http://localhost:8272/api/v2/moon-movie/reservation';
 
@@ -147,5 +149,42 @@ export const createPaymentToCheckout = async ({
     } catch (error: any) {
         console.log('Error creating new payment method', error.message);
         throw new Error('Cannot create new payment method');
+    }
+};
+
+export const getTickets = async ({
+    filter,
+    page = 1,
+    size = 100,
+}: {
+    filter: 'all' | 'active' | 'expired' | 'unpaid';
+    page: number;
+    size: number;
+}) => {
+    const __sessionToken = getSessionToken();
+    if (!__sessionToken) {
+        throw new Error('User not sign in yet, cannot get session token');
+    }
+
+    try {
+        const res = await axios.get(`${API_URL}/ticket`, {
+            headers: { Authorization: 'Bearer ' + __sessionToken },
+            withCredentials: true,
+            params: {
+                filter,
+                page,
+                size,
+            },
+        });
+
+        const result = z.array(TicketSchema).safeParse(res.data.data);
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid ticket data return');
+        }
+    } catch (error: any) {
+        console.log('Error getting list tickets', error.message);
+        throw new Error('Cannot get list tickets');
     }
 };

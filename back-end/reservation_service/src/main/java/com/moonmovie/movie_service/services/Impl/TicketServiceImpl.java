@@ -11,6 +11,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,13 +27,40 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public PaginationResponse<Ticket> getTickets(int page, int size, String orderStatus, String userId) {
+    public PaginationResponse<Ticket> getTickets(int page, int size, String filter, String userId) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        List<Ticket> ticketList = ticketDao.findPaidTicketsByUserId(userId, orderStatus, LocalDateTime.now(), pageable);
+        List<Ticket> ticketList = new ArrayList<>();
         Integer ticketsCount = 0;
-        if (!ticketList.isEmpty()) {
-            ticketsCount = ticketDao.countPaidTicketsByUserId(userId, orderStatus, LocalDateTime.now());
+
+        switch (filter.toLowerCase()) {
+            case "all":
+                ticketList = ticketDao.findAllTicketsFilterAll(userId, pageable);
+                if (!ticketList.isEmpty()) {
+                    ticketsCount = ticketDao.countTicketsFilterAll(userId);
+                }
+                break;
+            case "active":
+                ticketList = ticketDao.findAllTicketsFilterActiveOrExpired(userId, LocalDateTime.now(), pageable);
+                if (!ticketList.isEmpty()) {
+                    ticketsCount = ticketDao.countTicketsFilterActiveOrExpired(userId, LocalDateTime.now());
+                }
+                break;
+            case "expired":
+                ticketList = ticketDao.findAllTicketsFilterActiveOrExpired(userId, LocalDateTime.of(1900, 1, 1, 0, 0), pageable);
+                if (!ticketList.isEmpty()) {
+                    ticketsCount = ticketDao.countTicketsFilterActiveOrExpired(userId, LocalDateTime.of(1900, 1, 1, 0, 0));
+                }
+                break;
+            case "unpaid":
+                ticketList = ticketDao.findAllTicketsFilterUnpaid(userId, pageable);
+                if (!ticketList.isEmpty()) {
+                    ticketsCount = ticketDao.countTicketsFilterUnpaid(userId);
+                }
+                break;
+            default:
+                throw new ReservationException(ReservationErrorConstants.ERROR_NOT_EXIST_FILTER_TICKET);
         }
+
         Page<Ticket> ticketPage = new PageImpl<>(ticketList, pageable, ticketsCount);
 
         PaginationResponse<Ticket> resp = PaginationResponse.<Ticket>builder()

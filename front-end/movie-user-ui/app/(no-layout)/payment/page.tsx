@@ -3,8 +3,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogHeader }
 import { Button } from '@/components/ui/button';
 import { createRandomTransId } from '@/lib/utils';
 import { reservationServices } from '@/services';
-import { Check, X } from 'lucide-react';
-import Image from 'next/image';
+import { Bot, Check, X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
@@ -91,6 +90,7 @@ const PaymentPage = (props: Props) => {
                 router.replace('/tickets');
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [countdown]);
 
     const handleContinue = () => {
@@ -173,7 +173,9 @@ const PaymentPage = (props: Props) => {
                     </AlertDialogHeader>
                 </AlertDialogContent>
             </AlertDialog>
-            <Image src="/assets/idle-ghost.gif" alt="idle action" width={500} height={500} quality={100} />
+            <div className="flex min-h-96 w-full items-center justify-center">
+                <Bot className="size-20 animate-bounce" />
+            </div>
         </div>
     );
 };

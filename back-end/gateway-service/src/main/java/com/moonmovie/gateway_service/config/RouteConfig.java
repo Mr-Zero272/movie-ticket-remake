@@ -48,13 +48,17 @@ public class RouteConfig {
                 .route("seat-service", predicateSpec ->
                         predicateSpec.path("/ws/**")
                                 .uri("lb://seat-service"))
-                .route("reservation-service-order", predicateSpec ->
-                        predicateSpec.path("/api/v2/moon-movie/reservation/order/**")
-                                .filters(f -> f.filter(authenticationFilter))
-                                .uri("lb://reservation-service"))
                 .route("reservation-service", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/reservation/**")
+                                .filters(f -> f.filter(authenticationFilter))
                                 .uri("lb://reservation-service"))
+                .route("auth-service-protect", predicateSpec ->
+                        predicateSpec.path("/api/v2/moon-movie/auth/user/**")
+                                .filters(f -> f.filter(authenticationFilter))
+                                .uri("lb://auth-service"))
+                .route("auth-service", predicateSpec ->
+                        predicateSpec.path("/api/v2/moon-movie/auth/**")
+                                .uri("lb://auth-service"))
                 .build();
     }
 }

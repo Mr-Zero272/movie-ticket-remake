@@ -44,7 +44,7 @@ interface PropsWithTypePopular extends Props {
 const FilterMovie = (props: PropsWithTypeNormal | PropsWithTypePopular) => {
     const params = useParams();
     let q = decodeURI(params?.q as string);
-
+    const queryRef = useRef(q);
     const [sort, setSort] = useState(props.sortData[0].value);
     const [genreId, setGenreId] = useState(props.genreData[0].id.toString());
     const [page, setPage] = useState(props.initialData.page);
@@ -66,11 +66,11 @@ const FilterMovie = (props: PropsWithTypeNormal | PropsWithTypePopular) => {
 
             const fetchMovieWithTypeNormal = async () => {
                 setLoading(true);
-                if (q === undefined || q === null || q === 'undefined') {
-                    q = '';
+                if (queryRef.current === undefined || queryRef.current === null || queryRef.current === 'undefined') {
+                    queryRef.current = '';
                 }
                 const res = await fetchMovies({
-                    q,
+                    q: queryRef.current,
                     originalLanguage: language,
                     status,
                     sort,
@@ -91,7 +91,7 @@ const FilterMovie = (props: PropsWithTypeNormal | PropsWithTypePopular) => {
         }
 
         isFirstTimeRun.current = true;
-    }, [q, language, status, page, size, genreId, sort]);
+    }, [queryRef, language, status, page, size, genreId, sort, props.type]);
 
     const { current, prev, next, items } = useMemo(() => {
         return paginate({ current: movieData.page, max: movieData.totalPages });

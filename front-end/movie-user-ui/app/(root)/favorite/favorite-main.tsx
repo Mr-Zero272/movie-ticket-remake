@@ -110,6 +110,7 @@ function DebouncedInput({
         }, debounce);
 
         return () => clearTimeout(timeout);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
     const handleInputChange = (value: string | number) => {
@@ -191,6 +192,7 @@ const FavoriteMain = ({ username, userId, listFavoriteMovies, listPopularMovies 
                 table.setSorting([{ id: 'fullName', desc: false }]);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [table.getState().columnFilters[0]?.id]);
 
     const handleOpenSide = () => {

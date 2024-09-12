@@ -16,6 +16,10 @@ const FavoritePage = async (props: Props) => {
 
     const userInfo = await fetchUser(user.id);
 
+    if (userInfo === undefined) {
+        throw new Error('Error form user server!');
+    }
+
     if (!userInfo?.onboarded) redirect('/onboarding');
 
     const popularMovies = await fetchPopularMovies({ page: 3, size: 4, sort: 'releaseDate', genreId: 0 });

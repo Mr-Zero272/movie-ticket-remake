@@ -5,5 +5,5 @@ import com.moonmovie.movie_service.responses.PaginationResponse;
 
 public interface TicketService {
     public Ticket getTicketById(String ticketId);
-    public PaginationResponse<Ticket> getTickets(int page, int size, String orderStatus, String userId);
+    public PaginationResponse<Ticket> getTickets(int page, int size, String filter, String userId);
 }

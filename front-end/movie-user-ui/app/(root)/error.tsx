@@ -1,15 +1,10 @@
 'use client';
-
 import { Button } from '@/components/ui/button';
 import { Flag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-type Props = {
-    error: Error;
-};
-
-function Error({ error }: Props) {
+function Error() {
     const route = useRouter();
 
     return (
@@ -17,7 +12,7 @@ function Error({ error }: Props) {
             <div>
                 <Flag className="mx-auto h-20 w-20" />
                 <h1 color="blue-gray" className="mt-10 text-3xl leading-snug md:text-4xl">
-                    Error 500 <br /> {error.message}
+                    Error 500
                     <br /> It looks like something went wrong.
                 </h1>
                 <p className="mx-auto mb-14 mt-8 text-[18px] font-normal text-gray-500 md:max-w-sm">

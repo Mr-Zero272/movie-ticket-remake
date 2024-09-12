@@ -1,67 +1,58 @@
 package com.moonmovie.gateway_service.utils;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
-import java.text.ParseException;
-import java.util.Base64;
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private static final String PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" +
-            "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsKKvIPNecREo3wKjY/7z\n" +
-            "nWCEbcnNqyA072T03uFIGE/clXXUd9FmikUm04MRFP6xQN6VlEFzYWpLg2/fjMUh\n" +
-            "iTgX12b+sbrD/ospa94pEB6/9vdNZA5GGORFXJ6MP74Kxo1PE7NO7LX1a3RCmJh5\n" +
-            "g1yVskLP+8k5A5IB5eJkSVtaZh74zDh6F/B5SQtQ2ptxX/l2MSKRojQ7AcC3m45J\n" +
-            "43YXH25ut7eqPLxmAt2c37ZdY6u4xkRPmQD/Rm3WPzdwOdITt6cGiIaw2GIjMmFX\n" +
-            "nAdURG1M3KtwfxQL/TAdZ5NOsJyJtQCSj6j93zLUTQAtM2UHVh3XKjkX9beeHJIe\n" +
-            "VwIDAQAB\n" +
-            "-----END PUBLIC KEY-----\n";
 
-    private static RSAPublicKey getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        // Remove the "BEGIN" and "END" lines, as well as any surrounding whitespace
-        String publicKeyPEM = key.replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replaceAll("\\s", "");
+    private static final String SECRET_KEY = "f6d3d7289d940ce9dbfacaf37d282a3eae68ab562e659674efa900d627889697";
 
-        // Decode the Base64 string
-        byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
-
-        // Create the public key
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
-        return (RSAPublicKey) keyFactory.generatePublic(keySpec);
+    public String extractUserId(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
-    public boolean validateToken(String token) {
-        try {
-            RSAPublicKey publicKey = getPublicKey(PUBLIC_KEY);
-            SignedJWT signedJWT = SignedJWT.parse(token);
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
 
-            // Verify the token
-            RSASSAVerifier verifier = new RSASSAVerifier(publicKey);
-            return signedJWT.verify(verifier);
+    public boolean isTokenValid(String token) {
+        try {
+            Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token);
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
+        return !isTokenExpired(token);
     }
 
-    public JWTClaimsSet getClaims(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            return signedJWT.getJWTClaimsSet();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    private Date extractExpiration(String token) {
+        // TODO Auto-generated method stub
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public Claims extractAllClaims(String token) {
+        return Jwts
+                .parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    private SecretKey getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

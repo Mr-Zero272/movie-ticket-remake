@@ -10,6 +10,10 @@ const ProfilePage = async () => {
 
     const userInfo = await fetchUser(user.id);
 
+    if (userInfo === undefined) {
+        throw new Error('Error form user server!');
+    }
+
     if (!userInfo?.onboarded) redirect('/onboarding');
     return (
         <div>

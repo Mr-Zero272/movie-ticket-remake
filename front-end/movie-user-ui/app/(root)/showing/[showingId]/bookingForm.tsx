@@ -77,6 +77,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                 fetchShowingApi();
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [showingData],
     );
 
@@ -111,6 +112,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
 
             fetchShowingsApi();
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [showingData, showingInfo],
     );
     return (

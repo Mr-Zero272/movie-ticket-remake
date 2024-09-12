@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/v2/moon-movie/reservation/order/ticket")
+@RequestMapping("api/v2/moon-movie/reservation/ticket")
 public class TicketController {
 
     @Autowired
@@ -22,10 +22,10 @@ public class TicketController {
     @GetMapping
     public ResponseEntity<PaginationResponse<Ticket>> fetchTickets(
             @RequestHeader("user-id")  String userId,
-            @RequestParam("orderStatus") String orderStatus,
+            @RequestParam("filter") String filter,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(ticketService.getTickets(page, size, orderStatus, userId));
+        return ResponseEntity.ok(ticketService.getTickets(page, size, filter, userId));
     }
 }

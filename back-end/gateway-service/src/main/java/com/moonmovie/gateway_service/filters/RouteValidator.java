@@ -11,23 +11,7 @@ import java.util.function.Predicate;
 public class RouteValidator {
     public static final List<String> openApiEndpoints = List.of(
             "/api/v2/moon-movie/recommend/**",
-            "/api/v1/auth/register",
-            "/api/v1/auth/authenticate",
-            "/api/v1/auth/register-business/**",
-            "/api/v1/auth/valid-otp",
-            "/api/v1/auth/change-pass",
-            "/api/v1/movie/genre/all",
-            "/api/v1/movie/search",
-            "/api/v1/movie/new",
-            "/api/v1/movie/info",
-            "/api/v1/movie/manufacture",
-            "/api/v1/movie/review/all",
-            "/api/v1/movie/review/info",
-            "/api/v1/movie/screening/type",
-            "/api/v1/movie/screening/search",
-            "/api/v1/images/**",
-            "/api/v1/videos/**",
-            "/api/v1/reservation/order/creat-zalopay-payment",
+            "/api/v2/moon-movie/auth/**",
             "/eureka"
     );
 

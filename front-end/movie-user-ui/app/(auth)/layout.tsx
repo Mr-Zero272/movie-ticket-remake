@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google';
 
 import '../globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
+import CookiesProviderCus from '@/components/cookie-provider';
 
 export const metadata: Metadata = {
     title: 'Moon Movie (Make your night bright)',
@@ -21,7 +22,9 @@ const RootLayout = ({ children }: Props) => {
             <html lang="en">
                 <body className={`${inter.className} bg-dark-1`}>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-                        <div className="flex min-h-screen w-full items-center justify-center">{children}</div>
+                        <CookiesProviderCus>
+                            <div className="flex min-h-screen w-full items-center justify-center">{children}</div>
+                        </CookiesProviderCus>
                     </ThemeProvider>
                 </body>
             </html>

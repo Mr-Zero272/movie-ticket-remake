@@ -15,6 +15,10 @@ export default async function Home() {
 
     const userInfo = await fetchUser(user.id);
 
+    if (userInfo === undefined) {
+        throw new Error('Error form user server!');
+    }
+
     if (!userInfo?.onboarded) redirect('/onboarding');
 
     const popularMovies = await fetchPopularMovies({ page: 1, size: 20, sort: 'releaseDate', genreId: 0 });

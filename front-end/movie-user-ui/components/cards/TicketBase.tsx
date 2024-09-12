@@ -1,11 +1,12 @@
 import { cn } from '@/lib/utils';
+import { Ticket } from '@/types/ticket';
 import { format } from 'date-fns';
 import { Armchair, MonitorPlay, TableRowsSplit } from 'lucide-react';
 
-type Props = {
+interface Props extends Ticket {
     active?: boolean;
     onClick?: () => void;
-};
+}
 
 const TicketBase = ({ active, onClick }: Props) => {
     return (

@@ -1,20 +1,19 @@
 'use client';
 import { useUploadThing } from '@/lib/uploadthing';
 import { isBase64Image } from '@/lib/utils';
-import { User, UserValidation } from '@/types/user';
+import { addUser, updateClerkUserInfo, updateUser } from '@/services/userServices';
+import { User } from '@/types/user';
+import { useUser } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { Button } from '../ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import { Button } from '../ui/button';
-import Image from 'next/image';
-import * as z from 'zod';
-import { addUser, updateClerkUserInfo, updateUser } from '@/services/userServices';
-import { useUser } from '@clerk/nextjs';
-import { type CustomError } from '@/types/error';
 import { useToast } from '../ui/use-toast';
 
 type UserInfo = {
