@@ -6,13 +6,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { SignedIn, SignedOut, SignOutButton, useAuth } from '@clerk/nextjs';
 import { Separator } from '../ui/separator';
 
 import ThemeButton from '../ui/theme-button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { TooltipArrow } from '@radix-ui/react-tooltip';
 import { LogIn, LogOut, Moon } from 'lucide-react';
+import SignedIn from '../auth/SignedIn';
+import SignOutButton from '../auth/SignOutButton';
+import SignedOut from '../auth/SignedOut';
 
 type Props = {};
 

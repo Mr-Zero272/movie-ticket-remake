@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserDto {
+    private String id;
     @NotNull
     @Size(min = 3, max = 30)
     private String username;

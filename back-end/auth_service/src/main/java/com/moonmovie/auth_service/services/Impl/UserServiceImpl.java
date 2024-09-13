@@ -3,11 +3,13 @@ package com.moonmovie.auth_service.services.Impl;
 import com.moonmovie.auth_service.dao.UserDao;
 import com.moonmovie.auth_service.dto.UserDto;
 import com.moonmovie.auth_service.exception.GlobalException;
+import com.moonmovie.auth_service.helpers.Helpers;
 import com.moonmovie.auth_service.models.User;
 import com.moonmovie.auth_service.request.UpdateUserRequest;
 import com.moonmovie.auth_service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -19,14 +21,14 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     @Override
-    public UserDto updateUser(UpdateUserRequest request, String userId) {
+    public UserDto updateUser(UpdateUserRequest request, String userId) throws MethodArgumentNotValidException {
         User user = userDao.findById(userId).orElseThrow(() -> new GlobalException(400, "This user does not exist in the system."));
         if (!request.getUsername().equalsIgnoreCase(user.getUsername()) && userDao.countByUsername(request.getUsername()) == 1) {
-            throw new GlobalException(400, "This username is already in use.");
+            throw Helpers.createMethodArgumentNotValidException("username", "This username is already in use.");
         }
 
         if (!request.getEmail().equalsIgnoreCase(user.getEmail()) && userDao.countByEmail(request.getEmail()) == 1) {
-            throw new GlobalException(400, "This email is already in use.");
+            throw Helpers.createMethodArgumentNotValidException("email", "This email is already in use.");
         }
 
         List<String> fieldsSkip = List.of("onboarded", "createdAt", "modifiedAt", "authentications");
@@ -62,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
     private UserDto convertUserToDto(User user) {
         return UserDto.builder()
+                .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .name(user.getName())

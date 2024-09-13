@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 import { TooltipArrow } from '@radix-ui/react-tooltip';
 import { navbarLinks } from '@/constants';
 import { usePathname } from 'next/navigation';
-import { useAuth } from '@clerk/nextjs';
 
 type Props = {};
 

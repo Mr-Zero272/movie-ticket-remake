@@ -1,55 +1,37 @@
 'use client';
-import { SignOutButton, useUser } from '@clerk/nextjs';
-import React from 'react';
+
 import { Skeleton } from '../ui/skeleton';
 
+import { LogOut, User } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuPortal,
     DropdownMenuSeparator,
     DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import {
-    Cloud,
-    CreditCard,
-    Github,
-    Keyboard,
-    LifeBuoy,
-    LogOut,
-    Mail,
-    MessageSquare,
-    Plus,
-    PlusCircle,
-    Settings,
-    User,
-    UserPlus,
-    Users,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useAuth } from './AuthProvider';
+import SignOutButton from './SignOutButton';
 
 type Props = {};
 
-const MyUserButton = (props: Props) => {
-    const { isLoaded, user } = useUser();
+const UserButton = (props: Props) => {
+    const { loading, user } = useAuth();
 
     return (
         <div>
-            {isLoaded ? (
+            {!loading ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Image
                             src={
-                                user
-                                    ? user.imageUrl
+                                user && user.avatar
+                                    ? user.avatar
                                     : 'https://i.pinimg.com/originals/f0/ab/cc/f0abcce41dcc6b804105e710d6def988.jpg'
                             }
                             alt="avatar"
@@ -87,4 +69,4 @@ const MyUserButton = (props: Props) => {
     );
 };
 
-export default MyUserButton;
+export default UserButton;

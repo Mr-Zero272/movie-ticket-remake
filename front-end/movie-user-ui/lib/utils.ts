@@ -98,3 +98,9 @@ export const createRandomTransId = () => {
     const transID = Math.floor(Math.random() * 1000000);
     return `${format(new Date(), 'yyMMdd')}_${transID}`;
 };
+
+export const getSignInGoogleUrl = () => {
+    const clientId = process.env.GG_CLIENT_ID;
+    const redirectUri = 'http://localhost:3000/sign-in';
+    return `https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${redirectUri}&response_type=code&client_id=${clientId}&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+openid&access_type=offline`;
+};

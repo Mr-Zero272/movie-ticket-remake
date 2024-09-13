@@ -1,11 +1,6 @@
 'use client';
-
-import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
-
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
-import { Bell } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
 import Search from './Search';
@@ -14,12 +9,15 @@ import { TooltipArrow } from '@radix-ui/react-tooltip';
 import Image from 'next/image';
 import ThemeButton from '../ui/theme-button';
 import HiddenSearch from './HiddenSearch';
-import MyUserButton from './MyUserButton';
+import { useAuth } from '../auth/AuthProvider';
+import SignedIn from '../auth/SignedIn';
+import UserButton from '../auth/UserButton';
+import SignedOut from '../auth/SignedOut';
 
 type Props = {};
 
 function Header({}: Props) {
-    const { isLoaded } = useUser();
+    const { loading } = useAuth();
 
     return (
         <section className="sticky top-0 z-50 w-full">
@@ -49,7 +47,7 @@ function Header({}: Props) {
                     </div>
                     <div className="flex items-center gap-x-6">
                         <SignedIn>
-                            {isLoaded ? <MyUserButton /> : <Skeleton className="size-7 rounded-full" />}
+                            <UserButton />
                         </SignedIn>
                         <div className="hidden max-md:block">
                             <SignedOut>

@@ -26,8 +26,23 @@ public class AuthController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request) throws MethodArgumentNotValidException {
-        return ResponseEntity.ok(authenticationService.register(request, Role.USER));
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request, HttpServletResponse response) throws MethodArgumentNotValidException {
+        AuthenticationResponse authenticationResponse = authenticationService.register(request, Role.USER);
+        Cookie tokenCookie = new Cookie("mmtk", authenticationResponse.getToken());
+        tokenCookie.setPath("/");
+        tokenCookie.setMaxAge(3600);
+        tokenCookie.setHttpOnly(true);
+        tokenCookie.setSecure(false);
+
+        Cookie refreshTokenCookie = new Cookie("mmrtk", authenticationResponse.getRefreshToken());
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(3600);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false);
+
+        response.addCookie(tokenCookie);
+        response.addCookie(refreshTokenCookie);
+        return ResponseEntity.ok(authenticationResponse);
     }
 
     @PostMapping("/authenticate")
@@ -41,26 +56,40 @@ public class AuthController {
         tokenCookie.setHttpOnly(true);
         tokenCookie.setSecure(false);
 
-        String cookieHeader = tokenCookie.getName() + "=" + tokenCookie.getValue()
-                + "; Path=" + tokenCookie.getPath()
-                + "; HttpOnly; SameSite=Lax";
+        Cookie refreshTokenCookie = new Cookie("mmrtk", authenticationResponse.getRefreshToken());
+        refreshTokenCookie.setPath("/");
+        if (request.isKeepLogin()) {
+            refreshTokenCookie.setMaxAge(3600);
+        }
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false);
 
-
-//        Cookie refreshTokenCookie = new Cookie("mmrtk", authenticationResponse.getRefreshToken());
-//        refreshTokenCookie.setPath("/");
-//        if (request.isKeepLogin()) {
-//            refreshTokenCookie.setMaxAge(3600);
-//        }
-//        refreshTokenCookie.setHttpOnly(true);
-//        refreshTokenCookie.setSecure(false);
-
-        response.addHeader("Set-Cookie", cookieHeader);
-//        response.addCookie(refreshTokenCookie);
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+        response.addCookie(tokenCookie);
+        response.addCookie(refreshTokenCookie);
+        return ResponseEntity.ok(authenticationResponse);
     }
 
     @PostMapping("/authenticate/google")
-    public ResponseEntity<AuthenticationResponse> loginWithGoogle(@RequestBody AuthenticationGoogleRequest request) throws UnsupportedEncodingException {
-        return ResponseEntity.ok(authenticationService.authenticateWithGoogle(request.getCode()));
+    public ResponseEntity<AuthenticationResponse> loginWithGoogle(@RequestBody AuthenticationGoogleRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+        AuthenticationResponse authenticationResponse = authenticationService.authenticateWithGoogle(request.getCode());
+        Cookie tokenCookie = new Cookie("mmtk", authenticationResponse.getToken());
+        tokenCookie.setPath("/");
+        if (request.isKeepLogin()) {
+            tokenCookie.setMaxAge(3600);
+        }
+        tokenCookie.setHttpOnly(true);
+        tokenCookie.setSecure(false);
+
+        Cookie refreshTokenCookie = new Cookie("mmrtk", authenticationResponse.getRefreshToken());
+        refreshTokenCookie.setPath("/");
+        if (request.isKeepLogin()) {
+            refreshTokenCookie.setMaxAge(3600);
+        }
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false);
+
+        response.addCookie(tokenCookie);
+        response.addCookie(refreshTokenCookie);
+        return ResponseEntity.ok(authenticationResponse);
     }
 }

@@ -1,14 +1,14 @@
-import { authenticate } from '@/services/authServices';
-import { SignInInfo } from '@/types/auth';
+import { authenticate, authenticateWithGoogle } from '@/services/authServices';
+import { SignInGoogle } from '@/types/auth';
 import { cookies } from 'next/headers';
 
 export async function POST(req: Request) {
     const cookieStore = cookies();
-    const { usernameOrEmail, password, keepLogin } = (await req.json()) as SignInInfo;
+    const { code, keepLogin } = (await req.json()) as SignInGoogle;
 
     try {
         // Call Spring Boot API for authentication
-        const response = await authenticate({ usernameOrEmail, password, keepLogin });
+        const response = await authenticateWithGoogle({ code, keepLogin });
 
         if (response && 'token' in response) {
             const { token, refreshToken } = response;

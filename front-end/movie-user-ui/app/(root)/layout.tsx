@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../globals.css';
 
-import { ClerkProvider } from '@clerk/nextjs';
 import Header from '@/components/shared/Header';
 import { ThemeProvider } from '@/components/theme-provider';
 import Sidebar from '@/components/shared/Sidebar';
 import Footerbar from '@/components/shared/Footerbar';
 import Footer from '@/components/shared/Footer';
 import { Toaster } from '@/components/ui/toaster';
+import AuthProvider from '@/components/auth/AuthProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,7 +23,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <ClerkProvider>
+        <AuthProvider>
             <html lang="en">
                 <body className={inter.className}>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
@@ -40,6 +40,6 @@ export default function RootLayout({
                     </ThemeProvider>
                 </body>
             </html>
-        </ClerkProvider>
+        </AuthProvider>
     );
 }

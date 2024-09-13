@@ -2,18 +2,16 @@ import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
 import FilterMovie from '@/components/shared/FilterMovie';
 import MovieCarousel from '@/components/shared/MovieCarousel';
 import ScrollList from '@/components/shared/ScrollList';
+import { currentUser } from '@/services/authServices';
 import { fetchAllGenres, fetchPopularMovies, fetchUpcomingMovies } from '@/services/movieServices';
 import { fetchUser } from '@/services/userServices';
-import { currentUser } from '@clerk/nextjs/server';
+import { User } from '@/types/auth';
+
 import { FileVideo, Headset, Ticket, Users } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 export default async function Home() {
-    const user = await currentUser();
-
-    if (!user) return null;
-
-    const userInfo = await fetchUser(user.id);
+    const userInfo = (await currentUser()) as User;
 
     if (userInfo === undefined) {
         throw new Error('Error form user server!');
@@ -30,7 +28,7 @@ export default async function Home() {
             <MovieCarousel data={popularMovies.data.slice(1, 6)} />
             <ScrollList title="Opening this week">
                 <FilterMovie
-                    userId={userInfo.userClerkId}
+                    userId={userInfo.id}
                     initialData={popularMovies}
                     type="popular"
                     sortData={[
@@ -46,13 +44,13 @@ export default async function Home() {
                     {upcomingMovies.data.map((movie) => (
                         <MovieCardItemVertical
                             key={movie.id}
-                            userId={userInfo.userClerkId}
+                            userId={userInfo.id}
                             movieId={movie.id}
                             poster={movie.posterPath}
                             title={movie.title}
                             runtime={movie.runtime}
                             firstGenre={movie.genres[0].name}
-                            love={movie.userFavoriteMovies.some((m) => m.userId === userInfo.userClerkId)}
+                            love={movie.userFavoriteMovies.some((m) => m.userId === userInfo.id)}
                         />
                     ))}
                 </div>

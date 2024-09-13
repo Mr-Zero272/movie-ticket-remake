@@ -1,9 +1,6 @@
 'use client';
 import { useUploadThing } from '@/lib/uploadthing';
 import { isBase64Image } from '@/lib/utils';
-import { addUser, updateClerkUserInfo, updateUser } from '@/services/userServices';
-import { User } from '@/types/user';
-import { useUser } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -15,9 +12,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { useToast } from '../ui/use-toast';
+import { ErrorDetail, User } from '@/types/auth';
+import { updateUser } from '@/services/authServices';
 
 type UserInfo = {
     username: string;
+    email: string;
     name: string;
     bio: string;
     avatar: string;
@@ -27,18 +27,17 @@ type Props = {
     user: User;
     title: string;
     sub: string;
-    type: 'create' | 'update';
 };
 
 export const UserSchema = z.object({
     username: z.string().min(3).max(30),
+    email: z.string().email(),
     name: z.string().min(3).max(30),
-    bio: z.string().min(3).max(1000),
+    bio: z.string().min(3).max(300),
     avatar: z.string().url(),
 });
 
-function ProfileForm({ user, title, sub, type }: Props) {
-    const userObject = useUser();
+function ProfileForm({ user, title, sub }: Props) {
     const { toast } = useToast();
 
     const [files, setFiles] = useState<File[]>([]);
@@ -50,6 +49,7 @@ function ProfileForm({ user, title, sub, type }: Props) {
     const form = useForm({
         resolver: zodResolver(UserSchema),
         defaultValues: {
+            email: user.email || '',
             username: user.username || '',
             name: user.name || '',
             bio: user.bio || '',
@@ -86,63 +86,24 @@ function ProfileForm({ user, title, sub, type }: Props) {
         if (hasImageChanged) {
             console.log(files[0].name);
             const imgRes = await startUpload(files);
-            // await updateClerkUserImage(files[0], user.userClerkId);
-            await userObject.user?.setProfileImage({ file: files[0] });
+
             if (imgRes && imgRes[0].url) {
                 values.avatar = imgRes[0].url;
             }
         }
 
-        if (type === 'create') {
-            const res = await addUser({
-                id: '',
-                userClerkId: user.userClerkId,
-                username: values.username,
-                name: values.name,
-                bio: values.bio,
-                avatar: values.avatar,
-                onboarded: true,
-                createdAt: '',
-                modifiedAt: '',
-                role: 'USER',
-            });
+        const res = await updateUser({ ...values });
 
-            if ('httpStatusCode' in res && (res.httpStatusCode === 400 || res.httpStatusCode === 500)) {
-                form.setError('username', { type: 'custom', message: res?.message });
+        if (res && 'status' in res && res.status >= 400) {
+            if (res.errors && 'errors' in res && Object.keys(res.errors).length !== 0) {
+                for (const field in res.errors) {
+                    form.setError(field as 'username' | 'email' | 'name' | 'bio' | 'root' | `root.${string}`, {
+                        message: res.errors[field as keyof typeof res.errors],
+                    });
+                }
                 return;
             }
-
-            if (values.username !== user.username || values.name !== user.name) {
-                await updateClerkUserInfo(values.username, values.name, '', user.userClerkId);
-            }
-        } else {
-            const res = await updateUser(
-                {
-                    id: '',
-                    userClerkId: user.userClerkId,
-                    username: values.username,
-                    name: values.name,
-                    bio: values.bio,
-                    avatar: values.avatar,
-                    onboarded: true,
-                    createdAt: '',
-                    modifiedAt: '',
-                    role: 'USER',
-                },
-                user.userClerkId,
-            );
-
-            if ('httpStatusCode' in res && (res.httpStatusCode === 400 || res.httpStatusCode === 500)) {
-                form.setError('username', { type: 'custom', message: res?.message });
-                return;
-            }
-
-            if (values.username !== user.username || values.name !== user.name) {
-                await updateClerkUserInfo(values.username, values.name, '', user.userClerkId);
-            }
-            // await setTimeout(() => {
-            //     console.log(123);
-            // }, 1000);
+            return;
         }
 
         toast({
@@ -163,18 +124,33 @@ function ProfileForm({ user, title, sub, type }: Props) {
             </div>
             <Form {...form}>
                 <form className="flex flex-col-reverse md:flex-row" onSubmit={form.handleSubmit(onSubmit)}>
-                    <div className="md:w-3/5 md:border-r md:pr-10">
+                    <div className="p-5 md:flex-1 md:border-r md:pr-10">
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem className="my-4 flex max-w-full items-center gap-x-5">
+                                    <FormLabel className="w-1/5 text-right text-gray-400">Email:</FormLabel>
+                                    <div className="flex flex-1 flex-col">
+                                        <FormControl>
+                                            <Input type="email" className="no-focus" {...field} />
+                                        </FormControl>
+                                        <FormMessage className="mt-1 text-sm" />
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="name"
                             render={({ field }) => (
-                                <FormItem className="my-7 flex w-full items-center">
-                                    <FormLabel className="w-1/4 text-right text-gray-400">Name: </FormLabel>
-                                    <div className="flex w-3/4 flex-col">
+                                <FormItem className="my-4 flex w-full items-center gap-x-5">
+                                    <FormLabel className="w-1/5 text-right text-gray-400">Name: </FormLabel>
+                                    <div className="flex flex-1 flex-col">
                                         <FormControl>
-                                            <Input type="text" className="no-focus ml-7" {...field} />
+                                            <Input type="text" className="no-focus" {...field} />
                                         </FormControl>
-                                        <FormMessage className="ml-7 mt-1 text-sm" />
+                                        <FormMessage className="mt-1 text-sm" />
                                     </div>
                                 </FormItem>
                             )}
@@ -183,13 +159,13 @@ function ProfileForm({ user, title, sub, type }: Props) {
                             control={form.control}
                             name="username"
                             render={({ field }) => (
-                                <FormItem className="my-7 flex w-full items-center">
-                                    <FormLabel className="w-1/4 text-right text-gray-400">Username: </FormLabel>
-                                    <div className="flex w-3/4 flex-col">
+                                <FormItem className="my-4 flex w-full items-center gap-x-5">
+                                    <FormLabel className="w-1/5 text-right text-gray-400">Username: </FormLabel>
+                                    <div className="flex flex-1 flex-col">
                                         <FormControl>
-                                            <Input type="text" className="no-focus ml-7" {...field} />
+                                            <Input type="text" className="no-focus" {...field} />
                                         </FormControl>
-                                        <FormMessage className="ml-7 mt-1 text-sm" />
+                                        <FormMessage className="mt-1 text-sm" />
                                     </div>
                                 </FormItem>
                             )}
@@ -198,13 +174,13 @@ function ProfileForm({ user, title, sub, type }: Props) {
                             control={form.control}
                             name="bio"
                             render={({ field }) => (
-                                <FormItem className="my-7 flex w-full items-center">
-                                    <FormLabel className="w-1/4 text-right text-gray-400">Bio: </FormLabel>
-                                    <div className="flex w-3/4 flex-col">
+                                <FormItem className="my-4 flex w-full items-center gap-x-5">
+                                    <FormLabel className="w-1/5 text-right text-gray-400">Bio: </FormLabel>
+                                    <div className="flex flex-1 flex-col">
                                         <FormControl>
-                                            <Textarea rows={8} className="no-focus ml-7" {...field} />
+                                            <Textarea rows={8} className="no-focus" {...field} />
                                         </FormControl>
-                                        <FormMessage className="ml-7 mt-1 text-sm" />
+                                        <FormMessage className="mt-1 text-sm" />
                                     </div>
                                 </FormItem>
                             )}
@@ -223,7 +199,7 @@ function ProfileForm({ user, title, sub, type }: Props) {
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col items-center justify-center pb-5 md:w-2/5">
+                    <div className="mt-5 flex flex-col items-center justify-center pb-5 md:mt-0 md:w-2/5">
                         <FormField
                             control={form.control}
                             name="avatar"

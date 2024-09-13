@@ -136,18 +136,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String refreshToken = "";
 
         if (userInDatabase.isPresent()) {
-            if (userInDatabase.get().getAuthentications().size() == 2) {
-                token = jwtService.generateToken(userInDatabase.get(), 7);
-                refreshToken = jwtService.generateToken(userInDatabase.get(), 9);
+            userInDatabase.get().setEmail(tempUserInfo.getEmail());
+            userInDatabase.get().setName(tempUserInfo.getName());
+            userInDatabase.get().setAvatar(tempUserInfo.getAvatar());
+            User upToDateUserInfo = userDao.save(userInDatabase.get());
+            if (upToDateUserInfo.getAuthentications().size() == 2) {
+                token = jwtService.generateToken(upToDateUserInfo, 7);
+                refreshToken = jwtService.generateToken(upToDateUserInfo, 9);
                 return AuthenticationResponse.builder()
                         .token(token)
                         .refreshToken(refreshToken)
                         .message("Sign in successfully!")
                         .build();
             } else {
-                if (userInDatabase.get().getAuthentications().get(0).getProvider().equalsIgnoreCase("google")) {
-                    token = jwtService.generateToken(userInDatabase.get(), 7);
-                    refreshToken = jwtService.generateToken(userInDatabase.get(), 9);
+                if (upToDateUserInfo.getAuthentications().get(0).getProvider().equalsIgnoreCase("google")) {
+                    token = jwtService.generateToken(upToDateUserInfo, 7);
+                    refreshToken = jwtService.generateToken(upToDateUserInfo, 9);
                     return AuthenticationResponse.builder()
                             .token(token)
                             .refreshToken(refreshToken)
@@ -160,10 +164,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             .createdAt(LocalDateTime.now())
                             .modifiedAt(LocalDateTime.now())
                             .build();
-                    userInDatabase.get().getAuthentications().add(googleAuthentication);
-                    userDao.save(userInDatabase.get());
-                    token = jwtService.generateToken(userInDatabase.get(), 7);
-                    refreshToken = jwtService.generateToken(userInDatabase.get(), 9);
+                    upToDateUserInfo.getAuthentications().add(googleAuthentication);
+                    userDao.save(upToDateUserInfo);
+                    token = jwtService.generateToken(upToDateUserInfo, 7);
+                    refreshToken = jwtService.generateToken(upToDateUserInfo, 9);
                     return AuthenticationResponse.builder()
                             .token(token)
                             .refreshToken(refreshToken)
@@ -188,10 +192,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .createdAt(LocalDateTime.now())
                     .modifiedAt(LocalDateTime.now())
                     .authentications(List.of(googleAuthentication))
+                    .role(Role.USER)
                     .build();
-            token = jwtService.generateToken(newUser, 7);
-            refreshToken = jwtService.generateToken(newUser, 9);
-            userDao.save(newUser);
+
+            User savedUser = userDao.save(newUser);
+            token = jwtService.generateToken(savedUser, 7);
+            refreshToken = jwtService.generateToken(savedUser, 9);
+
             return AuthenticationResponse.builder()
                     .token(token)
                     .refreshToken(refreshToken)
@@ -207,7 +214,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
-        params.add("redirect_uri", "http://localhost:3000/oauth2");
+        params.add("redirect_uri", "http://localhost:3000/sign-in");
         params.add("client_id", clientGoogleId);
         params.add("client_secret", clientGoogleSecret);
         params.add("scope", "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile");
@@ -234,9 +241,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
         JsonObject jsonObject = new Gson().fromJson(response.getBody(), JsonObject.class);
         User user = User.builder()
-                .email(String.valueOf(jsonObject.get("email")))
-                .name(String.valueOf(jsonObject.get("name")))
-                .avatar(String.valueOf(jsonObject.get("picture")))
+                .email(jsonObject.get("email").getAsString())
+                .name(jsonObject.get("name").getAsString())
+                .avatar(jsonObject.get("picture").getAsString())
                 .build();
         return user;
     }

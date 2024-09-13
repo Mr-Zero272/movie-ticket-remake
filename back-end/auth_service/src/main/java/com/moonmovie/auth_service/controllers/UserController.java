@@ -6,6 +6,7 @@ import com.moonmovie.auth_service.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,7 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserDto> updateUser(@RequestHeader("user-id") String userId, @Valid @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<UserDto> updateUser(@RequestHeader("user-id") String userId, @Valid @RequestBody UpdateUserRequest request) throws MethodArgumentNotValidException {
         return ResponseEntity.ok(userService.updateUser(request, userId));
     }
 }

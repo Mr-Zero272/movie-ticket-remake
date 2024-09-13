@@ -5,7 +5,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
@@ -21,15 +21,6 @@ const SignInForm = (props: Props) => {
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    useEffect(() => {
-        if (authGoogleCode !== null) {
-            setGoogleLoading(true);
-            setTimeout(() => {
-                setGoogleLoading(false);
-            }, 5000);
-        }
-    }, [authGoogleCode]);
-
     const form = useForm({
         resolver: zodResolver(SignInFormSchema),
         defaultValues: {
@@ -39,37 +30,72 @@ const SignInForm = (props: Props) => {
         },
     });
 
-    const onSubmit = async (values: SignInInfo) => {
-        const res = await fetch('http://localhost:3000/api/user/auth', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...values,
-            }),
-            credentials: 'include',
-        });
+    const signIn = useCallback(
+        async ({
+            url,
+            ...restParams
+        }:
+            | { usernameOrEmail: string; password: string; keepLogin: boolean; url: string }
+            | { code: string; keepLogin: boolean; url: string }) => {
+            const res = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    ...restParams,
+                }),
+                credentials: 'include',
+            });
 
-        const resJson = (await res.json()) as ResponseApiTemplate;
-        if (resJson.status >= 400) {
-            if ('errors' in resJson) {
-                if (resJson.errors?.length !== 0) {
-                    resJson.errors?.forEach((error) => {
-                        for (const field in error) {
-                            if (error.hasOwnProperty(field)) {
-                                form.setError(
-                                    field as 'usernameOrEmail' | 'password' | 'keepLogin' | 'root' | `root.${string}`,
-                                    { message: error[field] },
-                                );
+            const resJson = (await res.json()) as ResponseApiTemplate;
+
+            if (resJson.status >= 400) {
+                if ('errors' in resJson) {
+                    if (resJson.errors?.length !== 0) {
+                        resJson.errors?.forEach((error) => {
+                            for (const field in error) {
+                                if (error.hasOwnProperty(field)) {
+                                    form.setError(
+                                        field as
+                                            | 'usernameOrEmail'
+                                            | 'password'
+                                            | 'keepLogin'
+                                            | 'root'
+                                            | `root.${string}`,
+                                        { message: error[field] },
+                                    );
+                                }
                             }
-                        }
-                    });
-                    return;
+                        });
+                        return;
+                    }
                 }
+                form.setError('usernameOrEmail', { message: resJson.message });
             }
-            form.setError('usernameOrEmail', { message: resJson.message });
-        }
+            router.push('/test-page');
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [form],
+    );
 
-        // router.push('/');
+    useEffect(() => {
+        if (googleLoading) return;
+        if (authGoogleCode !== null) {
+            setGoogleLoading(true);
+            signIn({
+                url: 'http://localhost:3000/api/user/auth/google',
+                code: authGoogleCode,
+                keepLogin: form.getValues().keepLogin,
+            });
+            setGoogleLoading(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authGoogleCode]);
+
+    const onSubmit = async (values: SignInInfo) => {
+        await signIn({ url: 'http://localhost:3000/api/user/auth', ...values });
     };
+
+    const clientId = process.env.GG_CLIENT_ID;
+    const redirectUri = 'http://localhost:3000/sign-in';
 
     return (
         <Form {...form}>
@@ -79,8 +105,8 @@ const SignInForm = (props: Props) => {
             >
                 <h3 className="mb-3 text-4xl font-extrabold">Sign In</h3>
                 <p className="text-grey-700 mb-4">Enter your email and password</p>
-                <Link
-                    href="/"
+                <a
+                    href={`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${redirectUri}&response_type=code&client_id=${clientId}&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+openid&access_type=offline`}
                     className="text-grey-900 bg-grey-300 hover:bg-grey-400 focus:ring-grey-300 mb-3 flex w-full items-center justify-center py-4 text-sm font-medium transition duration-300 focus:ring-4"
                 >
                     <Image
@@ -91,7 +117,7 @@ const SignInForm = (props: Props) => {
                         height={20}
                     />
                     Sign in with Google {googleLoading && <Loader2 className="mr-2 ms-2 h-4 w-4 animate-spin" />}
-                </Link>
+                </a>
                 <div className="mb-3 flex items-center">
                     <hr className="border-grey-500 h-0 grow border-b border-solid" />
                     <p className="text-grey-600 mx-4">or</p>
