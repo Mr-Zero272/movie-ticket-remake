@@ -21,6 +21,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
         oldPayments.add(payment);
         order.setPayments(oldPayments);
         if (request.getPaymentStatus().equalsIgnoreCase("paid")) {
-            List<Ticket> tickets = ticketDao.findAllByOrderId(order.getId());
+            List<Ticket> tickets = ticketDao.findAllByOrderId(new ObjectId(order.getId()));
             List<String> seatIds = tickets.stream().map(Ticket::getSeatId).toList();
             order.setOrderStatus("complete");
             kafkaProducerService.sendSeatDetailInfo(seatIds);

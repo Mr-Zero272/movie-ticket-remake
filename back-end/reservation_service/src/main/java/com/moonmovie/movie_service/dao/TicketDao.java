@@ -1,6 +1,7 @@
 package com.moonmovie.movie_service.dao;
 
 import com.moonmovie.movie_service.models.Ticket;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -75,5 +76,5 @@ public interface TicketDao extends MongoRepository<Ticket, String> {
     })
     Integer countPaidTicketsByUserId(String userId, String orderStatus, LocalDateTime date);
 
-    List<Ticket> findAllByOrderId(String orderId);
+    List<Ticket> findAllByOrderId(ObjectId orderId);
 }

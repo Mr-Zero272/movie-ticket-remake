@@ -1,5 +1,6 @@
 import PaymentForm from '@/components/forms/PaymentForm';
 import { createRandomTransId, formatCurrencyVND } from '@/lib/utils';
+import { User } from '@/types/auth';
 import { SeatDetail } from '@/types/seat';
 import { format } from 'date-fns';
 import { Armchair, Calendar, MapPin, Projector } from 'lucide-react';
@@ -11,8 +12,7 @@ const formatter = new Intl.ListFormat('en', {
 });
 
 type Props = {
-    userId: string;
-    userName: string;
+    userInfo: User;
     showingId: number;
     amount: number;
     dateTime: string;
@@ -22,7 +22,7 @@ type Props = {
     onBackStep: () => void;
 };
 
-const Step2 = ({ userId, showingId, userName, amount, dateTime, seats, hallName, hallAddress, onBackStep }: Props) => {
+const Step2 = ({ userInfo, showingId, amount, dateTime, seats, hallName, hallAddress, onBackStep }: Props) => {
     const [transId, setTransId] = useState(() => createRandomTransId());
     return (
         <div className="mt-5">
@@ -75,7 +75,7 @@ const Step2 = ({ userId, showingId, userName, amount, dateTime, seats, hallName,
                             </div>
                             <div className="text-gray-500">
                                 <p>Customer</p>
-                                <p className="font-semibold text-black dark:text-white">{userName}</p>
+                                <p className="font-semibold text-black dark:text-white">{userInfo.username}</p>
                             </div>
                             <div className="text-gray-500">
                                 <p>Total</p>
@@ -90,7 +90,8 @@ const Step2 = ({ userId, showingId, userName, amount, dateTime, seats, hallName,
                             total={amount}
                             startTime={dateTime}
                             showingId={showingId}
-                            customerId={userId}
+                            currentEmail={userInfo.email}
+                            customerId={userInfo.id}
                             backBtn
                             onBack={onBackStep}
                         />

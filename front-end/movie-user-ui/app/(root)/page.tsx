@@ -4,8 +4,6 @@ import MovieCarousel from '@/components/shared/MovieCarousel';
 import ScrollList from '@/components/shared/ScrollList';
 import { currentUser } from '@/services/authServices';
 import { fetchAllGenres, fetchPopularMovies, fetchUpcomingMovies } from '@/services/movieServices';
-import { fetchUser } from '@/services/userServices';
-import { User } from '@/types/auth';
 
 import { FileVideo, Headset, Ticket, Users } from 'lucide-react';
 import { redirect } from 'next/navigation';

@@ -1,15 +1,10 @@
 import FilterMovie from '@/components/shared/FilterMovie';
+import { currentUser } from '@/services/authServices';
 import { fetchAllGenres, fetchMovies } from '@/services/movieServices';
-import { fetchUser } from '@/services/userServices';
-import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
 const SearchPage = async () => {
-    const user = await currentUser();
-
-    if (!user) return null;
-
-    const userInfo = await fetchUser(user.id);
+    const userInfo = await currentUser();
 
     if (userInfo === undefined) {
         throw new Error('Error form user server!');
@@ -31,7 +26,7 @@ const SearchPage = async () => {
     return (
         <div className="p-4">
             <FilterMovie
-                userId={userInfo.userClerkId}
+                userId={userInfo.id}
                 type="normal"
                 initialData={popularMovies}
                 sortData={[

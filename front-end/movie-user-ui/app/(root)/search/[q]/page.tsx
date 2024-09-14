@@ -1,7 +1,6 @@
 import FilterMovie from '@/components/shared/FilterMovie';
+import { currentUser } from '@/services/authServices';
 import { fetchAllGenres, fetchMovies } from '@/services/movieServices';
-import { fetchUser } from '@/services/userServices';
-import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
 type Props = {
@@ -9,11 +8,11 @@ type Props = {
 };
 
 const SearchPage = async ({ params }: Props) => {
-    const user = await currentUser();
+    const userInfo = await currentUser();
 
-    if (!user) return null;
-
-    const userInfo = await fetchUser(user.id);
+    if (userInfo === undefined) {
+        throw new Error('Error form user server!');
+    }
 
     if (!userInfo?.onboarded) redirect('/onboarding');
 
@@ -31,7 +30,7 @@ const SearchPage = async ({ params }: Props) => {
     return (
         <div className="p-4">
             <FilterMovie
-                userId={userInfo.userClerkId}
+                userId={userInfo.id}
                 type="normal"
                 initialData={popularMovies}
                 sortData={[

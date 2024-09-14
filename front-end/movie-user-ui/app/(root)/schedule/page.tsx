@@ -1,6 +1,5 @@
 import InfiniteScrollSchedule from '@/components/shared/InfiniteScrollSchedule';
 import { currentUser } from '@/services/authServices';
-import { fetchUser } from '@/services/userServices';
 import { redirect } from 'next/navigation';
 
 type Props = {};

@@ -34,7 +34,7 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = "checkout_seat",  groupId = "moon-movie")
     public void checkoutSeat(@Payload List<String> seatIds) {
-        log.info(String.format("Received: -> %s", seatIds.toString()));
+        log.info(String.format("Received list seatId: -> %s", seatIds.toString()));
         seatDetailService.checkoutSeat(seatIds);
     }
 }

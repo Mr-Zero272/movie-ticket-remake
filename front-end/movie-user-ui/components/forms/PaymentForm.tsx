@@ -26,6 +26,7 @@ const FormSchema = z.object({
 type PropsWithBackBtn = {
     invoiceId: string;
     total: number;
+    currentEmail: string;
     startTime: string;
     customerId: string;
     showingId: number;
@@ -36,6 +37,7 @@ type PropsWithBackBtn = {
 type Props = {
     invoiceId: string;
     total: number;
+    currentEmail: string;
     startTime: string;
     customerId: string;
     showingId: number;
@@ -43,7 +45,7 @@ type Props = {
 
 const PaymentForm = (props: Props | PropsWithBackBtn) => {
     const router = useRouter();
-    const { invoiceId, total, startTime, customerId, showingId } = props;
+    const { invoiceId, total, currentEmail, startTime, customerId, showingId } = props;
     let haveBackBtn = false;
     let backFun: () => void;
     if ('backBtn' in props) {
@@ -52,6 +54,9 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
     }
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
+        defaultValues: {
+            email: currentEmail,
+        },
     });
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {

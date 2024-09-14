@@ -157,8 +157,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                         )}
                         {activeStep.step === 2 && (
                             <Step2
-                                userId={userInfo.id}
-                                userName={userInfo.username}
+                                userInfo={userInfo}
                                 dateTime={showingData?.startTime || ''}
                                 showingId={showingData?.id || 0}
                                 seats={listSelectedSeats}

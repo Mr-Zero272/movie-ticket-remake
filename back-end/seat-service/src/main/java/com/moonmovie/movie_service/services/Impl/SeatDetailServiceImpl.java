@@ -112,6 +112,13 @@ public class SeatDetailServiceImpl implements SeatDetailService {
     public List<String> checkoutSeat(List<String> seatIds) {
         List<SeatDetail> seatDetails = seatDetailDao.findAllById(seatIds);
         seatDetails.forEach(seatDetail -> seatDetail.setStatus("booked"));
+        seatDetails.forEach(seatDetail -> {
+            ChoosingSeatRequest request = new ChoosingSeatRequest();
+            request.setId(seatDetail.getId());
+            request.setUserId(seatDetail.getUserId());
+            request.setStatus(seatDetail.getStatus());
+            sendDataToWebSocket("/topic/seat-state", request);
+        });
         seatDetailDao.saveAll(seatDetails);
         return seatIds;
     }
