@@ -20,6 +20,8 @@ const SignInForm = (props: Props) => {
     const authGoogleCode = searchParams.get('code');
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const clientId = process.env.GG_CLIENT_ID;
+    const redirectUri = 'http://localhost:3000/sign-in';
 
     const form = useForm({
         resolver: zodResolver(SignInFormSchema),
@@ -36,41 +38,34 @@ const SignInForm = (props: Props) => {
             ...restParams
         }:
             | { usernameOrEmail: string; password: string; keepLogin: boolean; url: string }
-            | { code: string; keepLogin: boolean; url: string }) => {
+            | { redirectUri: string; code: string; keepLogin: boolean; url: string }) => {
             const res = await fetch(url, {
                 method: 'POST',
                 body: JSON.stringify({
                     ...restParams,
                 }),
-                credentials: 'include',
+                // credentials: 'include',
             });
 
             const resJson = (await res.json()) as ResponseApiTemplate;
+            console.log(resJson);
 
-            if (resJson.status >= 400) {
-                if ('errors' in resJson) {
-                    if (resJson.errors?.length !== 0) {
-                        resJson.errors?.forEach((error) => {
-                            for (const field in error) {
-                                if (error.hasOwnProperty(field)) {
-                                    form.setError(
-                                        field as
-                                            | 'usernameOrEmail'
-                                            | 'password'
-                                            | 'keepLogin'
-                                            | 'root'
-                                            | `root.${string}`,
-                                        { message: error[field] },
-                                    );
-                                }
-                            }
-                        });
-                        return;
+            if (resJson && 'status' in resJson && resJson.status >= 400) {
+                if (resJson.errors && 'errors' in resJson && Object.keys(resJson.errors).length !== 0) {
+                    for (const field in resJson.errors) {
+                        form.setError(
+                            field as 'usernameOrEmail' | 'password' | 'keepLogin' | 'root' | `root.${string}`,
+                            {
+                                message: resJson.errors[field as keyof typeof resJson.errors],
+                            },
+                        );
                     }
+                    return;
                 }
                 form.setError('usernameOrEmail', { message: resJson.message });
+                return;
             }
-            router.push('/test-page');
+            router.push('/');
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [form],
@@ -81,6 +76,7 @@ const SignInForm = (props: Props) => {
         if (authGoogleCode !== null) {
             setGoogleLoading(true);
             signIn({
+                redirectUri: 'http://localhost:3000/sign-in',
                 url: 'http://localhost:3000/api/user/auth/google',
                 code: authGoogleCode,
                 keepLogin: form.getValues().keepLogin,
@@ -91,11 +87,8 @@ const SignInForm = (props: Props) => {
     }, [authGoogleCode]);
 
     const onSubmit = async (values: SignInInfo) => {
-        await signIn({ url: 'http://localhost:3000/api/user/auth', ...values });
+        await signIn({ url: `/api/user/auth`, ...values });
     };
-
-    const clientId = process.env.GG_CLIENT_ID;
-    const redirectUri = 'http://localhost:3000/sign-in';
 
     return (
         <Form {...form}>

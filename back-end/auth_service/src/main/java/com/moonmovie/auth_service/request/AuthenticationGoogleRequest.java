@@ -6,7 +6,9 @@ import lombok.Data;
 @Data
 public class AuthenticationGoogleRequest {
     @NotNull
-    String code;
+    private String redirectUri;
+    @NotNull
+    private String code;
     @NotNull
     private boolean keepLogin;
 }

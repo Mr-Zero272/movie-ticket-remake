@@ -1,6 +1,4 @@
 import MarqueeText from '@/components/ui/marquee-text';
-import { fetchUser } from '@/services/userServices';
-import { currentUser } from '@clerk/nextjs/server';
 import { BadgeHelp, CalendarCheck, Heart, Monitor } from 'lucide-react';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
@@ -10,15 +8,12 @@ import { getTickets } from '@/services/reservationServices';
 import { OrderId, Ticket } from '@/types/ticket';
 import { fetchPopularMovies } from '@/services/movieServices';
 import { Movie } from '@/types/movie';
+import { currentUser } from '@/services/authServices';
 
 type Props = {};
 
 const Tickets = async ({}: Props) => {
-    const user = await currentUser();
-
-    if (!user) return null;
-
-    const userInfo = await fetchUser(user.id);
+    const userInfo = await currentUser();
 
     if (userInfo === undefined) {
         throw new Error('Error form user server!');
@@ -28,7 +23,7 @@ const Tickets = async ({}: Props) => {
 
     const listTickets = await getTickets({ filter: 'all', page: 1, size: 100 });
 
-    const favoriteMovies = await fetchListFavoriteMovies(userInfo.userClerkId);
+    const favoriteMovies = await fetchListFavoriteMovies(userInfo.id);
     let popularMovies: Movie[] = [];
     if (listTickets.length === 0) {
         popularMovies = (await fetchPopularMovies({ page: 1, size: 20, sort: 'releaseDate', genreId: 0 })).data;
@@ -37,11 +32,11 @@ const Tickets = async ({}: Props) => {
     return (
         <>
             <div className="flex max-h-[35rem] gap-3 rounded-lg bg-black p-4 dark:bg-white max-md:max-h-[100rem]">
-                <ListTicket userId={userInfo.userClerkId} listTickets={listTickets} listPopularMovies={popularMovies} />
+                <ListTicket userId={userInfo.id} listTickets={listTickets} listPopularMovies={popularMovies} />
                 <div className="max-h-[35rem] w-1/6 max-[1490px]:w-1/3 max-md:hidden">
                     <div className="flex flex-col items-center gap-y-5">
                         <Image
-                            src={userInfo.avatar}
+                            src={userInfo.avatar ?? ''}
                             alt="avatar"
                             width={400}
                             height={400}

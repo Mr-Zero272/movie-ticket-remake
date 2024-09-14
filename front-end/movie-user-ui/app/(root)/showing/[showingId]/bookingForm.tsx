@@ -9,11 +9,10 @@ import Step1 from './step-1';
 import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
 import { Showing, ShowingDto } from '@/types/showing';
 import { SeatDetail } from '@/types/seat';
-import { User } from '@/types/user';
-import { userInfo } from 'os';
 import { fetchShowing, fetchShowings } from '@/services/movieServices';
 import { useToast } from '@/components/ui/use-toast';
 import { seatService } from '@/services';
+import { User } from '@/types/auth';
 
 type Props = {
     userInfo: User;
@@ -30,7 +29,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
     const [showTimes, setShowTimes] = useState(listShowTimes);
     const [amount, setAmount] = useState(() => {
         const sum = listSeat.reduce((accumulator, currentValue) => {
-            if (currentValue.userId === userInfo.userClerkId && currentValue.status === 'choosing') {
+            if (currentValue.userId === userInfo.id && currentValue.status === 'choosing') {
                 return accumulator + currentValue.price;
             }
             return accumulator;
@@ -67,7 +66,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                 if (showingId === showingData.id) {
                     return;
                 }
-                await seatService.refreshSeatState(showingData.id, userInfo.userClerkId);
+                await seatService.refreshSeatState(showingData.id, userInfo.id);
                 setAmount(0);
                 const fetchShowingApi = async () => {
                     const res = await fetchShowing(showingId);
@@ -96,14 +95,14 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                     } else {
                         setShowingData(null);
                     }
-                    await seatService.refreshSeatState(showingData.id, userInfo.userClerkId);
+                    await seatService.refreshSeatState(showingData.id, userInfo.id);
                     setAmount(0);
                 } else {
                     const showTimes = await fetchShowings(date, showingInfo.movie.id);
 
                     setShowTimes(showTimes);
                     const showingRes = await fetchShowing(showTimes[0].id);
-                    // await seatService.refreshSeatState(showingRes.id, userInfo.userClerkId);
+                    // await seatService.refreshSeatState(showingRes.id, userInfo.id);
                     setShowingData(showingRes);
                 }
 
@@ -121,20 +120,20 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                 <Stepper value={activeStep.value} data={stepperShowing} onChooseStep={handleChooseStep} />
                 <div className="mt-5 hidden max-[1200px]:block">
                     <MovieCardItemHorizontal
-                        userId={userInfo.userClerkId}
+                        userId={userInfo.id}
                         movieId={showingInfo.movie.id}
                         poster={showingInfo.movie.posterPath}
                         title={showingInfo.movie.title}
                         runtime={showingInfo.movie.runtime}
                         firstGenre={showingInfo.movie.genres[0].name}
-                        love={showingInfo.movie.userFavoriteMovies.some((s) => s.userId === userInfo.userClerkId)}
+                        love={showingInfo.movie.userFavoriteMovies.some((s) => s.userId === userInfo.id)}
                     />
                 </div>
                 <div className="flex justify-between">
                     <div className="w-3/4 max-[1200px]:w-full">
                         {activeStep.step === 1 && (
                             <Step1
-                                userId={userInfo.userClerkId}
+                                userId={userInfo.id}
                                 amount={amount}
                                 showingId={showingData ? showingData.id : null}
                                 showingDate={showingData ? showingData.startTime : null}
@@ -158,7 +157,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                         )}
                         {activeStep.step === 2 && (
                             <Step2
-                                userId={userInfo.userClerkId}
+                                userId={userInfo.id}
                                 userName={userInfo.username}
                                 dateTime={showingData?.startTime || ''}
                                 showingId={showingData?.id || 0}
@@ -177,13 +176,13 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                     <div className="flex w-1/4 justify-center max-[1200px]:hidden">
                         <MovieCardItemVertical
                             className="w-56"
-                            userId={userInfo.userClerkId}
+                            userId={userInfo.id}
                             movieId={showingInfo.movie.id}
                             poster={showingInfo.movie.posterPath}
                             title={showingInfo.movie.title}
                             runtime={showingInfo.movie.runtime}
                             firstGenre={showingInfo.movie.genres[0].name}
-                            love={showingInfo.movie.userFavoriteMovies.some((s) => s.userId === userInfo.userClerkId)}
+                            love={showingInfo.movie.userFavoriteMovies.some((s) => s.userId === userInfo.id)}
                         />
                     </div>
                 </div>

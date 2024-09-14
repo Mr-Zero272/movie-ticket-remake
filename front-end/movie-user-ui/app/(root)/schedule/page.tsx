@@ -1,17 +1,12 @@
 import InfiniteScrollSchedule from '@/components/shared/InfiniteScrollSchedule';
-import { fetchScheduleShowings } from '@/services/movieServices';
+import { currentUser } from '@/services/authServices';
 import { fetchUser } from '@/services/userServices';
-import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
 type Props = {};
 
 async function Page({}: Props) {
-    const user = await currentUser();
-
-    if (!user) return null;
-
-    const userInfo = await fetchUser(user.id);
+    const userInfo = await currentUser();
 
     if (userInfo === undefined) {
         throw new Error('Error form user server!');

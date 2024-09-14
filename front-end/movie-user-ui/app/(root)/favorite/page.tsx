@@ -1,20 +1,15 @@
 import { fetchListFavoriteMovies } from '@/services/favoriteServices';
 import { fetchPopularMovies } from '@/services/movieServices';
-import { fetchUser } from '@/services/userServices';
-import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import 'slick-carousel/slick/slick-theme.css';
 import 'slick-carousel/slick/slick.css';
 import FavoriteMain from './favorite-main';
+import { currentUser } from '@/services/authServices';
 
 type Props = {};
 
 const FavoritePage = async (props: Props) => {
-    const user = await currentUser();
-
-    if (!user) return null;
-
-    const userInfo = await fetchUser(user.id);
+    const userInfo = await currentUser();
 
     if (userInfo === undefined) {
         throw new Error('Error form user server!');
@@ -23,13 +18,13 @@ const FavoritePage = async (props: Props) => {
     if (!userInfo?.onboarded) redirect('/onboarding');
 
     const popularMovies = await fetchPopularMovies({ page: 3, size: 4, sort: 'releaseDate', genreId: 0 });
-    const favoriteMovies = await fetchListFavoriteMovies(userInfo.userClerkId);
+    const favoriteMovies = await fetchListFavoriteMovies(userInfo.id);
 
     return (
         <section>
             <FavoriteMain
                 username={userInfo.username}
-                userId={userInfo.userClerkId}
+                userId={userInfo.id}
                 listFavoriteMovies={favoriteMovies}
                 listPopularMovies={popularMovies.data}
             />

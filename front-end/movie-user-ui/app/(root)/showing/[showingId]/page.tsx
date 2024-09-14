@@ -1,10 +1,9 @@
-import { currentUser } from '@clerk/nextjs/server';
-import BookingForm from './bookingForm';
-import { fetchUser } from '@/services/userServices';
-import { redirect } from 'next/navigation';
+import { currentUser } from '@/services/authServices';
 import { fetchShowing, fetchShowings } from '@/services/movieServices';
 import { fetchSeatDetails } from '@/services/seatServices';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import BookingForm from './bookingForm';
 
 export const metadata: Metadata = {
     title: 'Booking your tickets',
@@ -16,11 +15,7 @@ type Props = {
 };
 
 const Showing = async ({ params }: Props) => {
-    const user = await currentUser();
-
-    if (!user) return null;
-
-    const userInfo = await fetchUser(user.id);
+    const userInfo = await currentUser();
 
     if (userInfo === undefined) {
         throw new Error('Error form user server!');

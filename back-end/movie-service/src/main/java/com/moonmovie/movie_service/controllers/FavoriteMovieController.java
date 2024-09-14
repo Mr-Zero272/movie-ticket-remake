@@ -18,8 +18,8 @@ public class FavoriteMovieController {
     @Autowired
     private UserFavoriteMovieService userFavoriteMovieService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<UserFavoriteMovieDto>> getFavoriteMovies(@PathVariable("userId") String userId) {
+    @GetMapping
+    public ResponseEntity<List<UserFavoriteMovieDto>> getFavoriteMovies(@RequestHeader("user-id") String userId) {
         return ResponseEntity.ok(userFavoriteMovieService.getUserFavoriteMovieByUserId(userId));
     }
 

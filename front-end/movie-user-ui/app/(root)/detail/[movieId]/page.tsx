@@ -1,25 +1,20 @@
 import ShowingDetail from '@/components/shared/ShowingDetail';
 import { formatCurrencyUSD } from '@/lib/utils';
 import { fetchMovie } from '@/services/movieServices';
-import { fetchUser } from '@/services/userServices';
-import { currentUser } from '@clerk/nextjs/server';
 import { format } from 'date-fns';
 import { LucideBarChart3, MessageCircleMore, UserRoundPen } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Trailer from './trailer';
 import { redirect } from 'next/navigation';
+import { currentUser } from '@/services/authServices';
 
 type Props = {
     params: { movieId: number };
 };
 
 const Page = async ({ params }: Props) => {
-    const user = await currentUser();
-
-    if (!user) return null;
-
-    const userInfo = await fetchUser(user.id);
+    const userInfo = await currentUser();
 
     if (userInfo === undefined) {
         throw new Error('Error form user server!');
@@ -32,7 +27,7 @@ const Page = async ({ params }: Props) => {
         <div>
             <Trailer
                 movieId={movieInfo.id}
-                userId={userInfo.userClerkId}
+                userId={userInfo.id}
                 userFavoriteMovies={movieInfo.userFavoriteMovies}
                 title={movieInfo.title}
                 video={movieInfo.video}

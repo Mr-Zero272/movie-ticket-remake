@@ -11,7 +11,7 @@ import { FileVideo, Headset, Ticket, Users } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 export default async function Home() {
-    const userInfo = (await currentUser()) as User;
+    const userInfo = await currentUser();
 
     if (userInfo === undefined) {
         throw new Error('Error form user server!');

@@ -1,20 +1,17 @@
 'use server';
-import { CustomError } from '@/types/error';
 import { OrderSchema, PaymentMethodSchema, PaymentSchema } from '@/types/order';
 import { TicketSchema } from '@/types/ticket';
-import { User, UserValidation } from '@/types/user';
-import { clerkClient } from '@clerk/nextjs/server';
-import axios, { isAxiosError } from 'axios';
+import axios from 'axios';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 
 const API_URL = 'http://localhost:8272/api/v2/moon-movie/reservation';
 
-const getSessionToken = () => {
+const getToken = () => {
     const cookieStore = cookies();
-    const __sessionToken = cookieStore.get('__session');
+    const mmtk = cookieStore.get('mmtk');
 
-    return __sessionToken?.value;
+    return mmtk?.value;
 };
 
 export const addNewOrder = async ({
@@ -26,8 +23,8 @@ export const addNewOrder = async ({
     customerId: string;
     showingId: number;
 }) => {
-    const __sessionToken = getSessionToken();
-    if (!__sessionToken) {
+    const mmtk = getToken();
+    if (!mmtk) {
         throw new Error('User not sign in yet, cannot get session token');
     }
 
@@ -40,7 +37,7 @@ export const addNewOrder = async ({
                 showingId,
             },
             {
-                headers: { Authorization: 'Bearer ' + __sessionToken },
+                headers: { Authorization: 'Bearer ' + mmtk },
                 withCredentials: true,
             },
         );
@@ -73,8 +70,8 @@ export const addNewPayment = async ({
     description: string;
     customerEmail: string;
 }) => {
-    const __sessionToken = getSessionToken();
-    if (!__sessionToken) {
+    const mmtk = getToken();
+    if (!mmtk) {
         throw new Error('User not sign in yet, cannot get session token');
     }
 
@@ -91,7 +88,7 @@ export const addNewPayment = async ({
                 customerEmail,
             },
             {
-                headers: { Authorization: 'Bearer ' + __sessionToken },
+                headers: { Authorization: 'Bearer ' + mmtk },
                 withCredentials: true,
             },
         );
@@ -120,8 +117,8 @@ export const createPaymentToCheckout = async ({
     returnUrl: string;
     transactionId: string;
 }) => {
-    const __sessionToken = getSessionToken();
-    if (!__sessionToken) {
+    const mmtk = getToken();
+    if (!mmtk) {
         throw new Error('User not sign in yet, cannot get session token');
     }
 
@@ -136,7 +133,7 @@ export const createPaymentToCheckout = async ({
                 transactionId,
             },
             {
-                headers: { Authorization: 'Bearer ' + __sessionToken },
+                headers: { Authorization: 'Bearer ' + mmtk },
                 withCredentials: true,
             },
         );
@@ -161,14 +158,14 @@ export const getTickets = async ({
     page: number;
     size: number;
 }) => {
-    const __sessionToken = getSessionToken();
-    if (!__sessionToken) {
+    const mmtk = getToken();
+    if (!mmtk) {
         throw new Error('User not sign in yet, cannot get session token');
     }
 
     try {
         const res = await axios.get(`${API_URL}/ticket`, {
-            headers: { Authorization: 'Bearer ' + __sessionToken },
+            headers: { Authorization: 'Bearer ' + mmtk },
             withCredentials: true,
             params: {
                 filter,

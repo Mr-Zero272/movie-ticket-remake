@@ -71,7 +71,7 @@ public class AuthController {
 
     @PostMapping("/authenticate/google")
     public ResponseEntity<AuthenticationResponse> loginWithGoogle(@RequestBody AuthenticationGoogleRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-        AuthenticationResponse authenticationResponse = authenticationService.authenticateWithGoogle(request.getCode());
+        AuthenticationResponse authenticationResponse = authenticationService.authenticateWithGoogle(request.getCode(), request.getRedirectUri());
         Cookie tokenCookie = new Cookie("mmtk", authenticationResponse.getToken());
         tokenCookie.setPath("/");
         if (request.isKeepLogin()) {

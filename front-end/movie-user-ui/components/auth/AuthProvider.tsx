@@ -26,7 +26,7 @@ const AuthProvider = ({ children }: Props) => {
 
     useEffect(() => {
         const callApi = async () => {
-            const res = await fetch('http://localhost:3000/api/user', {
+            const res = await fetch(`/api/user`, {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -39,10 +39,11 @@ const AuthProvider = ({ children }: Props) => {
         callApi();
 
         setLoading(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const signOut = async (redirectUrl: string) => {
-        await fetch('http://localhost:3000/api/user/auth/sign-out', {
+        await fetch(`/api/user/auth/sign-out`, {
             method: 'POST',
             credentials: 'include',
         });

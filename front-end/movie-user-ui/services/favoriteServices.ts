@@ -1,8 +1,5 @@
 'use server';
-import { CustomError } from '@/types/error';
 import { FavoriteMovieDtosSchema } from '@/types/movie';
-import { User, UserValidation } from '@/types/user';
-import { clerkClient } from '@clerk/nextjs/server';
 import axios, { isAxiosError } from 'axios';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
@@ -11,14 +8,14 @@ const API_URL = 'http://localhost:8272/api/v2/moon-movie/movie/favorite';
 
 const getSessionToken = () => {
     const cookieStore = cookies();
-    const __sessionToken = cookieStore.get('__session');
+    const mmtkToken = cookieStore.get('mmtk');
 
-    return __sessionToken?.value;
+    return mmtkToken?.value;
 };
 
 export const addToFavorite = async ({ movieId, userId }: { movieId: number; userId: string }) => {
     const cookieStore = cookies();
-    const __sessionToken = cookieStore.get('__session');
+    const mmtkToken = cookieStore.get('mmtk');
 
     try {
         await axios.post(
@@ -28,7 +25,7 @@ export const addToFavorite = async ({ movieId, userId }: { movieId: number; user
                 userId,
             },
             {
-                headers: { Authorization: 'Bearer ' + __sessionToken?.value },
+                headers: { Authorization: 'Bearer ' + mmtkToken?.value },
             },
         );
     } catch (error: any) {
@@ -39,11 +36,11 @@ export const addToFavorite = async ({ movieId, userId }: { movieId: number; user
 
 export const deleteFavoriteMovie = async ({ movieId, userId }: { movieId: number; userId: string }) => {
     const cookieStore = cookies();
-    const __sessionToken = cookieStore.get('__session');
+    const mmtkToken = cookieStore.get('mmtk');
 
     try {
         await axios.delete(`${API_URL}/${movieId}/${userId}`, {
-            headers: { Authorization: 'Bearer ' + __sessionToken?.value },
+            headers: { Authorization: 'Bearer ' + mmtkToken?.value },
         });
     } catch (error: any) {
         console.log(error);
@@ -53,12 +50,14 @@ export const deleteFavoriteMovie = async ({ movieId, userId }: { movieId: number
 
 export const fetchListFavoriteMovies = async (userId: string) => {
     const cookieStore = cookies();
-    const __sessionToken = cookieStore.get('__session');
+    const mmtkToken = cookieStore.get('mmtk');
 
     try {
-        const res = await axios.get(`${API_URL}/${userId}`, {
-            headers: { Authorization: 'Bearer ' + __sessionToken?.value },
+        const res = await axios.get(`${API_URL}`, {
+            headers: { Authorization: 'Bearer ' + mmtkToken?.value },
         });
+
+        // console.log(res);
 
         const result = z.array(FavoriteMovieDtosSchema).safeParse(res.data);
         if (result.success) {

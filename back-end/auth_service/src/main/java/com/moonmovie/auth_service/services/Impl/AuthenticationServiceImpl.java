@@ -72,7 +72,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     throw createMethodArgumentNotValidException("email", "This email is already in use!");
                 }
 
-                if (userDao.countByUsername(request.getUsername()) == 1) {
+                if (!userInDb.get().getUsername().equalsIgnoreCase("")
+                        && !userInDb.get().getUsername().equalsIgnoreCase(request.getUsername())
+                        && userDao.countByUsername(request.getUsername()) == 1) {
                     throw createMethodArgumentNotValidException("username", "This username is already in use!");
                 }
 
@@ -82,6 +84,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .createdAt(LocalDateTime.now())
                         .modifiedAt(LocalDateTime.now())
                         .build();
+                userInDb.get().setUsername(request.getUsername());
                 userInDb.get().getAuthentications().add(localAuthentication);
                 String token = jwtService.generateToken(userInDb.get(), 7);
                 String refreshToken = jwtService.generateToken(userInDb.get(), 9);
@@ -126,8 +129,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public AuthenticationResponse authenticateWithGoogle(String code) throws UnsupportedEncodingException {
-        String accessGoogleToken = getOauthAccessTokenGoogle(code);
+    public AuthenticationResponse authenticateWithGoogle(String code, String redirectUrl) throws UnsupportedEncodingException {
+        String accessGoogleToken = getOauthAccessTokenGoogle(code, redirectUrl);
         User tempUserInfo = getProfileDetailsGoogle(accessGoogleToken);
         Optional<User> userInDatabase = userDao.findByEmail(tempUserInfo.getEmail());
 
@@ -207,14 +210,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    public String getOauthAccessTokenGoogle(String code) {
+    public String getOauthAccessTokenGoogle(String code, String redirectUri) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
-        params.add("redirect_uri", "http://localhost:3000/sign-in");
+        params.add("redirect_uri", redirectUri);
         params.add("client_id", clientGoogleId);
         params.add("client_secret", clientGoogleSecret);
         params.add("scope", "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile");

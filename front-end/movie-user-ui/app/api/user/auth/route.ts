@@ -34,6 +34,9 @@ export async function POST(req: Request) {
             return new Response(JSON.stringify({ status: 200, message: 'Authenticated successfully' }), {
                 headers: {
                     'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
                 },
                 status: 200,
             });
@@ -45,6 +48,9 @@ export async function POST(req: Request) {
                 {
                     headers: {
                         'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
                     },
                     status: 400,
                 },
@@ -54,6 +60,9 @@ export async function POST(req: Request) {
         return new Response(JSON.stringify({ status: 400, message: 'Undefined error' }), {
             headers: {
                 'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             },
             status: 400,
         });

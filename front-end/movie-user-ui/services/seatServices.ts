@@ -14,7 +14,7 @@ const getSessionToken = () => {
 
 export const fetchSeatDetails = async (showingId: number) => {
     const cookieStore = cookies();
-    const __sessionToken = cookieStore.get('__session');
+    const __sessionToken = cookieStore.get('mmtk');
 
     try {
         const response = await axios.get(`${API_URL}/seat-detail`, {
@@ -38,7 +38,7 @@ export const fetchSeatDetails = async (showingId: number) => {
 
 export const refreshSeatState = async (showingId: number, userId: string) => {
     const cookieStore = cookies();
-    const __sessionToken = cookieStore.get('__session');
+    const __sessionToken = cookieStore.get('mmtk');
 
     try {
         await axios.post(

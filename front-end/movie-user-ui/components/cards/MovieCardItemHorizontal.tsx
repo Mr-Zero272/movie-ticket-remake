@@ -78,7 +78,7 @@ const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: 
             <div className="text-sm">
                 <div className="mb-2 flex items-center justify-between">
                     <Link href={`/detail/${movieId}`}>
-                        <h3 className="line-clamp-1 font-bold">{title}</h3>
+                        <h3 className="line-clamp-1 font-bold hover:decoration-solid">{title}</h3>
                     </Link>
                 </div>
                 <div className="flex gap-x-5">

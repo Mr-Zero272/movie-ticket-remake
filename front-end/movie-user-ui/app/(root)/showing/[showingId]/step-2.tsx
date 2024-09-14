@@ -1,13 +1,9 @@
 import PaymentForm from '@/components/forms/PaymentForm';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { createRandomTransId, formatCurrencyVND } from '@/lib/utils';
 import { SeatDetail } from '@/types/seat';
 import { format } from 'date-fns';
-import { Armchair, Calendar, MapPin, Projector, X } from 'lucide-react';
-import React, { useId, useState } from 'react';
+import { Armchair, Calendar, MapPin, Projector } from 'lucide-react';
+import { useState } from 'react';
 
 const formatter = new Intl.ListFormat('en', {
     style: 'long',

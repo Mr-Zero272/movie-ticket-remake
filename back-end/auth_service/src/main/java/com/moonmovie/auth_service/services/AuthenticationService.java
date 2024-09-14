@@ -10,6 +10,6 @@ import java.io.UnsupportedEncodingException;
 
 public interface AuthenticationService {
     AuthenticationResponse register(RegisterRequest request, Role role) throws MethodArgumentNotValidException;
-    AuthenticationResponse authenticateWithGoogle(String code) throws UnsupportedEncodingException;
+    AuthenticationResponse authenticateWithGoogle(String code, String redirectUrl) throws UnsupportedEncodingException;
     AuthenticationResponse authenticate(AuthenticationRequest request);
 }
