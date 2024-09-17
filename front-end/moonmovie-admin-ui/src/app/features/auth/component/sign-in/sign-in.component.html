@@ -1,0 +1,230 @@
+<div class="relative mx-auto flex h-screen w-full flex-col rounded-lg">
+    <!-- toast field login with google -->
+    <!-- <div
+        id="toast-danger"
+        class="absolute bottom-3 right-3 mb-4 flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400"
+        role="alert"
+    >
+        <div
+            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200"
+        >
+            <svg
+                class="h-5 w-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+            >
+                <path
+                    d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"
+                />
+            </svg>
+            <span class="sr-only">Error icon</span>
+        </div>
+        <div class="ms-3 text-sm font-normal">Login with google failed.</div>
+        <button
+            type="button"
+            class="-mx-1.5 -my-1.5 ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-white"
+            data-dismiss-target="#toast-danger"
+            aria-label="Close"
+        >
+            <span class="sr-only">Close</span>
+            <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                />
+            </svg>
+        </button>
+    </div> -->
+    <!-- end toast-->
+    <div class="draggable mx-auto flex h-full justify-center md:gap-5 lg:justify-normal xl:gap-14">
+        <div class="flex items-center justify-center">
+            <div class="flex w-96 items-center max-sm:px-3">
+                <form
+                    class="flex h-full w-96 flex-col rounded-3xl py-7 pb-6 text-center"
+                    [formGroup]="signInForm"
+                    (ngSubmit)="handleSubmit()"
+                >
+                    <h3 class="text-dark-grey-900 mb-3 text-4xl font-extrabold">Sign In</h3>
+                    <p class="text-grey-700 mb-4">Enter your email and password</p>
+                    <a
+                        [href]="ggSignInUrl"
+                        class="text-grey-900 bg-grey-300 hover:bg-grey-400 focus:ring-grey-300 mb-4 flex w-full items-center justify-center rounded-2xl py-2 text-sm font-medium transition duration-300 focus:ring-4"
+                    >
+                        <img
+                            class="mr-2 h-5"
+                            src="https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/motion-tailwind/img/logos/logo-google.png"
+                            alt=""
+                        />
+                        Sign in with Google
+                    </a>
+                    <div class="mb-3 flex items-center">
+                        <hr class="border-grey-500 h-0 grow border-b border-solid" />
+                        <p class="text-grey-600 mx-4 text-xl">or</p>
+                        <hr class="border-grey-500 h-0 grow border-b border-solid" />
+                    </div>
+                    <div class="mb-5 text-start">
+                        <label for="usernameOrEmail" class="text-grey-900 mb-2 text-sm">Username Or Email*</label>
+                        <input
+                            id="usernameOrEmail"
+                            type="text"
+                            required
+                            formControlName="usernameOrEmail"
+                            placeholder="mail@loopple.com"
+                            class="mt-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            required
+                        />
+
+                        <div
+                            *ngIf="
+                                signInForm.controls['usernameOrEmail'].invalid &&
+                                (signInForm.controls['usernameOrEmail'].dirty ||
+                                    signInForm.controls['usernameOrEmail'].touched)
+                            "
+                            class="mt-2 w-full text-left"
+                        >
+                            <div
+                                class="text-sm italic text-red-500"
+                                *ngIf="signInForm.controls['usernameOrEmail'].hasError('required')"
+                            >
+                                This filed is required.
+                            </div>
+                        </div>
+                        <div class="mt-2 text-sm italic text-red-500" *ngIf="hasProp(formErrors, 'usernameOrEmail')">
+                            {{ formErrors['usernameOrEmail'] }}
+                        </div>
+                    </div>
+                    <div class="mb-5 text-start">
+                        <label for="password" class="text-grey-900 text-sm">Password*</label>
+                        <div class="relative">
+                            <input
+                                id="password"
+                                [type]="showPassword ? 'text' : 'password'"
+                                formControlName="password"
+                                placeholder="Enter a password"
+                                class="mt-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                                required
+                            />
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                *ngIf="
+                                    signInForm.value.password !== '' &&
+                                    signInForm.value.password !== null &&
+                                    showPassword
+                                "
+                                class="absolute right-3 top-1/2 size-5 -translate-y-1/2 text-gray-500"
+                                (click)="toggleShowPassword()"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                />
+                            </svg>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                *ngIf="
+                                    signInForm.value.password !== '' &&
+                                    signInForm.value.password !== null &&
+                                    !showPassword
+                                "
+                                class="absolute right-3 top-1/2 size-5 -translate-y-1/2 text-gray-500"
+                                (click)="toggleShowPassword()"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
+                                />
+                            </svg>
+                        </div>
+                        <div
+                            *ngIf="
+                                signInForm.controls['password'].invalid &&
+                                (signInForm.controls['password'].dirty || signInForm.controls['password'].touched)
+                            "
+                            class="mt-2 w-full text-left"
+                        >
+                            <div
+                                class="text-sm italic text-red-500"
+                                *ngIf="signInForm.controls['password'].hasError('required')"
+                            >
+                                This filed is required.
+                            </div>
+                            <div
+                                class="text-sm italic text-red-500"
+                                *ngIf="signInForm.controls['password'].hasError('pattern')"
+                            >
+                                Password must contain at least one uppercase letter, one lowercase letter, and one
+                                digit.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8 flex flex-row justify-between">
+                        <label
+                            for="keepLogin"
+                            class="relative mr-3 inline-flex cursor-pointer select-none items-center"
+                        >
+                            <input
+                                id="keepLogin"
+                                type="checkbox"
+                                formControlName="keepLogin"
+                                class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary focus:ring-2 focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                            />
+
+                            <span class="text-grey-900 ml-3 text-sm font-normal">Keep me logged in</span>
+                        </label>
+                        <a href="javascript:void(0)" class="text-purple-blue-500 mr-4 text-sm font-medium"
+                            >Forget password?</a
+                        >
+                    </div>
+                    <button
+                        class="mb-5 w-full rounded-2xl bg-primary px-6 py-4 text-sm font-bold leading-none text-white transition duration-300 hover:bg-[#f1893f] focus:ring-4 focus:ring-purple-100 disabled:cursor-not-allowed disabled:bg-[#ef9c61] md:w-96"
+                        [disabled]="loading"
+                    >
+                        <svg
+                            *ngIf="loading"
+                            class="me-2 inline h-4 w-4 animate-spin fill-black text-gray-200 dark:text-gray-600"
+                            aria-hidden="true"
+                            viewBox="0 0 100 101"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                fill="currentColor"
+                            />
+                            <path
+                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                fill="currentFill"
+                            />
+                        </svg>
+                        Sign In
+                    </button>
+                    <p class="text-grey-900 text-sm leading-relaxed">
+                        Not registered yet?
+                        <a href="javascript:void(0)" class="text-grey-700 font-bold">Create an Account</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

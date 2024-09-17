@@ -44,15 +44,11 @@ export class BreadcrumbsComponent implements OnInit {
         .join('/');
 
       if (routeURL !== '') {
-        const previousRoutes = breadcrumbs.reduce(
-          (
-            accumulator: string,
-            currentValue: { label: string; url: string }
-          ) => {
-            return (accumulator += `/${currentValue.label}`);
-          },
-          ''
-        );
+        let previousRoutes = '';
+        if (breadcrumbs.length !== 0) {
+          previousRoutes = breadcrumbs[breadcrumbs.length - 1].url;
+        }
+
         breadcrumbs.push({
           url: previousRoutes + `/${routeURL}`,
           label: routeURL,

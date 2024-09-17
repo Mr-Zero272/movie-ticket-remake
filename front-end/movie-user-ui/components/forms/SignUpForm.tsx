@@ -1,6 +1,6 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
@@ -10,38 +10,19 @@ import Link from 'next/link';
 import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-
-const SignUpFormSchema = z.object({
-    username: z
-        .string()
-        .min(3, { message: 'Username or email must contain at least 3 character(s)' })
-        .max(30, { message: 'Username or email must contain at most 30 character(s)' }),
-    email: z.string().email(),
-    password: z.string().regex(new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/), {
-        message: 'Password must contain at least one uppercase letter, one lowercase letter, and one digit.',
-    }),
-    keepLogin: z.boolean(),
-});
-
-type SignInUpInfo = z.infer<typeof SignUpFormSchema>;
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ResponseApiTemplate, SignUpFormSchema, SignUpInfo } from '@/types/auth';
 
 type Props = {};
 
 const SignUpForm = (props: Props) => {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const authGoogleCode = searchParams.get('code');
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-
-    useEffect(() => {
-        if (authGoogleCode !== null) {
-            setGoogleLoading(true);
-            setTimeout(() => {
-                setGoogleLoading(false);
-            }, 5000);
-        }
-    }, [authGoogleCode]);
+    const clientId = process.env.GG_CLIENT_ID;
+    const redirectUri = 'http://localhost:3000/sign-in';
 
     const form = useForm({
         resolver: zodResolver(SignUpFormSchema),
@@ -53,8 +34,87 @@ const SignUpForm = (props: Props) => {
         },
     });
 
-    const onSubmit = async (values: SignInUpInfo) => {
-        console.log(values);
+    const signIn = useCallback(
+        async ({
+            url,
+            ...restParams
+        }:
+            | { usernameOrEmail: string; password: string; keepLogin: boolean; url: string }
+            | { redirectUri: string; code: string; keepLogin: boolean; url: string }) => {
+            const res = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    ...restParams,
+                }),
+                // credentials: 'include',
+            });
+
+            const resJson = (await res.json()) as ResponseApiTemplate;
+            console.log(resJson);
+
+            if (resJson && 'status' in resJson && resJson.status >= 400) {
+                if (resJson.errors && 'errors' in resJson && Object.keys(resJson.errors).length !== 0) {
+                    for (const field in resJson.errors) {
+                        form.setError(
+                            field as 'username' | 'email' | 'password' | 'keepLogin' | 'root' | `root.${string}`,
+                            {
+                                message: resJson.errors[field as keyof typeof resJson.errors],
+                            },
+                        );
+                    }
+                    return;
+                }
+                form.setError('username', { message: resJson.message });
+                return;
+            }
+            router.push('/');
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [form],
+    );
+
+    useEffect(() => {
+        if (googleLoading) return;
+        if (authGoogleCode !== null) {
+            setGoogleLoading(true);
+            signIn({
+                redirectUri: 'http://localhost:3000/sign-in',
+                url: 'http://localhost:3000/api/user/auth/google',
+                code: authGoogleCode,
+                keepLogin: form.getValues().keepLogin,
+            });
+            setGoogleLoading(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authGoogleCode]);
+
+    const onSubmit = async (values: SignUpInfo) => {
+        const res = await fetch('/api/user/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+                ...values,
+            }),
+            // credentials: 'include',
+        });
+
+        const resJson = (await res.json()) as ResponseApiTemplate;
+
+        if (resJson && 'status' in resJson && resJson.status >= 400) {
+            if (resJson.errors && 'errors' in resJson && Object.keys(resJson.errors).length !== 0) {
+                for (const field in resJson.errors) {
+                    form.setError(
+                        field as 'username' | 'email' | 'password' | 'keepLogin' | 'root' | `root.${string}`,
+                        {
+                            message: resJson.errors[field as keyof typeof resJson.errors],
+                        },
+                    );
+                }
+                return;
+            }
+            form.setError('username', { message: resJson.message });
+            return;
+        }
+        router.push('/');
     };
 
     return (
@@ -65,8 +125,8 @@ const SignUpForm = (props: Props) => {
             >
                 <h3 className="mb-3 text-4xl font-extrabold">Sign Up</h3>
                 <p className="text-grey-700 mb-4">Enter your base information to sign up with us</p>
-                <Link
-                    href="/"
+                <a
+                    href={`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${redirectUri}&response_type=code&client_id=${clientId}&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+openid&access_type=offline`}
                     className="text-grey-900 bg-grey-300 hover:bg-grey-400 focus:ring-grey-300 mb-3 flex w-full items-center justify-center py-4 text-sm font-medium transition duration-300 focus:ring-4"
                 >
                     <Image
@@ -77,7 +137,7 @@ const SignUpForm = (props: Props) => {
                         height={20}
                     />
                     Sign in with Google {googleLoading && <Loader2 className="mr-2 ms-2 h-4 w-4 animate-spin" />}
-                </Link>
+                </a>
                 <div className="mb-3 flex items-center">
                     <hr className="border-grey-500 h-0 grow border-b border-solid" />
                     <p className="text-grey-600 mx-4">or</p>

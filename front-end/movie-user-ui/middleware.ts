@@ -6,7 +6,12 @@ const isPublicRoute = ['/sign-in(.*)', '/sign-up(.*)', '/api/uploadthing', '/api
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up') || pathname.startsWith('/api/user')) {
+    if (
+        pathname.startsWith('/sign-in') ||
+        pathname.startsWith('/sign-up') ||
+        pathname.startsWith('/api/user') ||
+        pathname.startsWith('/api/uploadthing')
+    ) {
         return NextResponse.next();
     }
 

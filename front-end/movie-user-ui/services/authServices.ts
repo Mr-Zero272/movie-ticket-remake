@@ -1,5 +1,12 @@
 'use server';
-import { ResponseApiTemplate, ResponseAuthTypeSchema, SignInGoogle, SignInInfo, UserSchema } from '@/types/auth';
+import {
+    ResponseApiTemplate,
+    ResponseAuthTypeSchema,
+    SignInGoogle,
+    SignInInfo,
+    SignUpInfo,
+    UserSchema,
+} from '@/types/auth';
 import axios, { isAxiosError } from 'axios';
 import { cookies } from 'next/headers';
 
@@ -8,6 +15,31 @@ const instanceAuthService = axios.create({
     timeout: 5000,
     headers: { withCredentials: true },
 });
+
+export const register = async (signUpInfo: SignUpInfo) => {
+    try {
+        const response = await instanceAuthService.post('/register', {
+            ...signUpInfo,
+        });
+
+        const result = ResponseAuthTypeSchema.safeParse(response.data);
+
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid register response');
+        }
+    } catch (error: any) {
+        console.log(error);
+        if (isAxiosError(error)) {
+            if (error.response?.data) {
+                return error.response.data as ResponseApiTemplate;
+            }
+        } else {
+            throw new Error('Cannot register new user!');
+        }
+    }
+};
 
 export const authenticate = async (signInInFo: SignInInfo) => {
     try {

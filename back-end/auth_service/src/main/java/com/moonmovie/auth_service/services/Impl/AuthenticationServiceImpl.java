@@ -55,8 +55,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private String clientGoogleSecret;
 
     private MethodArgumentNotValidException createMethodArgumentNotValidException(String field, String message) {
-        FieldError fieldError = new FieldError("user", field, message);
-        BindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "user");
+        return createMethodArgumentNotValidException(field, message, "user");
+    }
+
+    private MethodArgumentNotValidException createMethodArgumentNotValidException(String field, String message, String objectName) {
+        FieldError fieldError = new FieldError(objectName, field, message);
+        BindingResult bindingResult = new BeanPropertyBindingResult(new Object(), objectName);
         bindingResult.addError(fieldError);
         return new MethodArgumentNotValidException(null, bindingResult);
     }
@@ -111,15 +115,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             User user = User.builder()
                     .username(request.getUsername())
                     .email(request.getEmail())
-                    .onboarded(true)
+                    .avatar("http://localhost:8272/api/v2/moon-movie/media/images/user-avatar.png")
+                    .onboarded(false)
                     .modifiedAt(LocalDateTime.now())
                     .createdAt(LocalDateTime.now())
                     .role(role)
                     .authentications(List.of(localAuthentication))
                     .build();
-            String token = jwtService.generateToken(user, 7);
-            String refreshToken = jwtService.generateToken(user, 9);
-            userDao.save(user);
+            User savedUser = userDao.save(user);
+            String token = jwtService.generateToken(savedUser, 7);
+            String refreshToken = jwtService.generateToken(savedUser, 9);
             return AuthenticationResponse.builder()
                     .token(token)
                     .refreshToken(refreshToken)

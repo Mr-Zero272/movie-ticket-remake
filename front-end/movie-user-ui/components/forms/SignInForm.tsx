@@ -48,7 +48,7 @@ const SignInForm = (props: Props) => {
             });
 
             const resJson = (await res.json()) as ResponseApiTemplate;
-            console.log(resJson);
+            // console.log(resJson);
 
             if (resJson && 'status' in resJson && resJson.status >= 400) {
                 if (resJson.errors && 'errors' in resJson && Object.keys(resJson.errors).length !== 0) {
