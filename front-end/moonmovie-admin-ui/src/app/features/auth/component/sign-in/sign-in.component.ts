@@ -1,11 +1,12 @@
 import { NgIf } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../../../core/services/auth.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ErrorDetail } from '../../../../shared/models/auth.model';
-import { environment } from '../../../../../environments/environment';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from '../../../../../environments/environment';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { ErrorDetail } from '../../../../shared/models/auth.model';
 
 @Component({
     selector: 'app-sign-in',
@@ -25,6 +26,7 @@ export class SignInComponent implements OnInit {
         private authService: AuthService,
         private router: Router,
         private route: ActivatedRoute,
+        private toast: ToastService,
     ) {}
 
     ngOnInit() {
@@ -40,6 +42,10 @@ export class SignInComponent implements OnInit {
 
         this.route.queryParamMap.subscribe((params) => {
             const code = params.get('code');
+            const error = params.get('error');
+            if (error) {
+                this.toast.showToast('danger', 'Login with google failed!');
+            }
             if (code) {
                 this.loading = true;
                 this.authService
@@ -80,6 +86,7 @@ export class SignInComponent implements OnInit {
                     if ('token' in res) {
                         this.router.navigate(['/']);
                     }
+                    this.authService.checkAuthOnAppStart();
                 },
                 error: (err: HttpErrorResponse) => {
                     this.formErrors = { usernameOrEmail: err.error?.message };

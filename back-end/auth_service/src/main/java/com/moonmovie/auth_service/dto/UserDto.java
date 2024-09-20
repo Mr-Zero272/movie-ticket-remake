@@ -33,4 +33,5 @@ public class UserDto {
     private boolean onboarded;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private LocalDateTime lastSignedIn;
 }

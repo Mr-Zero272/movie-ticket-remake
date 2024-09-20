@@ -2,18 +2,33 @@ import { NgClass, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OutsideClickDirective } from '../../../directives/outside-click.directive';
+import { AuthService } from '../../../../core/services/auth.service';
+import { User } from '../../../models/auth.model';
+import { SignOutButtonComponent } from '../sign-out-button/sign-out-button.component';
 
 @Component({
-  selector: 'app-user-button',
-  standalone: true,
-  imports: [RouterLink, NgIf, OutsideClickDirective],
-  templateUrl: './user-button.component.html',
-  styleUrl: './user-button.component.css',
+    selector: 'app-user-button',
+    standalone: true,
+    imports: [RouterLink, NgIf, OutsideClickDirective, SignOutButtonComponent],
+    templateUrl: './user-button.component.html',
+    styleUrl: './user-button.component.css',
 })
 export class UserButtonComponent {
-  isMenuOpen: boolean = false;
+    isMenuOpen: boolean = false;
+    user: User | null = null;
+    profileImg: string = '';
+    toggleUserMenu() {
+        this.isMenuOpen = !this.isMenuOpen;
+    }
 
-  toggleUserMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-  }
+    constructor(authService: AuthService) {
+        authService.getUser().subscribe((userInfo) => {
+            this.user = userInfo;
+            this.profileImg = userInfo?.avatar || '';
+        });
+    }
+
+    onErrorProfileImage() {
+        this.profileImg = 'http://localhost:8272/api/v2/moon-movie/media/images/user-avatar.png';
+    }
 }

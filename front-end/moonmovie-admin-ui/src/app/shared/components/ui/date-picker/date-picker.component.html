@@ -1,0 +1,53 @@
+<div class="flex items-center gap-x-5 p-2" [ngClass]="class">
+    <div class="rounded-full p-2 hover:bg-accent active:scale-90">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="3"
+            stroke="currentColor"
+            class="size-6 cursor-pointer text-primary"
+            (click)="handleClickPrevDate()"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+    </div>
+    <div
+        class="no-scrollbar mb-3 flex overflow-auto rounded-lg"
+        #datePickerRef
+        (mousedown)="handleMouseDown($event)"
+        (mouseleave)="handleMouseLeave()"
+        (mouseup)="handleMouseUp()"
+        (mousemove)="handleMouseMove($event)"
+    >
+        <div
+            *ngFor="let date of listDate"
+            class="cursor-pointer select-none rounded-lg p-2 text-center text-sm"
+            [ngClass]="{ 'bg-primary': date === activeDate }"
+            (click)="handleDateClick(date)"
+        >
+            <div class="mb-2 text-gray-500" [ngClass]="{ 'text-white': date === activeDate }">
+                {{ date | date: 'EEE' }}
+            </div>
+            <div
+                class="rounded-lg px-2 py-1 font-semibold"
+                [ngClass]="{ 'bg-white text-primary': date === activeDate }"
+            >
+                {{ date | date: 'dd/MM' }}
+            </div>
+        </div>
+    </div>
+    <div class="rounded-full p-2 hover:bg-accent active:scale-90">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="3"
+            stroke="currentColor"
+            class="size-6 cursor-pointer text-primary"
+            (click)="handleClickNextDate()"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
+    </div>
+</div>

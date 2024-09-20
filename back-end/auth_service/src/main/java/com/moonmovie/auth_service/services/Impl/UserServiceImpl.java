@@ -6,8 +6,13 @@ import com.moonmovie.auth_service.exception.GlobalException;
 import com.moonmovie.auth_service.helpers.Helpers;
 import com.moonmovie.auth_service.models.User;
 import com.moonmovie.auth_service.request.UpdateUserRequest;
+import com.moonmovie.auth_service.response.PaginationResponse;
 import com.moonmovie.auth_service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -62,6 +67,32 @@ public class UserServiceImpl implements UserService {
         return convertUserToDto(userDao.findById(userId).orElseThrow(() -> new GlobalException(400, "This user does not exist in the system.")));
     }
 
+    @Override
+    public PaginationResponse<UserDto> getUsers(int page, int size, String userId, String usernameOrEmail, String sortBy, String sortOrder) {
+        Pageable pageable;
+        if (sortOrder.equalsIgnoreCase("desc")) {
+            pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sortBy));
+        } else {
+            pageable = PageRequest.of(page - 1, size,  Sort.by(Sort.Direction.ASC, sortBy));
+        }
+        Page<User> pageMovie;
+        if (usernameOrEmail == null || usernameOrEmail.equalsIgnoreCase("")) {
+            pageMovie = userDao.findAllByIdNotContainsIgnoreCase(userId, pageable);
+        } else {
+            pageMovie = userDao.findAllByIdNotContainsIgnoreCaseAndUsernameLikeOrEmailLike(userId, usernameOrEmail, usernameOrEmail, pageable);
+        }
+        List<UserDto> userDtos = pageMovie.getContent().stream().map(user -> convertUserToDto(user)).toList();
+
+        PaginationResponse<UserDto> resp = PaginationResponse.<UserDto>builder()
+                .data(userDtos)
+                .page(page)
+                .size(size)
+                .totalPages(pageMovie.getTotalPages())
+                .totalElements(pageMovie.getTotalElements())
+                .build();
+        return resp;
+    }
+
     private UserDto convertUserToDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
@@ -73,6 +104,7 @@ public class UserServiceImpl implements UserService {
                 .onboarded(user.isOnboarded())
                 .createdAt(user.getCreatedAt())
                 .modifiedAt(user.getModifiedAt())
+                .lastSignedIn(user.getLastSignedIn())
                 .build();
     }
 }

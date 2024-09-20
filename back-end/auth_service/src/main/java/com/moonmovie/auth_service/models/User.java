@@ -44,6 +44,7 @@ public class User implements Serializable, UserDetails {
     private boolean onboarded;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private LocalDateTime lastSignedIn;
 
     List<Authentication> authentications = new ArrayList<>();
 

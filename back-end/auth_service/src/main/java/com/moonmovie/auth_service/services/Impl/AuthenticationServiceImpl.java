@@ -90,6 +90,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .build();
                 userInDb.get().setUsername(request.getUsername());
                 userInDb.get().getAuthentications().add(localAuthentication);
+                userInDb.get().setLastSignedIn(LocalDateTime.now());
                 String token = jwtService.generateToken(userInDb.get(), 7);
                 String refreshToken = jwtService.generateToken(userInDb.get(), 9);
                 userDao.save(userInDb.get());
@@ -116,9 +117,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .username(request.getUsername())
                     .email(request.getEmail())
                     .avatar("http://localhost:8272/api/v2/moon-movie/media/images/user-avatar.png")
-                    .onboarded(false)
+                    .onboarded(true)
                     .modifiedAt(LocalDateTime.now())
                     .createdAt(LocalDateTime.now())
+                    .lastSignedIn(LocalDateTime.now())
                     .role(role)
                     .authentications(List.of(localAuthentication))
                     .build();
@@ -147,6 +149,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             userInDatabase.get().setEmail(tempUserInfo.getEmail());
             userInDatabase.get().setName(tempUserInfo.getName());
             userInDatabase.get().setAvatar(tempUserInfo.getAvatar());
+            userInDatabase.get().setLastSignedIn(LocalDateTime.now());
             User upToDateUserInfo = userDao.save(userInDatabase.get());
             if (upToDateUserInfo.getAuthentications().size() == 2) {
                 token = jwtService.generateToken(upToDateUserInfo, 7);
@@ -199,6 +202,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .onboarded(false)
                     .createdAt(LocalDateTime.now())
                     .modifiedAt(LocalDateTime.now())
+                    .lastSignedIn(LocalDateTime.now())
                     .authentications(List.of(googleAuthentication))
                     .role(Role.USER)
                     .build();
@@ -266,6 +270,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .orElseThrow(() -> new UsernameNotFoundException("User not found with email or username: " + request.getUsernameOrEmail())));
         String token = jwtService.generateToken(user, 7);
         String refreshToken = jwtService.generateToken(user, 9);
+        user.setLastSignedIn(LocalDateTime.now());
         userDao.save(user);
         return AuthenticationResponse.builder()
                 .token(token)

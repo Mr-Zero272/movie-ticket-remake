@@ -1,1 +1,631 @@
-<p>users works!</p>
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
+        <caption class="bg-white p-5 text-left">
+            <span class="text-lg font-semibold text-gray-900 dark:bg-gray-800 dark:text-white rtl:text-right"
+                >Users</span
+            >
+            <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">View and manage users</p>
+            <div class="my-3 w-full">
+                <div class="flex items-center gap-x-5">
+                    <div class="relative w-72">
+                        <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                            <svg
+                                class="h-4 w-4 text-gray-500 dark:text-gray-400"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 20 20"
+                            >
+                                <path
+                                    stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                                />
+                            </svg>
+                        </div>
+                        <input
+                            type="search"
+                            id="default-search"
+                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-1.5 ps-10 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                            placeholder="Search"
+                            autocomplete="off"
+                            [(ngModel)]="searchValue"
+                            (input)="onSearchInputChange($event)"
+                        />
+                    </div>
+                    <div>
+                        <app-dropdown-menu [isMenuOpen]="isSortMenuOpen" (toggleMeuEvent)="toggleMenuSort()">
+                            <button
+                                labelMenu
+                                class="inline-flex items-center rounded-lg bg-primary px-4 py-1.5 text-center text-sm font-medium text-white hover:bg-[#f1893f] focus:outline-none"
+                                type="button"
+                                [ngSwitch]="sortBy"
+                            >
+                                Sort:&nbsp;
+                                <span class="capitalize" *ngSwitchCase="'createdAt'">Joined</span>
+                                <span class="capitalize" *ngSwitchCase="'lastSignedIn'">Last signed in</span>
+                                <span class="capitalize" *ngSwitchDefault="'createdAt'">{{ sortBy }}</span>
+                                <svg
+                                    class="ms-3 h-2.5 w-2.5"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 10 6"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="m1 1 4 4 4-4"
+                                    />
+                                </svg>
+                            </button>
+                            <ul mainItems class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                <app-dropdown-menu-item (clickEleEvent)="changeSortBy('email')">
+                                    <div class="flex items-center justify-between">
+                                        <span>Email</span>
+                                        <svg
+                                            *ngIf="sortBy === 'email' && sortOrder === 'desc'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="h-4 w-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                                            />
+                                        </svg>
+                                        <svg
+                                            *ngIf="sortBy === 'email' && sortOrder === 'asc'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="h-4 w-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                                            />
+                                        </svg>
+                                    </div>
+                                </app-dropdown-menu-item>
+                                <app-dropdown-menu-item (clickEleEvent)="changeSortBy('username')">
+                                    <div class="flex items-center justify-between">
+                                        <span>Username</span>
+                                        <svg
+                                            *ngIf="sortBy === 'username' && sortOrder === 'desc'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="h-4 w-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                                            />
+                                        </svg>
+                                        <svg
+                                            *ngIf="sortBy === 'username' && sortOrder === 'asc'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="h-4 w-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                                            />
+                                        </svg>
+                                    </div>
+                                </app-dropdown-menu-item>
+                                <app-dropdown-menu-item (clickEleEvent)="changeSortBy('lastSignedIn')">
+                                    <div class="flex items-center justify-between">
+                                        <span>Last signed in</span>
+                                        <svg
+                                            *ngIf="sortBy === 'lastSignedIn' && sortOrder === 'desc'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="h-4 w-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                                            />
+                                        </svg>
+                                        <svg
+                                            *ngIf="sortBy === 'lastSignedIn' && sortOrder === 'asc'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="h-4 w-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                                            />
+                                        </svg>
+                                    </div>
+                                </app-dropdown-menu-item>
+                                <app-dropdown-menu-item (clickEleEvent)="changeSortBy('createdAt')">
+                                    <div class="flex items-center justify-between">
+                                        <span>Joined</span>
+                                        <svg
+                                            *ngIf="sortBy === 'createdAt' && sortOrder === 'desc'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="h-4 w-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                                            />
+                                        </svg>
+                                        <svg
+                                            *ngIf="sortBy === 'createdAt' && sortOrder === 'asc'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="h-4 w-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                                            />
+                                        </svg>
+                                    </div>
+                                </app-dropdown-menu-item>
+                            </ul>
+                        </app-dropdown-menu>
+                    </div>
+                </div>
+            </div>
+        </caption>
+
+        <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+            <tr class="w-full">
+                <th
+                    scope="col"
+                    class="px-6 py-3"
+                    [ngClass]="{ 'cursor-pointer': sortBy === 'email' }"
+                    (click)="changeSortOrder('email')"
+                >
+                    <div class="flex items-center">
+                        <span>User</span>
+                        <svg
+                            *ngIf="sortBy === 'email' && sortOrder === 'desc'"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-4 w-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                            />
+                        </svg>
+                        <svg
+                            *ngIf="sortBy === 'email' && sortOrder === 'asc'"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-4 w-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                            />
+                        </svg>
+                    </div>
+                </th>
+                <th
+                    scope="col"
+                    class="px-6 py-3"
+                    [ngClass]="{ 'cursor-pointer': sortBy === 'username' }"
+                    (click)="changeSortOrder('username')"
+                >
+                    <div class="flex items-center">
+                        <span>Username</span>
+                        <svg
+                            *ngIf="sortBy === 'username' && sortOrder === 'desc'"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-4 w-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                            />
+                        </svg>
+                        <svg
+                            *ngIf="sortBy === 'username' && sortOrder === 'asc'"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-4 w-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                            />
+                        </svg>
+                    </div>
+                </th>
+                <th
+                    scope="col"
+                    class="px-6 py-3"
+                    [ngClass]="{ 'cursor-pointer': sortBy === 'lastSignedIn' }"
+                    (click)="changeSortOrder('lastSignedIn')"
+                >
+                    <div class="flex items-center">
+                        <span>Last signed in</span>
+                        <svg
+                            *ngIf="sortBy === 'lastSignedIn' && sortOrder === 'desc'"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-4 w-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                            />
+                        </svg>
+                        <svg
+                            *ngIf="sortBy === 'lastSignedIn' && sortOrder === 'asc'"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-4 w-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                            />
+                        </svg>
+                    </div>
+                </th>
+                <th
+                    scope="col"
+                    class="gap-x-1 px-6 py-3"
+                    [ngClass]="{ 'cursor-pointer': sortBy === 'createdAt' }"
+                    (click)="changeSortOrder('createdAt')"
+                >
+                    <div class="flex items-center">
+                        <span>Joined</span>
+                        <svg
+                            *ngIf="sortBy === 'createdAt' && sortOrder === 'desc'"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-4 w-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                            />
+                        </svg>
+                        <svg
+                            *ngIf="sortBy === 'createdAt' && sortOrder === 'asc'"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-4 w-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                            />
+                        </svg>
+                    </div>
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    <span class="sr-only">Edit</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody *ngIf="usersPagination; else loadingTableBody">
+            <tr
+                *ngFor="let user of usersPagination.data"
+                class="border-b bg-white dark:border-gray-700 dark:bg-gray-800"
+            >
+                <th scope="row" class="px-6 py-4">
+                    <div class="flex items-center gap-x-3">
+                        <img class="h-10 w-10 rounded-full border border-gray-200" [src]="user.avatar" alt="avatar" />
+                        <div class="flex flex-col">
+                            <span class="font-semibold text-gray-900 dark:text-white">{{
+                                user.name ? user.name : 'Unknown'
+                            }}</span>
+                            <span class="text-gray-400">{{ user.email }}</span>
+                        </div>
+                    </div>
+                </th>
+                <td class="px-6 py-4">{{ user.username }}</td>
+                <td class="px-6 py-4">{{ user.lastSignedIn | date }}</td>
+                <td class="px-6 py-4">{{ user.createdAt | date }}</td>
+                <td class="px-6 py-4 text-right">
+                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</a>
+                </td>
+            </tr>
+            <!-- <tr class="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                <th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
+                    Microsoft Surface Pro
+                </th>
+                <td class="px-6 py-4">White</td>
+                <td class="px-6 py-4">Laptop PC</td>
+                <td class="px-6 py-4">$1999</td>
+                <td class="px-6 py-4 text-right">
+                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</a>
+                </td>
+            </tr>
+            <tr class="bg-white dark:bg-gray-800">
+                <th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
+                    Magic Mouse 2
+                </th>
+                <td class="px-6 py-4">Black</td>
+                <td class="px-6 py-4">Accessories</td>
+                <td class="px-6 py-4">$99</td>
+                <td class="px-6 py-4 text-right">
+                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</a>
+                </td>
+            </tr> -->
+        </tbody>
+        <ng-template #loadingTableBody>
+            <tbody>
+                <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <th scope="row" class="px-6 py-4">
+                        <div class="flex items-center gap-x-3">
+                            <div
+                                class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"
+                            ></div>
+                            <div class="flex flex-col justify-center">
+                                <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                            </div>
+                        </div>
+                    </th>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                            <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
+                        ></a>
+                    </td>
+                </tr>
+                <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <th scope="row" class="px-6 py-4">
+                        <div class="flex items-center gap-x-3">
+                            <div
+                                class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"
+                            ></div>
+                            <div class="flex flex-col justify-center">
+                                <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                            </div>
+                        </div>
+                    </th>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                            <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
+                        ></a>
+                    </td>
+                </tr>
+                <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <th scope="row" class="px-6 py-4">
+                        <div class="flex items-center gap-x-3">
+                            <div
+                                class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"
+                            ></div>
+                            <div class="flex flex-col justify-center">
+                                <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                            </div>
+                        </div>
+                    </th>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                            <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
+                        ></a>
+                    </td>
+                </tr>
+                <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <th scope="row" class="px-6 py-4">
+                        <div class="flex items-center gap-x-3">
+                            <div
+                                class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"
+                            ></div>
+                            <div class="flex flex-col justify-center">
+                                <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                            </div>
+                        </div>
+                    </th>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                            <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
+                        ></a>
+                    </td>
+                </tr>
+                <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <th scope="row" class="px-6 py-4">
+                        <div class="flex items-center gap-x-3">
+                            <div
+                                class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"
+                            ></div>
+                            <div class="flex flex-col justify-center">
+                                <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                            </div>
+                        </div>
+                    </th>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                            <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
+                        ></a>
+                    </td>
+                </tr>
+                <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <th scope="row" class="px-6 py-4">
+                        <div class="flex items-center gap-x-3">
+                            <div
+                                class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"
+                            ></div>
+                            <div class="flex flex-col justify-center">
+                                <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                            </div>
+                        </div>
+                    </th>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                            <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
+                        ></a>
+                    </td>
+                </tr>
+                <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <th scope="row" class="px-6 py-4">
+                        <div class="flex items-center gap-x-3">
+                            <div
+                                class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"
+                            ></div>
+                            <div class="flex flex-col justify-center">
+                                <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                            </div>
+                        </div>
+                    </th>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                            <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
+                        ></a>
+                    </td>
+                </tr>
+            </tbody>
+        </ng-template>
+    </table>
+    <app-pagination
+        *ngIf="usersPagination"
+        [page]="usersPagination.page"
+        [totalPages]="usersPagination.totalPages"
+        [size]="usersPagination.size"
+        [totalElements]="usersPagination.totalElements"
+        (choosePage)="handleChoosePage($event)"
+        (nextPage)="handleNextPage($event)"
+        (prevPage)="handlePrevPage($event)"
+    ></app-pagination>
+</div>
