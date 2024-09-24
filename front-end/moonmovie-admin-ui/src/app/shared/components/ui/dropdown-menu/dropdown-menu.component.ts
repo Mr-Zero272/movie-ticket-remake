@@ -15,8 +15,6 @@ export class DropdownMenuComponent {
     tempOpen: boolean = true;
 
     toggleUserMenu() {
-        console.log(this.isMenuOpen);
-
         this.toggleMeuEvent.emit();
     }
 }

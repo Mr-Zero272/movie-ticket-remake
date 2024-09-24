@@ -4,7 +4,7 @@ import com.moonmovie.movie_service.constants.MovieErrorConstants;
 import com.moonmovie.movie_service.dao.MovieDao;
 import com.moonmovie.movie_service.dao.UserFavoriteMovieDao;
 import com.moonmovie.movie_service.dto.UserFavoriteMovieDto;
-import com.moonmovie.movie_service.exceptions.MovieException;
+import com.moonmovie.movie_service.exceptions.GlobalException;
 import com.moonmovie.movie_service.models.Movie;
 import com.moonmovie.movie_service.models.UserFavoriteMovie;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
@@ -35,7 +35,7 @@ public class UserFavoriteMovieServiceImpl implements UserFavoriteMovieService {
             return null;
         }
 
-        Movie movie = movieDao.findById(movieId).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
+        Movie movie = movieDao.findById(movieId).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
         UserFavoriteMovie userFavoriteMovie = new UserFavoriteMovie();
         userFavoriteMovie.setUserId(userId);
         userFavoriteMovie.setMovie(movie);
@@ -45,7 +45,7 @@ public class UserFavoriteMovieServiceImpl implements UserFavoriteMovieService {
 
     @Override
     public ResponseTemplate deleteUserFavoriteMovie(int movieId, String userId) {
-        UserFavoriteMovie userFavoriteMovie = userFavoriteMovieDao.findByUserIdAndMovieId(userId, movieId).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
+        UserFavoriteMovie userFavoriteMovie = userFavoriteMovieDao.findByUserIdAndMovieId(userId, movieId).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
         userFavoriteMovieDao.delete(userFavoriteMovie);
         return new ResponseTemplate("Delete favorite movie with id: " + userFavoriteMovie.getId() + " successfully!");
     }

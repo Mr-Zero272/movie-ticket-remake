@@ -2,10 +2,13 @@ package com.moonmovie.movie_service.services;
 
 import com.moonmovie.movie_service.dto.ShowingDto;
 import com.moonmovie.movie_service.models.Showing;
+import com.moonmovie.movie_service.requests.AddShowingRequest;
+import com.moonmovie.movie_service.requests.UpdateShowingTimeAndAuditoriumRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface ShowingService {
@@ -15,5 +18,11 @@ public interface ShowingService {
 
     Showing getShowing(int showingId);
 
-    PaginationResponse<Showing> getPaginationShowings(LocalDateTime startDate, int page, int size);
+    PaginationResponse<Showing> getPaginationShowings(String query, LocalDateTime date, Integer genreId, String type, int page, int size);
+
+    List<ShowingDto> getShowingsByDateAndAuditorium(LocalDate date, String auditoriumId);
+
+    Showing updateShowingTimeAndAuditorium(UpdateShowingTimeAndAuditoriumRequest request);
+
+    Showing addShowing(AddShowingRequest request);
 }

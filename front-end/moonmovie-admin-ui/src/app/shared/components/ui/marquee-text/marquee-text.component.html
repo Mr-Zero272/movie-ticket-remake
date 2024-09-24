@@ -1,0 +1,14 @@
+<div #containerRef class="w-full overflow-hidden whitespace-nowrap" (mouseenter)="handleMouseEnter()">
+    <div
+        #textRef
+        class="inline-block transition-transform ease-linear"
+        [ngClass]="class"
+        [style.transform]="isOverFlowing ? 'translateX(-' + scrollPosition + 'px)' : 'translateX(0)'"
+        [ngStyle]="{
+            animationDuration: duration ? duration + 's' : '1s',
+            transitionDuration: duration ? duration + 's' : '1s',
+        }"
+    >
+        {{ text }}
+    </div>
+</div>

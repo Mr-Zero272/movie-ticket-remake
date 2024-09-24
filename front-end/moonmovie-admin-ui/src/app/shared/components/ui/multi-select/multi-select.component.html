@@ -1,0 +1,48 @@
+<div class="mb-2 flex flex-wrap gap-2">
+    <div
+        *ngFor="let selectedItem of selectedResults"
+        class="flex w-fit items-center gap-x-1 rounded-lg bg-orange-100 px-1.5 py-1 text-xs font-medium text-orange-800"
+    >
+        <span>{{ selectedItem.key }}</span>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-4 cursor-pointer"
+            (click)="deleteItem(selectedItem)"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+    </div>
+</div>
+<div class="">
+    <div class="relative">
+        <input
+            labelMenu
+            type="search"
+            id="default-search"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+            placeholder="Search Mockups, Logos..."
+            autocomplete="off"
+            [(ngModel)]="searchValue"
+            (ngModelChange)="handleSearchValue($event)"
+            (focus)="toggleSearchResult(true)"
+        />
+        <div
+            *ngIf="isSearchResultsOpen && searchResults.length > 0"
+            [appOutsideClick]="isSearchResultsOpen"
+            (outSideClick)="isSearchResultsOpen = false"
+            class="absolute top-[3rem] z-10 w-full divide-y divide-gray-100 rounded-lg bg-white py-2 shadow dark:divide-gray-600 dark:bg-gray-700"
+        >
+            <ul>
+                <li *ngFor="let searchResult of searchResults" (click)="chooseItem(searchResult)">
+                    <app-dropdown-menu-item>
+                        <span>{{ searchResult.key }}</span>
+                    </app-dropdown-menu-item>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

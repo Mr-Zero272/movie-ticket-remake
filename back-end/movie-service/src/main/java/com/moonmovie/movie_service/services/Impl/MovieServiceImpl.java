@@ -4,7 +4,7 @@ import com.moonmovie.movie_service.constants.MovieErrorConstants;
 import com.moonmovie.movie_service.dao.*;
 import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.dto.ScheduleMovie;
-import com.moonmovie.movie_service.exceptions.MovieException;
+import com.moonmovie.movie_service.exceptions.GlobalException;
 import com.moonmovie.movie_service.feign.SeatServiceInterface;
 import com.moonmovie.movie_service.helpers.DateTimeTransfer;
 import com.moonmovie.movie_service.kafka.KafkaMessage;
@@ -109,7 +109,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie getMovieById(int id) {
-        return movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
+        return movieDao.findById(id).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class MovieServiceImpl implements MovieService {
         // if this month was scheduled change to next month
         try {
             if (showingDao.countByMonthAndYear(request.getMonthToSchedule(), request.getYearToSchedule()) > 0) {
-                throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
+                throw new GlobalException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,12 +133,12 @@ public class MovieServiceImpl implements MovieService {
         }
 
         if (totalShowingsThisMonth > LocalDate.now().lengthOfMonth() * 8 * 10) {
-            throw new MovieException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
+            throw new GlobalException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
         }
 
         // Check if the movie has the same title
 //        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
-//            throw new MovieException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
+//            throw new GlobalException()(MovieErrorConstants.ERROR_MOVIE_EXISTED);
 //        }
 
         Movie movie = convertMovieRequestToMovie(request);
@@ -167,7 +167,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public Movie updateMovie(int id, MovieRequest request) {
-        Movie movie = movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
+        Movie movie = movieDao.findById(id).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
         List<String> fieldsSkip = List.of("genreIds", "galleries", "monthToSchedule", "yearToSchedule", "totalDateShowingsInMonth", "totalShowings", "priceEachSeat", "detailShowingTypes");
         for (Field updateField : request.getClass().getDeclaredFields()) {
             updateField.setAccessible(true);
@@ -211,14 +211,14 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void deleteMovie(int id) {
-        Movie movie = movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
+        Movie movie = movieDao.findById(id).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
         movieDao.delete(movie);
     }
 
     @Override
     @Transactional
     public Movie updateMovieScheduleDetail(int id, MovieRequest request) {
-        Movie movie = movieDao.findById(id).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
+        Movie movie = movieDao.findById(id).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
 
         movie.setMonthToSchedule(request.getMonthToSchedule());
         movie.setYearToSchedule(request.getYearToSchedule());
@@ -235,11 +235,11 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public ResponseTemplate schedule(int month, int year, String role) {
         if (!role.equalsIgnoreCase("ADMIN")) {
-            throw new MovieException(MovieErrorConstants.ERROR_DO_NOT_HAVE_PERMISSION);
+            throw new GlobalException(MovieErrorConstants.ERROR_DO_NOT_HAVE_PERMISSION);
         }
 
         if (showingDao.countByMonthAndYear(month, year) > 0) {
-            throw new MovieException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
+            throw new GlobalException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
         }
 
         List<Movie> movies = movieDao.findAllByMonthToScheduleAndYearToSchedule(month, year);
@@ -257,7 +257,7 @@ public class MovieServiceImpl implements MovieService {
         try {
             auditoriumIds = seatServiceInterface.getAvailableAuditorium(10).getBody();
         } catch (Exception e) {
-            throw new MovieException(MovieErrorConstants.ERROR_SEAT_SERVICE_NOT_AVAILABLE);
+            throw new GlobalException(MovieErrorConstants.ERROR_SEAT_SERVICE_NOT_AVAILABLE);
         }
 
         List<List<AuditoriumState>> infoAuditoriumInThisMonth = new ArrayList<>();
@@ -429,7 +429,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public MovieDto getMovieByShowingId(int showingId) {
-        Showing showing = showingDao.findById(showingId).orElseThrow(() -> new MovieException(MovieErrorConstants.ERROR_SHOWING_NOT_EXISTS));
+        Showing showing = showingDao.findById(showingId).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_SHOWING_NOT_EXISTS));
         return convertMovieToMovieDto(showing.getMovie());
     }
 

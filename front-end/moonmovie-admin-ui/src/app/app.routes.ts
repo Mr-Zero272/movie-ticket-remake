@@ -10,6 +10,8 @@ import { BlankLayoutComponent } from './shared/components/layouts/blank-layout/b
 import { MainLayoutComponent } from './shared/components/layouts/main-layout/main-layout.component';
 import { authGuard } from './core/guards/auth.guard';
 import { ScheduleComponent } from './features/schedule/components/schedule/schedule.component';
+import { AnalyticsComponent } from './features/analytics/components/analytics/analytics.component';
+import { DetailScheduleComponent } from './features/schedule/components/detail/detail.component';
 
 export const routes: Routes = [
     {
@@ -27,27 +29,15 @@ export const routes: Routes = [
                 title: 'Movies management',
                 component: MoviesComponent,
                 canActivate: [authGuard],
-                children: [
-                    {
-                        path: 'add',
-                        title: 'Add new movie',
-                        component: AddMovieComponent,
-                        children: [
-                            {
-                                path: 'new',
-                                title: 'Add new movie',
-                                component: AddMovieComponent,
-                                children: [
-                                    {
-                                        path: 'mo',
-                                        title: 'Add new movie',
-                                        component: AddMovieComponent,
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                ],
+            },
+            {
+                path: 'movies/adding',
+                title: 'Add new movie',
+                component: AddMovieComponent,
+                canActivate: [authGuard],
+                data: {
+                    breadcrumb: 'adding',
+                },
             },
             {
                 path: 'users',
@@ -62,9 +52,21 @@ export const routes: Routes = [
                 canActivate: [authGuard],
             },
             {
+                path: 'schedule/:id',
+                title: 'Manage schedule movie',
+                component: DetailScheduleComponent,
+                canActivate: [authGuard],
+            },
+            {
                 path: 'schedule',
                 title: 'Manage schedule movie',
                 component: ScheduleComponent,
+                canActivate: [authGuard],
+            },
+            {
+                path: 'analytics',
+                title: 'Analytics',
+                component: AnalyticsComponent,
                 canActivate: [authGuard],
             },
         ],

@@ -1,13 +1,13 @@
 <div class="relative">
-    <button class="flex items-center gap-x-3 rounded-md p-2 hover:bg-accent" (click)="toggleUserMenu()">
+    <div class="flex items-center gap-x-3 rounded-md p-2 hover:bg-accent" (click)="toggleUserMenu()">
         <ng-content select="[labelMenu]"></ng-content>
-    </button>
+    </div>
     <!-- Dropdown menu -->
     <div
         *ngIf="isMenuOpen"
         [appOutsideClick]="isMenuOpen"
         (outSideClick)="isMenuOpen = false"
-        class="top-18 absolute right-2 z-10 w-44 divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700"
+        class="top-18 absolute z-10 w-full divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700"
     >
         <ng-content select="[mainItems]"></ng-content>
 
