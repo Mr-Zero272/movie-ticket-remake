@@ -1,5 +1,5 @@
 import { NgClass, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OutsideClickDirective } from '../../../directives/outside-click.directive';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -17,15 +17,24 @@ export class UserButtonComponent {
     isMenuOpen: boolean = false;
     user: User | null = null;
     profileImg: string = '';
-    toggleUserMenu() {
-        this.isMenuOpen = !this.isMenuOpen;
-    }
 
-    constructor(authService: AuthService) {
+    constructor(
+        authService: AuthService,
+        private renderer: Renderer2,
+    ) {
         authService.getUser().subscribe((userInfo) => {
             this.user = userInfo;
             this.profileImg = userInfo?.avatar || '';
         });
+    }
+
+    toggleUserMenu() {
+        this.isMenuOpen = !this.isMenuOpen;
+        if (this.isMenuOpen) {
+            this.renderer.setStyle(document.body, 'overflow', 'hidden');
+        } else {
+            this.renderer.removeStyle(document.body, 'overflow');
+        }
     }
 
     onErrorProfileImage() {

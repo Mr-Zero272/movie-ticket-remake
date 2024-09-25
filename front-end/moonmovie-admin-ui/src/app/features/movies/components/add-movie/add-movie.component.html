@@ -177,11 +177,9 @@
                         <input
                             id="releaseDate"
                             formControlName="releaseDate"
-                            datepicker
-                            datepicker-autohide
-                            type="text"
+                            type="date"
                             class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary dark:focus:ring-primary"
-                            placeholder="Release date"
+                            placeholder="MM/dd/yyy"
                         />
                         <div
                             *ngIf="
@@ -226,9 +224,9 @@
                 </div>
                 <div class="mb-3">
                     <label class="inline-flex cursor-pointer items-center">
-                        <input type="checkbox" value="" class="peer sr-only" />
+                        <input id="adult" type="checkbox" formControlName="adult" value="" class="peer sr-only" />
                         <div
-                            class="peer relative h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800 rtl:peer-checked:after:-translate-x-full"
+                            class="peer relative h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-orange-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-orange-800 rtl:peer-checked:after:-translate-x-full"
                         ></div>
                         <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Adult movie</span>
                     </label>
@@ -239,133 +237,7 @@
                     <label for="" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                         Movie images
                     </label>
-                    <div class="mb-3 flex gap-x-3">
-                        <div
-                            class="flex h-60 w-48 cursor-pointer flex-col items-center justify-center border border-dashed border-gray-500 bg-white"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-7 text-gray-500"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                                />
-                            </svg>
-                            <p class="text-sm text-gray-700">Click to browser</p>
-                        </div>
-                        <div
-                            class="flex h-60 w-48 cursor-pointer flex-col items-center justify-center border border-dashed border-gray-500 bg-white"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-7 text-gray-500"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                                />
-                            </svg>
-                            <p class="text-sm text-gray-700">Click to browser</p>
-                        </div>
-                        <div class="grid w-1/2 grid-cols-2 gap-5">
-                            <div
-                                class="flex cursor-pointer flex-col items-center justify-center border border-dashed border-gray-500 bg-white"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="1.5"
-                                    stroke="currentColor"
-                                    class="size-7 text-gray-500"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                                    />
-                                </svg>
-                                <p class="text-sm text-gray-700">Click to browser</p>
-                            </div>
-                            <div
-                                class="flex cursor-pointer flex-col items-center justify-center border border-dashed border-gray-500 bg-white"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="1.5"
-                                    stroke="currentColor"
-                                    class="size-7 text-gray-500"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                                    />
-                                </svg>
-                                <p class="text-sm text-gray-700">Click to browser</p>
-                            </div>
-                            <div
-                                class="flex cursor-pointer flex-col items-center justify-center border border-dashed border-gray-500 bg-white"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="1.5"
-                                    stroke="currentColor"
-                                    class="size-7 text-gray-500"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                                    />
-                                </svg>
-                                <p class="text-sm text-gray-700">Click to browser</p>
-                            </div>
-                            <div
-                                class="flex cursor-pointer flex-col items-center justify-center border border-dashed border-gray-500 bg-white"
-                                (click)="chooseImages()"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="1.5"
-                                    stroke="currentColor"
-                                    class="size-7 text-gray-500"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        class="hidden"
-                        (change)="handleFileInput($event)"
-                        multiple
-                        #inputImage
-                    />
-                    <p class="text-sm text-gray-500">
-                        You need at least 2 vertical photos and 1 horizontal photo for this movie and need at least 4
-                        photos. You can add more photos but 2 vertical and 1 horizontal photo photos are required.
-                    </p>
-                    <img *ngFor="let imageUrl of imageUrls" width="100%" [src]="imageUrl" class="image" />
+                    <app-select-images></app-select-images>
                 </div>
                 <div class="mb-3 flex gap-x-5">
                     <div class="w-1/4">
@@ -651,6 +523,7 @@
                         </svg>
                         Publish...
                     </button>
+                    <app-button variant="link"> Button </app-button>
                 </div>
             </div>
         </form>

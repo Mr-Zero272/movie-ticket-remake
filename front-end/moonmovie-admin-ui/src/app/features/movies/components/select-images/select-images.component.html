@@ -1,0 +1,62 @@
+<div class="mb-3 flex gap-x-3">
+    <div class="grid w-1/2 grid-cols-2 gap-3">
+        <app-select-image-item
+            class="h-52"
+            [urlImage]="images[0] ? images[0].url : undefined"
+            (onChooseImage)="handleChooseImages()"
+            (onDeleteImage)="handleDeleteImage(0)"
+        />
+        <app-select-image-item
+            class="h-52"
+            [urlImage]="images[1] ? images[1].url : undefined"
+            (onChooseImage)="handleChooseImages()"
+            (onDeleteImage)="handleDeleteImage(1)"
+        />
+    </div>
+    <div class="grid w-1/2 grid-cols-2 gap-3">
+        <app-select-image-item
+            class="h-24"
+            [urlImage]="images[2] ? images[2].url : undefined"
+            (onChooseImage)="handleChooseImages()"
+            (onDeleteImage)="handleDeleteImage(2)"
+        />
+        <app-select-image-item
+            class="h-24"
+            [urlImage]="images[3] ? images[3].url : undefined"
+            (onChooseImage)="handleChooseImages()"
+            (onDeleteImage)="handleDeleteImage(3)"
+        />
+        <app-select-image-item
+            class="h-24"
+            [urlImage]="images[4] ? images[4].url : undefined"
+            (onChooseImage)="handleChooseImages()"
+            (onDeleteImage)="handleDeleteImage(4)"
+        />
+        <app-select-image-item
+            *ngIf="images.length < 6"
+            class="h-24"
+            [urlImage]="images[4] ? images[4].url : undefined"
+            (onChooseImage)="handleChooseImages()"
+            (onDeleteImage)="handleDeleteImage(4)"
+        />
+        <div
+            *ngIf="images.length >= 6"
+            class="flex h-24 cursor-pointer items-center justify-center gap-x-2 border border-dashed border-gray-500 bg-white"
+        >
+            <div class="text-sm text-gray-700">+{{ images.length - 5 }} more</div>
+        </div>
+    </div>
+</div>
+<input type="file" accept="image/*" class="hidden" (change)="handleFileInput($event)" multiple #inputImage />
+<p class="text-sm text-gray-500">
+    You need at least 2 vertical photos and 1 horizontal photo for this movie and need at least 4 photos. You can add
+    more photos but 2 vertical and 1 horizontal photo photos are required.
+</p>
+<button
+    *ngIf="images.length !== 0"
+    type="button"
+    class="mb-2 me-2 rounded-lg border border-gray-800 px-5 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-800"
+    (click)="handleClearAll()"
+>
+    Clear all
+</button>
