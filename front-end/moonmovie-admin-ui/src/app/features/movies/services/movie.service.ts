@@ -1,46 +1,45 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { Movie } from '../../../shared/models/movie.model';
 import { Pagination } from '../../../shared/models/pagination-obj.model';
-import { User } from '../../../shared/models/user.model';
+import { throwError } from 'rxjs';
+
+const API = 'http://localhost:8272/api/v2/moon-movie/movie';
 
 @Injectable({
     providedIn: 'root',
 })
-export class UsersService {
+export class MovieService {
     constructor(
         private http: HttpClient,
         private authService: AuthService,
     ) {}
 
-    fetchUsers({
+    fetchMovies({
         page = 1,
         size = 7,
-        usernameOrEmail = '',
-        sortBy = 'createdAt',
+        sort = 'createdAt',
         sortOrder = 'desc',
     }: {
-        page?: number;
-        size?: number;
-        usernameOrEmail?: string;
-        sortBy?: string;
-        sortOrder?: string;
-    }): Observable<Pagination<User>> {
+        page: number;
+        size: number;
+        sort: string;
+        sortOrder: 'desc' | 'asc';
+    }) {
         const token = this.authService.getToken();
         if (!token) {
             return throwError(() => new Error('Token is missing'));
         }
 
-        return this.http.get<Pagination<User>>('http://localhost:8272/api/v2/moon-movie/auth/users', {
+        return this.http.get<Pagination<Movie>>(API, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
             params: {
                 page,
                 size,
-                usernameOrEmail,
-                sortBy,
+                sort,
                 sortOrder,
             },
         });

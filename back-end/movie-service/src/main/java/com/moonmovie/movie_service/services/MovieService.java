@@ -17,11 +17,12 @@ public interface MovieService {
      * @param originalLanguage Language
      * @param status Movie's status
      * @param sort Sort by
+     * @param sortOrder Sort order desc or asc
      * @param page current page
      * @param size size of the page
      * @return PaginationResponse<Movie> list movies and pagination information
      */
-    public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, int page, int size);
+    public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, String sortOrder, int page, int size);
 
     /**
      * Get popular movies

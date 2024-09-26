@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { OutsideClickDirective } from '../../../directives/outside-click.directive';
 import { NgIf } from '@angular/common';
 
@@ -11,10 +11,10 @@ import { NgIf } from '@angular/common';
 })
 export class DropdownMenuComponent {
     @Input() isMenuOpen: boolean = false;
-    @Output() toggleMeuEvent = new EventEmitter<void>();
+
     tempOpen: boolean = true;
 
     toggleUserMenu() {
-        this.toggleMeuEvent.emit();
+        this.isMenuOpen = !this.isMenuOpen;
     }
 }

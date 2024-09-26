@@ -1,5 +1,5 @@
 <div class="relative">
-    <div class="flex items-center gap-x-3 rounded-md p-2 hover:bg-accent" (click)="toggleUserMenu()">
+    <div class="flex items-center gap-x-3 rounded-md" (click)="toggleUserMenu()">
         <ng-content select="[labelMenu]"></ng-content>
     </div>
     <!-- Dropdown menu -->
@@ -9,7 +9,7 @@
         (outSideClick)="isMenuOpen = false"
         class="top-18 absolute z-10 w-full divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700"
     >
-        <ng-content select="[mainItems]"></ng-content>
+        <div (click)="isMenuOpen = false"><ng-content select="[mainItems]"></ng-content></div>
 
         <div>
             <ng-content select="[separateItems]"></ng-content>

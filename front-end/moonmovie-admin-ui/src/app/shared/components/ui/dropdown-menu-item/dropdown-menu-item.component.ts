@@ -8,10 +8,4 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     templateUrl: './dropdown-menu-item.component.html',
     styleUrl: './dropdown-menu-item.component.css',
 })
-export class DropdownMenuItemComponent {
-    @Output() clickEleEvent = new EventEmitter<void>();
-
-    choose() {
-        this.clickEleEvent.emit();
-    }
-}
+export class DropdownMenuItemComponent {}

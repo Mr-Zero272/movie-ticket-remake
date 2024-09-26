@@ -10,6 +10,7 @@ import { RouterLink } from '@angular/router';
     styleUrl: './movie-horizontal-card.component.css',
 })
 export class MovieHorizontalCardComponent {
+    @Input() loading: boolean = false;
     @Input() class: string = '';
     @Input() userId: string = '123';
     @Input() movieId: number = 0;

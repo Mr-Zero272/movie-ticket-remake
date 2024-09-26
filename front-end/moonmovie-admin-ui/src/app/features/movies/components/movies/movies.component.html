@@ -1,3 +1,45 @@
-<p>movies works!</p>
-<a routerLink="adding">Add new movie</a>
-<router-outlet></router-outlet>
+<div class="flex items-center justify-between">
+    <app-tabs></app-tabs>
+    <app-button [loading]="false" href="/movies/adding">
+        <svg
+            icon
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="inline size-4"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+        </svg>
+
+        Add movie
+    </app-button>
+</div>
+<div>
+    <ng-template #headerTable>
+        <span class="text-lg font-semibold text-gray-900 dark:bg-gray-800 dark:text-white rtl:text-right">Movie</span>
+        <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">View and manage movies</p>
+    </ng-template>
+    <app-table
+        [headerTable]="headerTable"
+        [columns]="columns"
+        [data]="moviesData"
+        [sortData]="sortDat"
+        (onChoosePage)="handleChangePage($event)"
+    ></app-table>
+    <ng-template #movieTemplate let-movie>
+        <app-movie-horizontal-card
+            [title]="movie.title"
+            [poster]="movie.posterPath"
+            [runtime]="movie.runtime"
+        ></app-movie-horizontal-card>
+    </ng-template>
+    <ng-template #movieTemplateLoading>
+        <app-movie-horizontal-card [loading]="true"></app-movie-horizontal-card>
+    </ng-template>
+</div>

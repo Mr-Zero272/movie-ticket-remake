@@ -1,0 +1,10 @@
+<div class="flex w-fit rounded-md bg-[#f1f5f9] p-1.5 text-sm">
+    <div
+        *ngFor="let tab of innerData"
+        class="cursor-pointer rounded-md p-1.5 font-medium text-gray-600"
+        [ngClass]="{ 'bg-white text-black': activeTab?.value === tab.value }"
+        (click)="handleChooseTab(tab)"
+    >
+        {{ tab.label }}
+    </div>
+</div>

@@ -1,14 +1,14 @@
 <button
     type="button"
-    class="mb-2 me-2 rounded-lg px-5 py-2.5 text-sm font-medium"
+    class="mb-2 me-2 flex items-center gap-x-2 rounded-lg px-5 py-2.5 text-sm font-medium"
     [ngClass]="classBaseOnVariant[variant]"
+    (click)="handleClick($event)"
 >
     <svg
         *ngIf="loading"
         aria-hidden="true"
         role="status"
-        class="me-3 inline h-4 w-4 animate-spin"
-        ngClass="{'text-black': variant === 'outline' || variant === 'alternative'}"
+        class="inline h-4 w-4 animate-spin"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -22,5 +22,8 @@
             fill="currentColor"
         />
     </svg>
+    <ng-container *ngIf="!loading">
+        <ng-content select="[icon]"></ng-content>
+    </ng-container>
     <ng-content></ng-content>
 </button>

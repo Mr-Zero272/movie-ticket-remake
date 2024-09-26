@@ -24,24 +24,8 @@ export class AuthService {
                 tap((response) => {
                     if ('token' in response) {
                         if (loginInfo.keepLogin) {
-                            this.cookieService.set(
-                                'mmtk',
-                                response.token,
-                                3600 * 24 * 7,
-                                '/',
-                                'localhost',
-                                false,
-                                'Lax',
-                            );
-                            this.cookieService.set(
-                                'mmrtk',
-                                response.refreshToken,
-                                3600 * 24 * 7,
-                                '/',
-                                'localhost',
-                                false,
-                                'Lax',
-                            );
+                            this.cookieService.set('mmtk', response.token, 7, '/', 'localhost', false, 'Lax');
+                            this.cookieService.set('mmrtk', response.refreshToken, 9, '/', 'localhost', false, 'Lax');
                         } else {
                             this.cookieService.set('mmtk', response.token, undefined, '/', 'localhost', false, 'Lax');
                             this.cookieService.set(

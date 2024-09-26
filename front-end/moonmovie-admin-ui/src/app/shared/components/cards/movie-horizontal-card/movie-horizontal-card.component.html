@@ -1,4 +1,4 @@
-<figure class="flex w-full gap-x-5" [ngClass]="class">
+<figure *ngIf="!loading; else loadingCard" class="flex w-full gap-x-5" [ngClass]="class">
     <div class="group relative flex-none cursor-pointer">
         <img [src]="poster" alt="movie 1 image" class="size-14 rounded-md object-cover" />
     </div>
@@ -35,3 +35,37 @@
         </div>
     </div>
 </figure>
+
+<ng-template #loadingCard>
+    <figure class="flex w-full animate-pulse gap-x-5" [ngClass]="class">
+        <div class="group relative flex-none cursor-pointer">
+            <div class="rounded-m size-14 rounded-md bg-gray-200"></div>
+        </div>
+        <div class="text-sm">
+            <div class="my-2 flex items-center justify-between">
+                <div class="h-3 w-24 rounded-full bg-gray-200"></div>
+            </div>
+            <div class="flex gap-x-5">
+                <div class="mb-3 flex items-center gap-x-3 text-xs text-gray-400">
+                    <div class="h-3 w-14 rounded-full bg-gray-200"></div>
+                    <span class="h-3 w-[0.1rem] rounded-full bg-gray-400 dark:bg-white"></span>
+                    <div class="h-3 w-14 rounded-full bg-gray-200"></div>
+                </div>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-4 cursor-pointer fill-gray-200 text-gray-200"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                    />
+                </svg>
+            </div>
+        </div>
+    </figure>
+</ng-template>

@@ -1,11 +1,11 @@
 import { NgClass, NgIf } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, Output, Renderer2 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-button',
     standalone: true,
-    imports: [NgClass, NgIf],
+    imports: [NgClass, NgIf, RouterLink],
     templateUrl: './button.component.html',
     styleUrl: './button.component.css',
 })
@@ -40,10 +40,12 @@ export class ButtonComponent {
         });
     }
 
-    handleClick() {
-        if (this.variant === 'link' && this.href !== '') {
+    handleClick(e: MouseEvent) {
+        if (this.href !== '') {
+            e.preventDefault();
             this.router.navigate([this.href]);
+        } else {
+            this.click.emit();
         }
-        this.click.emit();
     }
 }

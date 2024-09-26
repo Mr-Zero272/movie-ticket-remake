@@ -26,12 +26,13 @@ public class MovieController {
             @RequestParam(value = "q", defaultValue = "", required = false) String query,
             @RequestParam(value = "genreId", required = false, defaultValue = "") Integer genreId,
             @RequestParam(value = "sort", defaultValue = "none", required = false) String sort,
+            @RequestParam(value = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
             @RequestParam(value = "originalLanguage", defaultValue = "en", required = false) String originalLanguage,
             @RequestParam(value = "status", defaultValue = "Released", required = false) String status,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(movieService.getAllMovies(query, genreId, originalLanguage, status, sort, page, size));
+        return ResponseEntity.ok(movieService.getAllMovies(query, genreId, originalLanguage, status, sort, sortOrder, page, size));
     }
 
     @GetMapping("/popular")

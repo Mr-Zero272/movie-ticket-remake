@@ -20,7 +20,7 @@ public class MovieDaoCustom{
         this.entityManager = entityManager;
     }
 
-    public Page<Movie> findAllWithFilters(List<String> queries, Integer genreId, String originalLanguage, String status, String sort, Pageable pageable) {
+    public Page<Movie> findAllWithFilters(List<String> queries, Integer genreId, String originalLanguage, String status, String sort, String sortOrder, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Movie> query = cb.createQuery(Movie.class);
         Root<Movie> movieRoot = query.from(Movie.class);
@@ -55,7 +55,11 @@ public class MovieDaoCustom{
 
         // Apply sorting
         if (!sort.equalsIgnoreCase("none") && !sort.equalsIgnoreCase("")) {
-            query.orderBy(cb.asc(movieRoot.get(sort))); // Example: Sort by 'field'
+            if (sortOrder.equalsIgnoreCase("desc")) {
+                query.orderBy(cb.desc(movieRoot.get(sort)));
+            } else {
+                query.orderBy(cb.asc(movieRoot.get(sort)));
+            }
         }
 
         // Fetch paginated data

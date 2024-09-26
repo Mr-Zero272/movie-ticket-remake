@@ -60,7 +60,7 @@ public class MovieServiceImpl implements MovieService {
     private MovieDaoCustom movieDaoCustom;
 
     @Override
-    public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, int page, int size) {
+    public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, String sortOrder, int page, int size) {
         if (genreId != null && genreId == 0) genreId = null;
         List<String> queries = new ArrayList<>();
         queries.add(query);
@@ -70,7 +70,7 @@ public class MovieServiceImpl implements MovieService {
             queries = Arrays.stream(query.split(" ")).toList();
         }
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Movie> pageMovie = movieDaoCustom.findAllWithFilters(queries, genreId, originalLanguage, status, sort, pageable);
+        Page<Movie> pageMovie = movieDaoCustom.findAllWithFilters(queries, genreId, originalLanguage, status, sort, sortOrder, pageable);
         PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
                 .data(pageMovie.getContent())
                 .page(page)
