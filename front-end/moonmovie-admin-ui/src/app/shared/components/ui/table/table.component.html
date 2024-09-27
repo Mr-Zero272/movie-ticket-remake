@@ -83,8 +83,8 @@
             </th>
         </tr>
     </thead>
-    <tbody>
-        <tr *ngFor="let row of data" class="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+    <tbody *ngIf="!loading && tableData; else loadingBody">
+        <tr *ngFor="let row of tableData.data" class="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
             <td *ngFor="let column of columns" scope="row" class="px-6 py-2">
                 <ng-container *ngIf="column.template; else defaultCell">
                     <ng-container
@@ -94,196 +94,43 @@
                 <ng-template #defaultCell>{{ row[column.key] }}</ng-template>
             </td>
             <td class="px-6 py-2 text-right">
-                <app-button variant="link">Detail</app-button>
+                <ng-container *ngIf="lastColumn; else defaultLastCell">
+                    <ng-container *ngTemplateOutlet="lastColumn; context: { $implicit: row, row: row }"></ng-container>
+                </ng-container>
+                <ng-template #defaultLastCell
+                    ><app-button variant="link" [href]="'/details/' + row.id">Detail</app-button></ng-template
+                >
             </td>
         </tr>
     </tbody>
-    <ng-template #loadingTableBody>
+    <ng-template #loadingBody>
         <tbody>
-            <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                <th scope="row" class="px-6 py-4">
-                    <div class="flex items-center gap-x-3">
-                        <div class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"></div>
-                        <div class="flex flex-col justify-center">
-                            <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                            <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                        </div>
-                    </div>
-                </th>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                        <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
-                    ></a>
-                </td>
-            </tr>
-            <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                <th scope="row" class="px-6 py-4">
-                    <div class="flex items-center gap-x-3">
-                        <div class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"></div>
-                        <div class="flex flex-col justify-center">
-                            <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                            <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                        </div>
-                    </div>
-                </th>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                        <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
-                    ></a>
-                </td>
-            </tr>
-            <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                <th scope="row" class="px-6 py-4">
-                    <div class="flex items-center gap-x-3">
-                        <div class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"></div>
-                        <div class="flex flex-col justify-center">
-                            <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                            <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                        </div>
-                    </div>
-                </th>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                        <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
-                    ></a>
-                </td>
-            </tr>
-            <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                <th scope="row" class="px-6 py-4">
-                    <div class="flex items-center gap-x-3">
-                        <div class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"></div>
-                        <div class="flex flex-col justify-center">
-                            <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                            <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                        </div>
-                    </div>
-                </th>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                        <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
-                    ></a>
-                </td>
-            </tr>
-            <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                <th scope="row" class="px-6 py-4">
-                    <div class="flex items-center gap-x-3">
-                        <div class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"></div>
-                        <div class="flex flex-col justify-center">
-                            <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                            <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                        </div>
-                    </div>
-                </th>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                        <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
-                    ></a>
-                </td>
-            </tr>
-            <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                <th scope="row" class="px-6 py-4">
-                    <div class="flex items-center gap-x-3">
-                        <div class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"></div>
-                        <div class="flex flex-col justify-center">
-                            <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                            <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                        </div>
-                    </div>
-                </th>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                        <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
-                    ></a>
-                </td>
-            </tr>
-            <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                <th scope="row" class="px-6 py-4">
-                    <div class="flex items-center gap-x-3">
-                        <div class="h-10 w-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-700"></div>
-                        <div class="flex flex-col justify-center">
-                            <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                            <div class="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                        </div>
-                    </div>
-                </th>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="mb-4 h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                        <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
-                    ></a>
-                </td>
-            </tr>
+            <ng-container *ngFor="let i of [].constructor(10); let idx = index">
+                <tr class="animate-pulse border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <td *ngFor="let column of columns" scope="row" class="px-6 py-2">
+                        <ng-container *ngIf="column.templateLoading; else defaultCell">
+                            <ng-container *ngTemplateOutlet="column.templateLoading"></ng-container>
+                        </ng-container>
+                        <ng-template #defaultCell>
+                            <div class="mb-4 h-2.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div
+                        ></ng-template>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="mb-4 h-2.5 w-28 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </td>
+                </tr>
+            </ng-container>
         </tbody>
     </ng-template>
 </table>
-<app-pagination
-    [page]="1"
-    [totalPages]="12"
-    [size]="7"
-    [totalElements]="123"
-    (choosePage)="handleChoosePage($event)"
-    (nextPage)="handleChoosePage($event)"
-    (prevPage)="handleChoosePage($event)"
-></app-pagination>
+<ng-container *ngIf="tableData !== undefined">
+    <app-pagination
+        [page]="tableData.page"
+        [totalPages]="tableData.totalPages"
+        [size]="tableData.size"
+        [totalElements]="tableData.totalElements"
+        (choosePage)="handleChoosePage($event)"
+        (nextPage)="handleChoosePage($event)"
+        (prevPage)="handleChoosePage($event)"
+    ></app-pagination>
+</ng-container>

@@ -13,7 +13,7 @@ import {
 import { DropdownMenuComponent } from '../dropdown-menu/dropdown-menu.component';
 import { DropdownMenuItemComponent } from '../dropdown-menu-item/dropdown-menu-item.component';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { debounceTime, Subject } from 'rxjs';
 import { LabelAndValue } from '../../../models/labelAndValue';
 import { Column, Sort } from '../../../models/table';
 import { ButtonComponent } from '../button/button.component';
@@ -43,18 +43,28 @@ import { SortIconComponent } from '../sort-icon/sort-icon.component';
 })
 export class TableComponent implements OnInit {
     @Input() columns: Array<Column> = []; // Array of column definitions
-    @Input() data: any[] = [];
+    @Input() tableData!: any;
     @Input() sortData: Sort[] = [];
     @Input() headerTable!: TemplateRef<any>;
+    @Input() lastColumn!: TemplateRef<any>;
+    @Input() loading: boolean = false;
 
     @Output() onChoosePage = new EventEmitter<number>();
     @Output() onChooseSort = new EventEmitter<Sort>();
+    @Output() onSearch = new EventEmitter<string>();
+
     activeSort: Sort = this.sortData[0];
     searchInput = new Subject<string>();
     searchValue: string = '';
     click = 0;
 
-    constructor() {}
+    constructor() {
+        this.searchInput.pipe(debounceTime(500)).subscribe((searchTerm: string) => {
+            // Call your search function here
+            this.onSearch.emit(searchTerm);
+        });
+        console.log(this.tableData);
+    }
 
     ngOnInit(): void {
         this.activeSort = this.sortData[0];

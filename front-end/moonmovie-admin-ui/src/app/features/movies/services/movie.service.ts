@@ -17,15 +17,23 @@ export class MovieService {
     ) {}
 
     fetchMovies({
+        q = '',
         page = 1,
         size = 7,
-        sort = 'createdAt',
-        sortOrder = 'desc',
+        originalLanguage = 'en',
+        status = 'Released',
+        genreId = 0,
+        sort = 'title',
+        sortOrder = 'asc',
     }: {
-        page: number;
-        size: number;
-        sort: string;
-        sortOrder: 'desc' | 'asc';
+        q?: string;
+        page?: number;
+        size?: number;
+        sort?: string;
+        originalLanguage?: string;
+        status?: string;
+        genreId?: number;
+        sortOrder?: 'desc' | 'asc';
     }) {
         const token = this.authService.getToken();
         if (!token) {
@@ -37,8 +45,12 @@ export class MovieService {
                 Authorization: `Bearer ${token}`,
             },
             params: {
+                q,
                 page,
                 size,
+                originalLanguage,
+                status,
+                genreId,
                 sort,
                 sortOrder,
             },

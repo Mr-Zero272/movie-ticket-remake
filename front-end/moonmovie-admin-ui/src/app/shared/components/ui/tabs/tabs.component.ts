@@ -12,32 +12,7 @@ interface Tab extends LabelAndValue {}
     styleUrl: './tabs.component.css',
 })
 export class TabsComponent implements OnInit {
-    @Input() tabsData: Tab[] = [
-        {
-            label: 'All',
-            value: 'all',
-        },
-        {
-            label: 'Release',
-            value: 'release',
-        },
-        {
-            label: 'Upcoming',
-            value: 'upcoming',
-        },
-        {
-            label: 'English',
-            value: 'en',
-        },
-        {
-            label: 'French',
-            value: 'fr',
-        },
-        {
-            label: 'Action',
-            value: 'action',
-        },
-    ];
+    @Input() tabsData: Tab[] = [];
 
     innerData: Tab[] = [];
     @Input() activeTab: Tab | null = null;

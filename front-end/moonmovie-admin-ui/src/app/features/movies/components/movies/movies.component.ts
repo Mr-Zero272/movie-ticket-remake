@@ -9,6 +9,9 @@ import { moviesPagination } from '../../../../shared/data/movies';
 import { MovieService } from '../../services/movie.service';
 import { debounceTime, Subject } from 'rxjs';
 import { Movie } from '../../../../shared/models/movie.model';
+import { Pagination } from '../../../../shared/models/pagination-obj.model';
+import { LabelAndValue } from '../../../../shared/models/labelAndValue';
+import { Genre } from '../../../../shared/models/genre.model';
 
 @Component({
     selector: 'app-movies',
@@ -19,9 +22,37 @@ import { Movie } from '../../../../shared/models/movie.model';
 })
 export class MoviesComponent implements AfterViewInit, OnInit {
     columns: Array<Column> = [];
-    moviesData: Movie[] = [];
-    searchInput = new Subject<string>();
-    sortDat: Array<Sort> = [
+    moviesData!: Pagination<Movie>;
+    currentSearchValue: string = '';
+    loading: boolean = false;
+    tabsData: LabelAndValue[] = [
+        {
+            label: 'All',
+            value: 'all',
+        },
+        {
+            label: 'Action',
+            value: 28,
+        },
+        {
+            label: 'Adventure',
+            value: 12,
+        },
+        {
+            label: 'Drama',
+            value: 18,
+        },
+        {
+            label: 'Thriller',
+            value: 53,
+        },
+        {
+            label: 'Crime',
+            value: 80,
+        },
+    ];
+    activeTab: LabelAndValue = this.tabsData[0];
+    sortData: Array<Sort> = [
         {
             label: 'Title',
             key: 'title',
@@ -48,27 +79,22 @@ export class MoviesComponent implements AfterViewInit, OnInit {
             order: 'asc',
         },
     ];
+    activeSort: Sort = this.sortData[0];
     @ViewChild('movieTemplate', { static: true }) movieTemplate!: TemplateRef<any>;
+    @ViewChild('movieTemplateLoading', { static: true }) movieTemplateLoading!: TemplateRef<any>;
 
     constructor(
         private cdr: ChangeDetectorRef,
         private movieService: MovieService,
-    ) {
-        this.searchInput.pipe(debounceTime(500)).subscribe((searchTerm: string) => {
-            // Call your search function here
-            this.performSearch(searchTerm);
-        });
-    }
+    ) {}
 
     ngOnInit(): void {
-        this.movieService.fetchMovies({ page: 1, size: 5, sort: 'title', sortOrder: 'asc' }).subscribe((data) => {
-            this.moviesData = data.data;
-        });
+        this.handleFetchMovies({});
     }
 
     ngAfterViewInit(): void {
         this.columns = [
-            { label: 'Movie', key: 'title', template: this.movieTemplate },
+            { label: 'Movie', key: 'title', template: this.movieTemplate, templateLoading: this.movieTemplateLoading },
             { label: 'Status', key: 'status' }, // Default rendering
             { label: 'Vote Average', key: 'voteAverage' },
             { label: 'Release Date', key: 'releaseDate' },
@@ -77,13 +103,84 @@ export class MoviesComponent implements AfterViewInit, OnInit {
         this.cdr.detectChanges();
     }
 
-    handleChangePage(page: number) {
-        this.moviesData = this.moviesData.slice(0, 3);
-        console.log('change');
-        console.log(this.moviesData.length);
+    handleFetchMovies({
+        q = '',
+        page = 1,
+        size = 7,
+        originalLanguage = 'en',
+        status = 'Released',
+    }: {
+        q?: string;
+        page?: number;
+        size?: number;
+        originalLanguage?: string;
+        status?: string;
+    }) {
+        if (this.loading) {
+            return;
+        }
+        this.loading = true;
+        if (this.activeTab.value === 'all') {
+            this.movieService
+                .fetchMovies({
+                    q: this.currentSearchValue,
+                    page,
+                    size,
+                    originalLanguage,
+                    status,
+                    genreId: 0,
+                    sort: this.activeSort.key,
+                    sortOrder: this.activeSort.order,
+                })
+                .subscribe((data) => {
+                    this.moviesData = data;
+                }).closed;
+        } else {
+            this.movieService
+                .fetchMovies({
+                    q: this.currentSearchValue,
+                    page,
+                    size,
+                    originalLanguage,
+                    status,
+                    genreId: this.activeTab.value as number,
+                    sort: this.activeSort.key,
+                    sortOrder: this.activeSort.order,
+                })
+                .subscribe((data) => {
+                    this.moviesData = data;
+                }).closed;
+        }
+
+        this.loading = false;
     }
 
-    performSearch(searchTerm: string) {
-        console.log(searchTerm);
+    handleChangePage(page: number) {
+        this.handleFetchMovies({
+            page: page,
+        });
+    }
+
+    handleSearchChange(searchTerm: string) {
+        this.currentSearchValue = searchTerm;
+        this.handleFetchMovies({});
+    }
+
+    handleChangeSort(sort: Sort) {
+        this.activeSort = sort;
+        this.handleFetchMovies({});
+    }
+
+    handleChooseTab(tab: LabelAndValue) {
+        this.activeTab = tab;
+        this.handleFetchMovies({});
+    }
+
+    handleDisplayGenre(genres: Array<Genre>): string {
+        if (this.activeTab && this.activeTab.value !== 'all' && genres.some((g) => g.id === this.activeTab?.value)) {
+            return this.activeTab.label;
+        } else {
+            return genres[0].name;
+        }
     }
 }

@@ -1,5 +1,5 @@
 <div class="flex items-center justify-between">
-    <app-tabs></app-tabs>
+    <app-tabs [tabsData]="tabsData" [activeTab]="activeTab" (onChooseTab)="handleChooseTab($event)"></app-tabs>
     <app-button [loading]="false" href="/movies/adding">
         <svg
             icon
@@ -25,11 +25,18 @@
         <span class="text-lg font-semibold text-gray-900 dark:bg-gray-800 dark:text-white rtl:text-right">Movie</span>
         <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">View and manage movies</p>
     </ng-template>
+    <ng-template #lastColumn let-movie>
+        <app-button variant="link" [href]="'/movie/detail/' + movie.id">Detail</app-button>
+    </ng-template>
     <app-table
         [headerTable]="headerTable"
         [columns]="columns"
-        [data]="moviesData"
-        [sortData]="sortDat"
+        [tableData]="moviesData"
+        [sortData]="sortData"
+        [loading]="loading"
+        [lastColumn]="lastColumn"
+        (onChooseSort)="handleChangeSort($event)"
+        (onSearch)="handleSearchChange($event)"
         (onChoosePage)="handleChangePage($event)"
     ></app-table>
     <ng-template #movieTemplate let-movie>
@@ -37,6 +44,7 @@
             [title]="movie.title"
             [poster]="movie.posterPath"
             [runtime]="movie.runtime"
+            [firstGenre]="handleDisplayGenre(movie.genres)"
         ></app-movie-horizontal-card>
     </ng-template>
     <ng-template #movieTemplateLoading>

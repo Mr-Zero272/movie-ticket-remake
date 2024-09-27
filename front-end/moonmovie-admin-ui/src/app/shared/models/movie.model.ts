@@ -1,3 +1,5 @@
+import { Genre } from './genre.model';
+
 export class Movie {
     private _id: number;
     private _title: string;
@@ -14,7 +16,7 @@ export class Movie {
     private _runtime: number;
     private _releaseDate: string;
     private _deleteFlag: boolean;
-    private _genres: Array<{ id: number; name: string }>;
+    private _genres: Array<Genre>;
 
     constructor(
         id: number,
@@ -32,7 +34,7 @@ export class Movie {
         runtime: number,
         releaseDate: string,
         deleteFlag: boolean,
-        genres: Array<{ id: number; name: string }>,
+        genres: Array<Genre>,
     ) {
         this._id = id;
         this._title = title;
@@ -173,11 +175,11 @@ export class Movie {
     }
 
     /**
-     * Getter deleteFlag
-     * @return {Array<{id:number, name:string}>}
+     * Getter genres
+     * @return {Array<Genre>}
      */
-    public get genres(): Array<{ id: number; name: string }> {
-        return this.genres;
+    public get genres(): Array<Genre> {
+        return this._genres;
     }
 
     /**
@@ -301,10 +303,10 @@ export class Movie {
     }
 
     /**
-     * Setter deleteFlag
-     * @param {Array<{id:number, name:string}>}} value
+     * Setter genres
+     * @param {Array<Genre>} value
      */
-    public set genres(value: Array<{ id: number; name: string }>) {
+    public set genres(value: Array<Genre>) {
         this._genres = value;
     }
 }
