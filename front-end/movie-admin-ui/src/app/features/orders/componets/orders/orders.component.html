@@ -1,0 +1,20 @@
+<section>
+  <div>
+    <app-tabs [tabsData]="tabsData" [activeTab]="activeTab" (onChooseTab)="handleChooseTab($event)"></app-tabs>
+  </div>
+  <ng-template #headerTable>
+    <span class="text-lg font-semibold text-gray-900 rtl:text-right dark:bg-gray-800 dark:text-white">Orders</span>
+    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">View and manage orders</p>
+  </ng-template>
+
+  <app-table
+    [haveSearch]="false"
+    [headerTable]="headerTable"
+    [columns]="columns"
+    [tableData]="ordersData"
+    [sortData]="sortData"
+    [loading]="loading"
+    (onChooseSort)="handleChangeSort($event)"
+    (onChoosePage)="handleChangePage($event)"
+  />
+</section>

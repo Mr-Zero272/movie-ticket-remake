@@ -41,11 +41,11 @@ export const fetchShowings = async (startDate: string, movieId: number) => {
     }
 };
 
-export const fetchScheduleShowings = async (startDate: string, page: number = 1, size: number = 10) => {
+export const fetchScheduleShowings = async (date: string, page: number = 1, size: number = 10) => {
     try {
         const response = await axios.get(`${API_URL}/showing/schedule`, {
             params: {
-                startDate,
+                date,
                 page,
                 size,
             },

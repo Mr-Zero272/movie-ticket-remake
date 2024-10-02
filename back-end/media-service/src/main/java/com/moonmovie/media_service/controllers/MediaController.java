@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.apache.tomcat.util.http.fileupload.FileUploadBase.MULTIPART_FORM_DATA;
+
 @RestController
 @RequestMapping("/api/v2/moon-movie/media")
 public class MediaController {
@@ -32,12 +34,12 @@ public class MediaController {
         return new ResponseEntity<>(filesStorageService.loadFileAsResource(videoName, "video"), headers, HttpStatus.OK);
     }
 
-    @PostMapping("/images")
+    @PostMapping(value = "/images", consumes = MULTIPART_FORM_DATA, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> saveImage(@RequestParam("files") List<MultipartFile> files) {
         return ResponseEntity.ok(filesStorageService.saveFiles(files, "image"));
     }
 
-    @PostMapping("/videos")
+    @PostMapping(value ="/videos", consumes = MULTIPART_FORM_DATA, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> saveVideo(@RequestParam("files") List<MultipartFile> files) {
         return ResponseEntity.ok(filesStorageService.saveFiles(files, "video"));
     }

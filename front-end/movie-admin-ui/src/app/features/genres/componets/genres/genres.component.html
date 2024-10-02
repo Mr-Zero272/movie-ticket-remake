@@ -1,0 +1,18 @@
+<section>
+  <ng-template #headerTable>
+    <span class="text-lg font-semibold text-gray-900 rtl:text-right dark:bg-gray-800 dark:text-white">Genres</span>
+    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">View and manage genres</p>
+  </ng-template>
+
+  <app-table
+    [haveLastColumn]="false"
+    [headerTable]="headerTable"
+    [columns]="columns"
+    [tableData]="genresData"
+    [sortData]="sortData"
+    [loading]="loading"
+    (onChooseSort)="handleChangeSort($event)"
+    (onSearch)="handleSearchChange($event)"
+    (onChoosePage)="handleChangePage($event)"
+  />
+</section>

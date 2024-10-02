@@ -9,6 +9,8 @@ import com.moonmovie.movie_service.exceptions.ReservationException;
 import com.moonmovie.movie_service.feign.MovieServiceInterface;
 import com.moonmovie.movie_service.feign.SeatServiceInterface;
 import com.moonmovie.movie_service.models.Order;
+import com.moonmovie.movie_service.models.OrderStatistical;
+import com.moonmovie.movie_service.models.OrderStatisticalDetail;
 import com.moonmovie.movie_service.models.Ticket;
 import com.moonmovie.movie_service.requests.OrderRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
@@ -89,17 +91,40 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public PaginationResponse getOrders(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "timestamp"));
-        Page<Order> orderPage = orderDao.findAll(pageable);
+    public PaginationResponse<Order> getOrders(String orderStatus, String sort, String sortOrder, int page, int size) {
+        Pageable pageable;
+        if (sort.equalsIgnoreCase("none")) {
+            pageable = PageRequest.of(page - 1, size);
+        } else {
+            pageable = PageRequest.of(page - 1, size, Sort.by(
+                    sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+                    "timestamp"));
+        }
+        Page<Order> orderPage;
+        if (orderStatus.equalsIgnoreCase("all")) {
+            orderPage = orderDao.findAll(pageable);
+        } else {
+            orderPage = orderDao.findAllByOrderStatus(orderStatus, pageable);
+        }
 
-        PaginationResponse<Order> resp = PaginationResponse.<Order>builder()
+        return PaginationResponse.<Order>builder()
                 .data(orderPage.getContent())
                 .page(page)
                 .size(size)
                 .totalPages(orderPage.getTotalPages())
                 .totalElements(orderPage.getTotalElements())
                 .build();
-        return resp;
+    }
+
+    @Override
+    public List<OrderStatisticalDetail> getOrderStatistics(int year) {
+        List<OrderStatisticalDetail> orderStatisticalDetails = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            List<OrderStatistical> orderStatisticalList = orderDao.getOrderStatisticalByYear(year - i);
+            if (!orderStatisticalList.isEmpty()) {
+                orderStatisticalDetails.add(new OrderStatisticalDetail(year - i, orderStatisticalList));
+            }
+        }
+        return orderStatisticalDetails;
     }
 }

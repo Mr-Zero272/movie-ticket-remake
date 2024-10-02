@@ -1,0 +1,103 @@
+<section>
+  <div class="mb-10 flex gap-x-7">
+    <article class="flex-1">
+      <div class="flex items-center justify-between">
+        <div class="text-2xl font-semibold">Earnings</div>
+        <button class="flex items-center rounded-md px-3 py-1.5 hover:bg-accent">
+          <span class="me-2 font-medium">More</span>
+          <ng-icon name="heroSquares2x2" size="20"></ng-icon>
+        </button>
+      </div>
+      <div class="relative mb-5 h-56 w-full rounded-2xl bg-black p-5 text-white">
+        <div class="absolute right-5 top-5 flex items-center justify-center gap-x-2">
+          <ng-icon name="heroCubeTransparent" size="50" class="text-white"></ng-icon>
+          <div class="text-2xl font-medium">MM</div>
+        </div>
+        <div class="flex items-center gap-x-10">
+          <div class="relative size-44">
+            <canvas id="balanceChart" #balanceChart>{{ balanceChart }}</canvas>
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              <span><ng-icon name="heroArrowTrendingUp" size="16"></ng-icon></span>
+              <span>18%</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm">My Balance</p>
+            <p class="text-5xl font-semibold">{{ '10000000' | currency: 'VND' }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-4 gap-7">
+        <app-statistical-card></app-statistical-card>
+        <app-statistical-card></app-statistical-card>
+        <app-statistical-card></app-statistical-card>
+        <app-statistical-card></app-statistical-card>
+      </div>
+    </article>
+    <article class="flex w-1/5 flex-col gap-y-5">
+      <div class="flex flex-col items-center gap-y-5 rounded-2xl p-5">
+        <img
+          class="size-24 rounded-full border border-gray-200"
+          src="https://i.pinimg.com/564x/bc/5b/0e/bc5b0e6341c718fbbb0bb3620995a1e5.jpg"
+          alt="avatar"
+        />
+        <div>
+          <div class="text-gray-500">Hello,</div>
+          <p class="text-2xl font-medium">Pitithuong</p>
+        </div>
+      </div>
+
+      <div class="flex flex-1 flex-col items-center justify-center rounded-2xl p-5 shadow-md">
+        <p class="text-lg font-medium">{{ digitalClock | date: 'MMM dd, yyyy' }}</p>
+        <div class="flex items-center justify-center bg-primary p-1 text-white">
+          <div class="fonte-semibold text-3xl">{{ digitalClock | date: 'HH:mm:ss a' }}</div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <div class="flex gap-x-10">
+    <article class="flex-1">
+      <div class="flex items-center justify-between">
+        <div class="text-2xl font-semibold">Incomes Overview</div>
+        <button class="flex items-center rounded-md px-3 py-1.5 hover:bg-accent">
+          <ng-icon name="heroArrowLongRight" size="20"></ng-icon>
+        </button>
+      </div>
+      <div>
+        <canvas id="incomesChart" #incomesChart>{{ incomesChart }}</canvas>
+      </div>
+    </article>
+    <article class="flex w-1/4 flex-col justify-between">
+      <div>
+        <p class="text-lg font-medium">Recent orders</p>
+        <div class="text-xs text-gray-500">This list order by date</div>
+      </div>
+      <div class="my-3 flex-1">
+        <ul class="flex flex-col gap-y-2">
+          <li>
+            <app-order-item></app-order-item>
+          </li>
+          <li>
+            <app-order-item></app-order-item>
+          </li>
+          <li>
+            <app-order-item></app-order-item>
+          </li>
+          <li>
+            <app-order-item></app-order-item>
+          </li>
+          <li>
+            <app-order-item></app-order-item>
+          </li>
+          <li>
+            <app-order-item></app-order-item>
+          </li>
+          <li>
+            <app-order-item></app-order-item>
+          </li>
+        </ul>
+      </div>
+      <button class="w-full rounded-md py-1.5 font-medium hover:bg-accent">See more</button>
+    </article>
+  </div>
+</section>

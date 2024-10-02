@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import DatePickerCustom from '@/components/ui/date-picker-custom';
 import { cn } from '@/lib/utils';
 import { Flag, Frown, Info } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { Seat, SeatDetail } from '@/types/seat';
@@ -218,7 +218,7 @@ const Step1 = ({
                                 })
                             )
                         ) : (
-                            <>
+                            <Fragment>
                                 <div className="flex cursor-progress select-none flex-col items-center gap-y-3 rounded-lg border border-primary p-2 text-center text-sm">
                                     <div>
                                         <Skeleton className="h-5 w-20" />
@@ -243,7 +243,7 @@ const Step1 = ({
                                         <Skeleton className="h-5 w-20" />
                                     </div>
                                 </div>
-                            </>
+                            </Fragment>
                         )}
                     </div>
                 </div>
@@ -252,7 +252,7 @@ const Step1 = ({
                 <div className="w-2/3 max-md:w-full">
                     {seatLoading && <SeatSectionSkeleton />}
                     {!seatLoading && seatData?.length !== 0 && (
-                        <>
+                        <Fragment>
                             <div className="mb-7 flex flex-col items-center justify-center">
                                 <div className="h-1 w-56 rounded-full bg-gray-400 shadow-lg"></div>
                                 <p className="text-primary">SCREEN</p>
@@ -529,7 +529,7 @@ const Step1 = ({
                                     })}
                                 </div>
                             </div>
-                        </>
+                        </Fragment>
                     )}
                     {!seatLoading && seatData?.length === 0 && (
                         <div className="mx-auto grid place-items-center px-8 text-center">

@@ -15,10 +15,13 @@ public class GenreController {
 
     @GetMapping
     public ResponseEntity<PaginationResponse<Genre>> getAllGenres(
+            @RequestParam(value = "q", defaultValue = "", required = false) String query,
+            @RequestParam(value = "sort", defaultValue = "none", required = false) String sort,
+            @RequestParam(value = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(genreService.getAllGenres(page, size));
+        return ResponseEntity.ok(genreService.getAllGenres(query, sort, sortOrder, page, size));
     }
 
     @PostMapping

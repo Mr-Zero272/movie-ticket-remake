@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -21,9 +22,24 @@ public class GenreServiceImpl implements GenreService {
     private GenreDao genreDao;
 
     @Override
-    public PaginationResponse<Genre> getAllGenres( int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Genre> pageGenre = genreDao.findAll(pageable);
+    public PaginationResponse<Genre> getAllGenres(String q, String sort, String sortOrder, int page, int size) {
+
+        Pageable pageable;
+        if (sort.isEmpty() || sort.equalsIgnoreCase("none")) {
+            pageable = PageRequest.of(page - 1, size);
+        } else {
+            if (sortOrder.equals("asc")) {
+                pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, sort));
+            } else {
+                pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sort));
+            }
+        }
+        Page<Genre> pageGenre;
+        if (q.equalsIgnoreCase("")) {
+            pageGenre = genreDao.findAll(pageable);
+        } else {
+            pageGenre = genreDao.findAllByNameContainingIgnoreCase(q, pageable);
+        }
         PaginationResponse<Genre> resp = PaginationResponse.<Genre>builder()
                 .data(pageGenre.getContent())
                 .page(page)

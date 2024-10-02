@@ -1,0 +1,48 @@
+<div
+  *ngIf="urlVideo === undefined || urlVideo === '' || urlVideo === null"
+  [ngClass]="class"
+  class="mb-5 flex h-44 w-72 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed"
+  (click)="handleChooseVideo()"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+    class="size-7 text-gray-500"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+    />
+  </svg>
+  <p class="text-sm text-gray-700">Click to browser</p>
+</div>
+
+<div
+  *ngIf="urlVideo !== undefined && urlVideo !== '' && urlVideo !== null"
+  class="group relative h-full w-fit"
+  [ngClass]="class"
+>
+  <video class="h-44 w-72 rounded-lg" controls>
+    <source [src]="urlVideo" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+  <div
+    class="absolute right-0 top-0 hidden cursor-pointer rounded-full bg-white bg-opacity-70 p-1.5 group-hover:block"
+    (click)="handleDeleteVideo()"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="2.5"
+      stroke="currentColor"
+      class="size-4 text-red-500"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+    </svg>
+  </div>
+</div>
