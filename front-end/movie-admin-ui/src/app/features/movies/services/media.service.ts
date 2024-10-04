@@ -16,7 +16,6 @@ export class MediaService {
     } else {
       prefixUrl = '/videos';
     }
-    console.log(files);
 
     const formData = new FormData();
     files.forEach((file) => {

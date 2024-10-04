@@ -12,21 +12,12 @@
             placeholder="Title"
             required
           />
-          <div
-            *ngIf="
-              movieForm.controls['title'].invalid &&
-              (movieForm.controls['title'].dirty || movieForm.controls['title'].touched)
-            "
-            class="mt-2 w-full text-left"
-          >
-            <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['title'].hasError('required')">
-              This filed is required.
-            </div>
-          </div>
+          <app-error-display [control]="movieForm.controls['title']" [isFormSubmitted]="isFormSubmitted" />
         </div>
         <div class="mb-3">
           <label for="genre" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Genres </label>
-          <app-multi-select [data]="genres"></app-multi-select>
+          <app-multi-select [data]="genresData" formControlName="genres"></app-multi-select>
+          <app-error-display [control]="movieForm.controls['genres']" [isFormSubmitted]="isFormSubmitted" />
         </div>
         <div class="mb-3 flex gap-x-5">
           <div class="w-1/2">
@@ -39,20 +30,7 @@
               placeholder="Budget"
               required
             />
-            <div
-              *ngIf="
-                movieForm.controls['budget'].invalid &&
-                (movieForm.controls['budget'].dirty || movieForm.controls['budget'].touched)
-              "
-              class="mt-2 w-full text-left"
-            >
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['budget'].hasError('required')">
-                This filed is required.
-              </div>
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['budget'].hasError('min')">
-                Budget must greater than 1.
-              </div>
-            </div>
+            <app-error-display [control]="movieForm.controls['budget']" [isFormSubmitted]="isFormSubmitted" />
           </div>
           <div class="w-1/2">
             <label for="runtime" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
@@ -66,20 +44,7 @@
               placeholder="Runtime"
               required
             />
-            <div
-              *ngIf="
-                movieForm.controls['runtime'].invalid &&
-                (movieForm.controls['runtime'].dirty || movieForm.controls['runtime'].touched)
-              "
-              class="mt-2 w-full text-left"
-            >
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['runtime'].hasError('required')">
-                This filed is required.
-              </div>
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['runtime'].hasError('min')">
-                Runtime must greater than 1.
-              </div>
-            </div>
+            <app-error-display [control]="movieForm.controls['runtime']" [isFormSubmitted]="isFormSubmitted" />
           </div>
         </div>
         <div class="mb-3 flex gap-x-5">
@@ -95,20 +60,7 @@
               placeholder="Vote average"
               required
             />
-            <div
-              *ngIf="
-                movieForm.controls['voteAverage'].invalid &&
-                (movieForm.controls['voteAverage'].dirty || movieForm.controls['voteAverage'].touched)
-              "
-              class="mt-2 w-full text-left"
-            >
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['voteAverage'].hasError('required')">
-                This filed is required.
-              </div>
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['voteAverage'].hasError('min')">
-                Vote average must greater than 1.
-              </div>
-            </div>
+            <app-error-display [control]="movieForm.controls['voteAverage']" [isFormSubmitted]="isFormSubmitted" />
           </div>
           <div class="w-1/3">
             <label for="voteCount" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -122,20 +74,7 @@
               placeholder="Vote count"
               required
             />
-            <div
-              *ngIf="
-                movieForm.controls['voteCount'].invalid &&
-                (movieForm.controls['voteCount'].dirty || movieForm.controls['voteCount'].touched)
-              "
-              class="mt-2 w-full text-left"
-            >
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['voteCount'].hasError('required')">
-                This filed is required.
-              </div>
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['voteCount'].hasError('min')">
-                Vote count must greater than 1.
-              </div>
-            </div>
+            <app-error-display [control]="movieForm.controls['voteCount']" [isFormSubmitted]="isFormSubmitted" />
           </div>
           <div class="w-1/3">
             <label for="releaseDate" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -147,18 +86,9 @@
               type="date"
               class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary dark:focus:ring-primary"
               placeholder="MM/dd/yyy"
+              required
             />
-            <div
-              *ngIf="
-                movieForm.controls['releaseDate'].invalid &&
-                (movieForm.controls['releaseDate'].dirty || movieForm.controls['releaseDate'].touched)
-              "
-              class="mt-2 w-full text-left"
-            >
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['releaseDate'].hasError('required')">
-                This filed is required.
-              </div>
-            </div>
+            <app-error-display [control]="movieForm.controls['releaseDate']" [isFormSubmitted]="isFormSubmitted" />
           </div>
         </div>
         <div class="mb-3">
@@ -179,7 +109,8 @@
           <label for="overview" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Overview</label>
           <textarea
             id="overview"
-            rows="4"
+            rows="6"
+            formControlName="overview"
             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary dark:focus:ring-primary"
             placeholder="Overview..."
           ></textarea>
@@ -196,26 +127,18 @@
       </div>
       <div class="flex-1">
         <div class="mb-3">
-          <label for="" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Movie images </label>
-          <app-select-images (onChange)="handleChangeImage($event)"></app-select-images>
+          <label for="images" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+            Movie images
+          </label>
+          <app-select-images [errorMsg]="imagesErrorMessage" id="images" formControlName="images"></app-select-images>
         </div>
         <div class="mb-3">
           <label for="video" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Movie trailer</label>
           <app-select-videos-trailer
-            [urlVideo]="trailer?.url"
-            (onChooseVideo)="handleChooseTrailer()"
-            (onDeleteVideo)="handleDeleteTrailer()"
+            id="trailer"
+            formControlName="trailer"
+            [errorMsg]="trailerErrorMessage"
           ></app-select-videos-trailer>
-          <input
-            #trailerInput
-            type="file"
-            id="video"
-            class="hidden w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-            placeholder="Video"
-            accept="video/mp4,video/x-m4v,video/*"
-            (change)="handleChangeVideo($event)"
-            required
-          />
         </div>
         <div class="mb-3 flex gap-x-5">
           <div class="w-1/4">
@@ -230,27 +153,10 @@
               placeholder="Total date showings in month"
               required
             />
-            <div
-              *ngIf="
-                movieForm.controls['totalDateShowingsInMonth'].invalid &&
-                (movieForm.controls['totalDateShowingsInMonth'].dirty ||
-                  movieForm.controls['totalDateShowingsInMonth'].touched)
-              "
-              class="mt-2 w-full text-left"
-            >
-              <div
-                class="text-sm italic text-red-500"
-                *ngIf="movieForm.controls['totalDateShowingsInMonth'].hasError('required')"
-              >
-                This filed is required.
-              </div>
-              <div
-                class="text-sm italic text-red-500"
-                *ngIf="movieForm.controls['totalDateShowingsInMonth'].hasError('min')"
-              >
-                This field must greater than 1.
-              </div>
-            </div>
+            <app-error-display
+              [control]="movieForm.controls['totalDateShowingsInMonth']"
+              [isFormSubmitted]="isFormSubmitted"
+            />
           </div>
           <div class="w-1/4">
             <label for="priceEachSeat" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -264,20 +170,7 @@
               placeholder="Price for each seat"
               required
             />
-            <div
-              *ngIf="
-                movieForm.controls['priceEachSeat'].invalid &&
-                (movieForm.controls['priceEachSeat'].dirty || movieForm.controls['priceEachSeat'].touched)
-              "
-              class="mt-2 w-full text-left"
-            >
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['priceEachSeat'].hasError('required')">
-                This filed is required.
-              </div>
-              <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['priceEachSeat'].hasError('min')">
-                Price must greater than 1.
-              </div>
-            </div>
+            <app-error-display [control]="movieForm.controls['priceEachSeat']" [isFormSubmitted]="isFormSubmitted" />
           </div>
           <div class="w-1/4">
             <label for="monthToSchedule" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
@@ -331,20 +224,7 @@
                 placeholder="2D"
                 required
               />
-              <div
-                *ngIf="
-                  movieForm.controls['_2d'].invalid &&
-                  (movieForm.controls['_2d'].dirty || movieForm.controls['_2d'].touched)
-                "
-                class="mt-2 w-full text-left"
-              >
-                <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['_2d'].hasError('required')">
-                  This filed is required.
-                </div>
-                <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['_2d'].hasError('min')">
-                  This field must greater than 1.
-                </div>
-              </div>
+              <app-error-display [control]="movieForm.controls['_2d']" [isFormSubmitted]="isFormSubmitted" />
             </div>
             <div>
               <label for="_2dSubtitles" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -358,23 +238,7 @@
                 placeholder="2D Subtitles"
                 required
               />
-              <div
-                *ngIf="
-                  movieForm.controls['_2dSubtitles'].invalid &&
-                  (movieForm.controls['_2dSubtitles'].dirty || movieForm.controls['_2dSubtitles'].touched)
-                "
-                class="mt-2 w-full text-left"
-              >
-                <div
-                  class="text-sm italic text-red-500"
-                  *ngIf="movieForm.controls['_2dSubtitles'].hasError('required')"
-                >
-                  This filed is required.
-                </div>
-                <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['_2dSubtitles'].hasError('min')">
-                  This field must greater than 1.
-                </div>
-              </div>
+              <app-error-display [control]="movieForm.controls['_2dSubtitles']" [isFormSubmitted]="isFormSubmitted" />
             </div>
             <div>
               <label for="_3d" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">3D</label>
@@ -386,20 +250,7 @@
                 placeholder="3D"
                 required
               />
-              <div
-                *ngIf="
-                  movieForm.controls['_3d'].invalid &&
-                  (movieForm.controls['_3d'].dirty || movieForm.controls['_3d'].touched)
-                "
-                class="mt-2 w-full text-left"
-              >
-                <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['_3d'].hasError('required')">
-                  This filed is required.
-                </div>
-                <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['_3d'].hasError('min')">
-                  This field must greater than 1.
-                </div>
-              </div>
+              <app-error-display [control]="movieForm.controls['_3d']" [isFormSubmitted]="isFormSubmitted" />
             </div>
             <div>
               <label for="_3dSubtitles" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
@@ -413,29 +264,13 @@
                 placeholder="3D Subtitles"
                 required
               />
-              <div
-                *ngIf="
-                  movieForm.controls['_3dSubtitles'].invalid &&
-                  (movieForm.controls['_3dSubtitles'].dirty || movieForm.controls['_3dSubtitles'].touched)
-                "
-                class="mt-2 w-full text-left"
-              >
-                <div
-                  class="text-sm italic text-red-500"
-                  *ngIf="movieForm.controls['_3dSubtitles'].hasError('required')"
-                >
-                  This filed is required.
-                </div>
-                <div class="text-sm italic text-red-500" *ngIf="movieForm.controls['_3dSubtitles'].hasError('min')">
-                  This field must greater than 1.
-                </div>
-              </div>
+              <app-error-display [control]="movieForm.controls['_3dSubtitles']" [isFormSubmitted]="isFormSubmitted" />
             </div>
           </div>
         </div>
 
         <div>
-          <app-button type="submit">Publish</app-button>
+          <app-button [loading]="isFormLoading" [disabled]="isFormLoading" type="submit">Publish</app-button>
         </div>
       </div>
     </form>

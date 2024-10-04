@@ -1,14 +1,14 @@
 import MarqueeText from '@/components/ui/marquee-text';
+import { currentUser } from '@/services/authServices';
+import { fetchListFavoriteMovies } from '@/services/favoriteServices';
+import { fetchPopularMovies } from '@/services/movieServices';
+import { getTickets } from '@/services/reservationServices';
+import { Movie } from '@/types/movie';
 import { BadgeHelp, CalendarCheck, Heart, Monitor } from 'lucide-react';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import ListTicket from './list-ticket';
-import { fetchListFavoriteMovies } from '@/services/favoriteServices';
-import { getTickets } from '@/services/reservationServices';
-import { OrderId, Ticket } from '@/types/ticket';
-import { fetchPopularMovies } from '@/services/movieServices';
-import { Movie } from '@/types/movie';
-import { currentUser } from '@/services/authServices';
+import { Fragment } from 'react';
 
 type Props = {};
 
@@ -30,7 +30,7 @@ const Tickets = async ({}: Props) => {
     }
 
     return (
-        <>
+        <Fragment>
             <div className="flex max-h-[35rem] gap-3 rounded-lg bg-black p-4 dark:bg-white max-md:max-h-[100rem]">
                 <ListTicket userId={userInfo.id} listTickets={listTickets} listPopularMovies={popularMovies} />
                 <div className="max-h-[35rem] w-1/6 max-[1490px]:w-1/3 max-md:hidden">
@@ -81,7 +81,7 @@ const Tickets = async ({}: Props) => {
                     </div>
                 </div>
             </div>
-        </>
+        </Fragment>
     );
 };
 

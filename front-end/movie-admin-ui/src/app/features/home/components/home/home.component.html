@@ -1,7 +1,7 @@
 <section>
   <div class="mb-10 flex gap-x-7">
     <article class="flex-1">
-      <div class="flex items-center justify-between">
+      <div class="mb-3 flex items-center justify-between">
         <div class="text-2xl font-semibold">Earnings</div>
         <button class="flex items-center rounded-md px-3 py-1.5 hover:bg-accent">
           <span class="me-2 font-medium">More</span>
@@ -35,18 +35,23 @@
       </div>
     </article>
     <article class="flex w-1/5 flex-col gap-y-5">
-      <div class="flex flex-col items-center gap-y-5 rounded-2xl p-5">
-        <img
-          class="size-24 rounded-full border border-gray-200"
-          src="https://i.pinimg.com/564x/bc/5b/0e/bc5b0e6341c718fbbb0bb3620995a1e5.jpg"
-          alt="avatar"
-        />
+      <div *ngIf="user; else userLoading" class="flex flex-col items-center gap-y-5 rounded-2xl p-5">
+        <img class="size-24 rounded-full border border-gray-200" [src]="user.avatar" alt="avatar" />
+
         <div>
           <div class="text-gray-500">Hello,</div>
-          <p class="text-2xl font-medium">Pitithuong</p>
+          <p class="text-2xl font-medium">{{ user.username !== '' ? user.username : 'My master' }}</p>
         </div>
       </div>
-
+      <ng-template #userLoading>
+        <div class="flex animate-pulse flex-col items-center gap-y-5 rounded-2xl p-5">
+          <div class="size-24 rounded-full border border-gray-200 bg-gray-200"></div>
+          <div>
+            <div class="mb-2 h-3 w-16 rounded-full bg-gray-200"></div>
+            <p class="h-3 w-24 rounded-full bg-gray-200"></p>
+          </div>
+        </div>
+      </ng-template>
       <div class="flex flex-1 flex-col items-center justify-center rounded-2xl p-5 shadow-md">
         <p class="text-lg font-medium">{{ digitalClock | date: 'MMM dd, yyyy' }}</p>
         <div class="flex items-center justify-center bg-primary p-1 text-white">

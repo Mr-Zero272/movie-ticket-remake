@@ -17,7 +17,10 @@ const DatePickerCustom = ({ initialDate, className, onChooseDate }: Props) => {
     const [scrollLeft, setScrollLeft] = useState(0);
     const moveDistance = useRef(0);
 
-    const listDate = useMemo(() => generateDateRangeNext(format(initialDate, 'yyyy-MM-dd'), 100), [initialDate]);
+    const listDate = useMemo(() => {
+        return generateDateRangeNext(format(initialDate, 'yyyy-MM-dd'), 100);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     const [activeDate, setActiveDate] = useState(initialDate);
 
     const handleDateClick = (date: string) => {

@@ -86,15 +86,16 @@ const Page = async ({ params }: Props) => {
                 </div>
                 <div className="mb-10">
                     <h3 className="mb-3 text-xl">Gallery</h3>
-                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                         {movieInfo.galleries.map((gallery) => (
                             <div key={gallery.id}>
                                 <Image
-                                    className='class="h-auto max-w-full rounded-lg'
+                                    className="h-auto w-full rounded-lg"
                                     src={gallery.imgUrl}
                                     alt={'gallery' + movieInfo.title + gallery.id}
                                     width={200}
                                     height={200}
+                                    quality={100}
                                 />
                             </div>
                         ))}

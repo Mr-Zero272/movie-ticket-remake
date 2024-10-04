@@ -11,6 +11,8 @@ import {
 import { CurrencyPipe, DatePipe, NgIf } from '@angular/common';
 import Chart, { Legend } from 'chart.js/auto';
 import { OrderItemComponent } from '../../../../shared/components/ui/order-item/order-item.component';
+import { AuthService } from '../../../../core/services/auth.service';
+import { User } from '../../../../shared/models/auth.model';
 
 @Component({
   selector: 'app-home',
@@ -39,9 +41,11 @@ export class HomeComponent implements AfterViewInit, OnInit {
   balanceChart: any;
   incomesChart: any;
   digitalClock: Date = new Date();
-
+  user: User | null = null;
   @ViewChild('balanceChart') balanceChartElement!: ElementRef;
   @ViewChild('incomesChart') incomesChartElement!: ElementRef;
+
+  constructor(private authService: AuthService) {}
 
   dataBalanceChart = {
     datasets: [
@@ -99,6 +103,9 @@ export class HomeComponent implements AfterViewInit, OnInit {
     setInterval(() => {
       this.digitalClock = new Date();
     }, 1000);
+    this.authService.getUser().subscribe((data) => {
+      this.user = data;
+    }).closed;
   }
 
   ngAfterViewInit(): void {
