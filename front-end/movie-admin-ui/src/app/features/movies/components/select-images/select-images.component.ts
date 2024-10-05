@@ -35,9 +35,7 @@ export class SelectImagesComponent implements ControlValueAccessor {
 
   @ViewChild('inputImage') inputImageRef!: ElementRef<HTMLInputElement>;
 
-  loading: boolean = true;
-  totalVerticalImages: number = 0;
-  totalHorizontalImages: number = 0;
+  loading: boolean = false;
   images: { file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }[] = [];
 
   handleChooseImages() {
@@ -50,8 +48,8 @@ export class SelectImagesComponent implements ControlValueAccessor {
     e.preventDefault();
     const files = (e.target as HTMLInputElement).files;
     if (files) {
-      this.images = []; // Clear images to avoid duplication
-      let fileCount = files.length; // Track the number of files
+      this.handleClearAll();
+      let fileCount = files.length;
       for (let index = 0; index < fileCount; index++) {
         let reader = new FileReader();
         reader.onload = (event: any) => {
@@ -60,14 +58,9 @@ export class SelectImagesComponent implements ControlValueAccessor {
           currentImage.src = imageUrl;
           currentImage.onload = () => {
             const type = currentImage.width >= currentImage.height ? 'horizontal' : 'vertical';
-            if (type === 'horizontal') {
-              this.totalHorizontalImages++;
-            } else {
-              this.totalVerticalImages++;
-            }
-            this.handleErrorImage();
             this.images.push({ url: event.target.result, file: files[index], type });
             if (this.images.length === fileCount) {
+              this.handleErrorImage();
               // sort for two vertical image come first
               this.images.sort((a, b) => {
                 if (a.type === 'vertical') {
@@ -78,7 +71,6 @@ export class SelectImagesComponent implements ControlValueAccessor {
                   return 0;
                 }
               });
-
               this.onChange(this.images);
               this.loading = false;
             }
@@ -91,13 +83,8 @@ export class SelectImagesComponent implements ControlValueAccessor {
   }
 
   handleDeleteImage(index: number) {
-    if (this.images[index].type === 'horizontal') {
-      this.totalHorizontalImages--;
-    } else {
-      this.totalVerticalImages--;
-    }
-    this.handleErrorImage();
     this.images.splice(index, 1);
+    this.handleErrorImage();
     this.onChange(this.images);
   }
 
@@ -108,12 +95,12 @@ export class SelectImagesComponent implements ControlValueAccessor {
   }
 
   handleErrorImage() {
-    if (this.totalHorizontalImages < 2) {
+    if (this.images.filter((img) => img.type === 'horizontal').length < 2) {
       this.errorMsg = 'You need at least 2 horizontal images!';
       return;
     }
 
-    if (this.totalVerticalImages < 2) {
+    if (this.images.filter((img) => img.type === 'vertical').length < 2) {
       this.errorMsg = 'You need at least 2 vertical images!';
       return;
     }

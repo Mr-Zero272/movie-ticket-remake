@@ -12,6 +12,11 @@ import { ErrorDisplayComponent } from '../../../../shared/components/ui/error-di
 import { MovieService } from '../../services/movie.service';
 import { lastValueFrom } from 'rxjs';
 import { AddMovieRequest } from '../../../../shared/models/add-movie-request.model';
+import { AddMovieRequestBuilder } from '../../../../shared/models/add-movie-request.builder';
+import { DetailShowingType } from '../../../../shared/models/detail-showing-type.model';
+import { FormMovieService } from '../../services/form-movie.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { ImageBase } from '../../../../shared/models/image-base.model';
 
 @Component({
   selector: 'app-add-movie',
@@ -31,22 +36,29 @@ import { AddMovieRequest } from '../../../../shared/models/add-movie-request.mod
   styleUrl: './add-movie.component.css',
 })
 export class AddMovieComponent implements OnInit {
+  @ViewChild('trailerInput') trailerInput!: ElementRef<HTMLInputElement>;
+
   isFormValid: boolean = false;
   movieForm!: FormGroup;
   genresData: Array<{ key: string; value: string | number }> = [];
-
   genresErrorMessage: string = '';
-
   imagesErrorMessage = '';
   trailerErrorMessage: string = '';
   isFormSubmitted: boolean = false;
   isFormLoading: boolean = false;
-  @ViewChild('trailerInput') trailerInput!: ElementRef<HTMLInputElement>;
+  globalError: string = '';
+
+  // submitted files
+  urlImagesVerticalSubmitted: string[] = [];
+  urlImagesHorizontalSubmitted: string[] = [];
+  urlTrailerSubmitted: string[] = [];
 
   constructor(
     private genresService: GenresService,
     private mediaService: MediaService,
     private movieService: MovieService,
+    private toastService: ToastService,
+    private formMovieService: FormMovieService,
   ) {}
 
   ngOnInit(): void {
@@ -74,7 +86,6 @@ export class AddMovieComponent implements OnInit {
       _2dSubtitles: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
       _3d: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
       _3dSubtitles: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      keepLogin: new FormControl(true),
     });
 
     this.genresService.fetchGenresForSearching({}).subscribe((data) => {
@@ -83,29 +94,15 @@ export class AddMovieComponent implements OnInit {
   }
 
   handleExtraFieldsError() {
-    if (this.movieForm.value.trailer === null) {
-      this.trailerErrorMessage = ' This filed is required.';
-      this.isFormValid = false;
-    } else {
-      this.trailerErrorMessage = '';
-    }
-
-    // check genres errors
-    if (this.movieForm.value.genres === null || this.movieForm.value.genres.length === 0) {
-      this.genresErrorMessage = 'This field is required!';
-      this.isFormValid = false;
-    } else {
-      this.genresErrorMessage = '';
-    }
-
-    // check images errors
-    if (this.movieForm.value.images === null || this.movieForm.value.images.length === 0) {
-      this.imagesErrorMessage = 'This field is required!';
-      this.isFormValid = false;
-    } else {
-      this.imagesErrorMessage = '';
-    }
-    this.isFormValid = true;
+    const state = this.formMovieService.handleErrorExtraFields(
+      this.movieForm.value.images,
+      this.movieForm.value.trailer,
+      this.movieForm.value.genres,
+    );
+    this.imagesErrorMessage = state.imagesErrors[0] ?? '';
+    this.trailerErrorMessage = state.trailerErrors[0] ?? '';
+    this.genresErrorMessage = state.genresErrors[0] ?? '';
+    this.isFormValid = state.isFormValid;
   }
 
   getControl(name: string) {
@@ -125,27 +122,33 @@ export class AddMovieComponent implements OnInit {
 
     this.isFormLoading = true;
 
-    let urlImagesVertical: string[] = [];
-    let urlImagesHorizontal: string[] = [];
-    let urlTrailer: string[] = [];
-    const verticalImageFiles = this.movieForm.value.images
-      .slice(0, 2)
-      .map((img: { file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }) => img.file);
-    const horizontalImageFiles = this.movieForm.value.images
-      .slice(2)
-      .map((img: { file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }) => img.file);
+    if (
+      this.urlImagesVerticalSubmitted.length === 0 &&
+      this.urlImagesHorizontalSubmitted.length === 0 &&
+      this.urlTrailerSubmitted.length === 0
+    ) {
+      const verticalImageFiles = this.movieForm.value.images
+        .filter(
+          (img: { file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }) => img.type === 'vertical',
+        )
+        .map((img: { file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }) => img.file);
+      const horizontalImageFiles = this.movieForm.value.images
+        .filter(
+          (img: { file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }) => img.type === 'horizontal',
+        )
+        .map((img: { file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }) => img.file);
+      this.urlImagesVerticalSubmitted = await lastValueFrom(
+        this.mediaService.addMediaMaterial({ type: 'image', files: verticalImageFiles }),
+      );
 
-    urlImagesVertical = await lastValueFrom(
-      this.mediaService.addMediaMaterial({ type: 'image', files: verticalImageFiles }),
-    );
+      this.urlImagesHorizontalSubmitted = await lastValueFrom(
+        this.mediaService.addMediaMaterial({ type: 'image', files: horizontalImageFiles }),
+      );
 
-    urlImagesHorizontal = await lastValueFrom(
-      this.mediaService.addMediaMaterial({ type: 'image', files: horizontalImageFiles }),
-    );
-
-    urlTrailer = await lastValueFrom(
-      this.mediaService.addMediaMaterial({ type: 'video', files: [this.movieForm.value.trailer?.file as File] }),
-    );
+      this.urlTrailerSubmitted = await lastValueFrom(
+        this.mediaService.addMediaMaterial({ type: 'video', files: [this.movieForm.value.trailer?.file as File] }),
+      );
+    }
 
     const totalShowings =
       +this.movieForm.value._2d +
@@ -153,51 +156,49 @@ export class AddMovieComponent implements OnInit {
       +this.movieForm.value._3d +
       +this.movieForm.value._3dSubtitles;
 
-    const dataSubmit: AddMovieRequest = {
-      title: this.movieForm.value.title as string,
-      adult: this.movieForm.value.adult as boolean,
-      budget: +this.movieForm.value.budget,
-      originalLanguage: this.movieForm.value.originalLanguage as string,
-      overview: this.movieForm.value.overview as string,
-      status: 'Released',
-      video: urlTrailer[0],
-      posterPath: urlImagesVertical[0] ? urlImagesVertical[0] : '',
-      backdropPath: urlImagesHorizontal[0] ? urlImagesHorizontal[0] : '',
-      voteAverage: +this.movieForm.value.voteAverage,
-      voteCount: +this.movieForm.value.voteCount,
-      runtime: +this.movieForm.value.runtime,
-      releaseDate: this.movieForm.value.releaseDate as string,
-      genreIds: this.movieForm.value.genres.map((g: { key: string; value: string | number }) => +g.value),
-      monthToSchedule: +this.movieForm.value.monthToSchedule,
-      yearToSchedule: +this.movieForm.value.yearToSchedule,
-      totalShowings: totalShowings,
-      totalDateShowingsInMonth: +this.movieForm.value.totalDateShowingsInMonth,
-      priceEachSeat: +this.movieForm.value.priceEachSeat,
-      detailShowingTypes: [
-        {
-          name: '2D',
-          showings: +this.movieForm.value._2d,
-        },
-        {
-          name: '2D subtitles',
-          showings: +this.movieForm.value._2dSubtitles,
-        },
-        {
-          name: '3D',
-          showings: +this.movieForm.value._3d,
-        },
-        {
-          name: '3D subtitles',
-          showings: +this.movieForm.value._3dSubtitles,
-        },
-      ],
-      galleries: urlImagesVertical.concat(urlImagesHorizontal),
-    };
+    const dataSubmit: AddMovieRequest = new AddMovieRequestBuilder()
+      .setTitle(this.movieForm.value.title as string)
+      .setAdult(this.movieForm.value.adult as boolean)
+      .setBudget(+this.movieForm.value.budget)
+      .setOriginalLanguage(this.movieForm.value.originalLanguage as string)
+      .setOverview(this.movieForm.value.overview as string)
+      .setStatus('Released')
+      .setVideo(this.urlTrailerSubmitted[0])
+      .setPosterPath(this.urlImagesVerticalSubmitted[0] ? this.urlImagesVerticalSubmitted[0] : '')
+      .setBackdropPath(this.urlImagesHorizontalSubmitted[0] ? this.urlImagesHorizontalSubmitted[0] : '')
+      .setVoteAverage(+this.movieForm.value.voteAverage)
+      .setVoteCount(+this.movieForm.value.voteCount)
+      .setRuntime(+this.movieForm.value.runtime)
+      .setReleaseDate(this.movieForm.value.releaseDate as string)
+      .setGenreIds(this.movieForm.value.genres.map((g: { key: string; value: string | number }) => +g.value))
+      .setMonthToSchedule(+this.movieForm.value.monthToSchedule)
+      .setYearToSchedule(+this.movieForm.value.yearToSchedule)
+      .setTotalShowings(totalShowings)
+      .setTotalDateShowingsInMonth(+this.movieForm.value.totalDateShowingsInMonth)
+      .setPriceEachSeat(+this.movieForm.value.priceEachSeat)
+      .setDetailShowingTypes([
+        new DetailShowingType(null, '2D', +this.movieForm.value._2d),
+        new DetailShowingType(null, '2D subtitles', +this.movieForm.value._2dSubtitles),
+        new DetailShowingType(null, '3D', +this.movieForm.value._3d),
+        new DetailShowingType(null, '3D subtitles', +this.movieForm.value._3dSubtitles),
+      ])
+      .setGalleries(this.urlImagesVerticalSubmitted.concat(this.urlImagesHorizontalSubmitted))
+      .build();
 
-    await lastValueFrom(this.movieService.addNewMovie(dataSubmit));
-
-    this.movieForm.reset();
-    this.isFormSubmitted = false;
-    this.isFormLoading = false;
+    this.movieService.addNewMovie(dataSubmit).subscribe({
+      next: (data) => {
+        this.movieForm.reset();
+        this.isFormSubmitted = false;
+        this.isFormLoading = false;
+        this.globalError = '';
+        this.toastService.showToast('success', 'Add new movie success!');
+      },
+      error: (err) => {
+        this.isFormSubmitted = false;
+        this.isFormLoading = false;
+        this.globalError = err?.error?.message;
+        this.toastService.showToast('danger', 'Cannot add new movie!');
+      },
+    });
   }
 }

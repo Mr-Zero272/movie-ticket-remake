@@ -2,13 +2,18 @@ package com.moonmovie.media_service.services.Impl;
 
 import com.moonmovie.media_service.constants.MediaErrorConstants;
 import com.moonmovie.media_service.exceptions.MediaException;
+import com.moonmovie.media_service.response.TemplateResponse;
 import com.moonmovie.media_service.services.FilesStorageService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
@@ -20,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class FilesStorageServiceImpl implements FilesStorageService {
 
     private final Path rootImage = Paths.get("uploads/images");
@@ -51,6 +57,17 @@ public class FilesStorageServiceImpl implements FilesStorageService {
                 }
             }
         } catch (MalformedURLException e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public InputStreamResource loadVideo(String filename) {
+        try {
+            Path pathFile = getPath("video").resolve(filename);
+            FileInputStream fileInputStream = new FileInputStream(pathFile.toFile());
+            return new InputStreamResource(fileInputStream);
+        } catch (Exception e) {
             throw new RuntimeException("Error: " + e.getMessage());
         }
     }
@@ -104,17 +121,32 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     }
 
     @Override
-    public void deleteFile(String filename, String type) {
+    public TemplateResponse deleteFile(List<String> filenames, String type) {
+        List<String> fileCannotDelete = new ArrayList<>();
+        boolean canDelete = false;
         Path finalPath = getPath(type);
 
-        try {
-            Path fileDelete = finalPath.resolve(Objects.requireNonNull(filename));
-            Files.deleteIfExists(fileDelete);
-        } catch (IOException e) {
-            if (e instanceof FileAlreadyExistsException) {
-                throw new MediaException(500, "Cannot delete this file: (" + filename + ")");
+        for(String filename: filenames) {
+            try {
+                Path fileDelete = finalPath.resolve(Objects.requireNonNull(filename));
+                canDelete = Files.deleteIfExists(fileDelete);
+                if (!canDelete) {
+                    fileCannotDelete.add(filename);
+                }
+            } catch (IOException e) {
+                if (e instanceof FileAlreadyExistsException) {
+                    log.info("Cannot delete this file: (" + filename + ")");
+                    fileCannotDelete.add(filename);
+                } else {
+                    log.info("IOException" + e.getMessage());
+                }
             }
-            throw new MediaException(500, e.getMessage());
+        }
+
+        if (!fileCannotDelete.isEmpty() && !canDelete) {
+            return new TemplateResponse(200, "Some file not exist in the system: " + fileCannotDelete);
+        } else {
+            return new TemplateResponse(200, "Delete files successfully!");
         }
     }
 

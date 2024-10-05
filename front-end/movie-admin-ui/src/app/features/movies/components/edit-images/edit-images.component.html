@@ -1,0 +1,70 @@
+<div class="mb-3 flex gap-x-3">
+  <div class="grid w-1/2 grid-cols-2 gap-3">
+    <app-select-image-item
+      class="h-52"
+      [loading]="loading"
+      [urlImage]="images[0] ? (images[0].needDelete ? undefined : images[0].url) : undefined"
+      (onChooseImage)="inputImage.click()"
+      (onDeleteImage)="handleDeleteImage(0)"
+    />
+    <app-select-image-item
+      class="h-52"
+      [loading]="loading"
+      [urlImage]="images[1] ? (images[1].needDelete ? undefined : images[1].url) : undefined"
+      (onChooseImage)="inputImage.click()"
+      (onDeleteImage)="handleDeleteImage(1)"
+    />
+  </div>
+  <div class="grid w-1/2 grid-cols-2 gap-3">
+    <app-select-image-item
+      class="h-24"
+      [loading]="loading"
+      [urlImage]="images[2] ? (images[2].needDelete ? undefined : images[2].url) : undefined"
+      (onChooseImage)="inputImage.click()"
+      (onDeleteImage)="handleDeleteImage(2)"
+    />
+    <app-select-image-item
+      class="h-24"
+      [loading]="loading"
+      [urlImage]="images[3] ? (images[3].needDelete ? undefined : images[3].url) : undefined"
+      (onChooseImage)="inputImage.click()"
+      (onDeleteImage)="handleDeleteImage(3)"
+    />
+    <app-select-image-item
+      class="h-24"
+      [loading]="loading"
+      [urlImage]="images[4] ? (images[4].needDelete ? undefined : images[4].url) : undefined"
+      (onChooseImage)="inputImage.click()"
+      (onDeleteImage)="handleDeleteImage(4)"
+    />
+    <app-select-image-item
+      *ngIf="images.length < 6"
+      class="h-24"
+      [urlImage]="images[5] ? (images[5].needDelete ? undefined : images[5].url) : undefined"
+      (onChooseImage)="inputImage.click()"
+      (onDeleteImage)="handleDeleteImage(5)"
+    />
+    <div
+      *ngIf="images.length >= 6"
+      class="flex h-24 cursor-pointer items-center justify-center gap-x-2 border border-dashed border-gray-500 bg-white"
+    >
+      <div class="text-sm text-gray-700">+{{ images.length - 5 }} more</div>
+    </div>
+  </div>
+</div>
+<input type="file" accept="image/*" class="hidden" (change)="handleFileInput($event)" multiple #inputImage />
+<p *ngIf="errorMsg === ''; else errorMessageImage" class="text-sm text-gray-500">
+  You need at least 2 vertical photos and 2 horizontal photos for this movie and need at least 4 photos. You can add
+  more photos but 2 vertical and 2 horizontal photo photos are required.
+</p>
+<ng-template #errorMessageImage>
+  <p class="text-sm italic text-red-500">{{ errorMsg }}</p>
+</ng-template>
+<button
+  *ngIf="!isClearAll()"
+  type="button"
+  class="mb-2 me-2 rounded-lg border border-gray-800 px-5 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-800"
+  (click)="handleClearAll()"
+>
+  Clear all
+</button>

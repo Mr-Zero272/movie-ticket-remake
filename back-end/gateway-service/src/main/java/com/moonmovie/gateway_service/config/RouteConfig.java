@@ -22,16 +22,6 @@ public class RouteConfig {
                                         .rewritePath("/api/v2/moon-movie/media/images//(?<segment>.*)", "/images/${segment}")
                                         .rewritePath("/api/v2/moon-movie/media/videos//(?<segment>.*)", "/videos/${segment}"))
                                 .uri("lb://media-service"))
-//                .route("user-service-auth", predicateSpec ->
-//                        predicateSpec.path("/api/v2/moon-movie/user/**")
-//                                .filters(f -> f.rewritePath("/api/v2/moon-movie/user//(?<segment>.*)", "/user/${segment}")
-//                                        .filter(authenticationFilter))
-//                                .uri("lb://user-service"))
-//                .route("user-service-users", predicateSpec ->
-//                        predicateSpec.path("/api/v2/moon-movie/users/**")
-//                                .filters(f -> f.rewritePath("/api/v2/moon-movie/user//(?<segment>.*)", "/user/${segment}")
-//                                        .filter(authenticationFilter))
-//                                .uri("lb://user-service"))
                 .route("movie-service-schedule", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/movie/schedule")
                                 .filters(f -> f.filter(authenticationFilter))

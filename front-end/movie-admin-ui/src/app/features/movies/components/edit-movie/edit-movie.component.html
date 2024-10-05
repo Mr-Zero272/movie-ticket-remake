@@ -1,6 +1,6 @@
 <section>
   <article>
-    <form class="flex gap-x-10" [formGroup]="movieForm" (ngSubmit)="handleSubmit()">
+    <form *ngIf="movieForm" class="flex gap-x-10" [formGroup]="movieForm" (ngSubmit)="handleSubmit()">
       <div class="w-2/5">
         <div class="mb-3">
           <label for="title" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Movie title</label>
@@ -131,15 +131,21 @@
           <label for="images" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
             Movie images
           </label>
-          <app-select-images [errorMsg]="imagesErrorMessage" id="images" formControlName="images"></app-select-images>
+          <app-edit-images
+            [errorMsg]="imagesErrorMessage"
+            id="images"
+            [urls]="urlImages"
+            (onChange)="handleEditImages($event)"
+          ></app-edit-images>
         </div>
         <div class="mb-3">
           <label for="video" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Movie trailer</label>
-          <app-select-videos-trailer
+          <app-edit-trailer
             id="trailer"
-            formControlName="trailer"
+            [urlTrailer]="movieData.video"
             [errorMsg]="trailerErrorMessage"
-          ></app-select-videos-trailer>
+            (onChange)="handleEditTrailer($event)"
+          ></app-edit-trailer>
         </div>
         <div class="mb-3 flex gap-x-5">
           <div class="w-1/4">
@@ -272,7 +278,7 @@
 
         <div>
           <div *ngIf="globalError !== ''" class="text-ms mb-2 italic text-red-500">{{ globalError }}</div>
-          <app-button [loading]="isFormLoading" [disabled]="isFormLoading" type="submit">Publish</app-button>
+          <app-button [loading]="isFormLoading" [disabled]="isFormLoading" type="submit">Edit</app-button>
         </div>
       </div>
     </form>

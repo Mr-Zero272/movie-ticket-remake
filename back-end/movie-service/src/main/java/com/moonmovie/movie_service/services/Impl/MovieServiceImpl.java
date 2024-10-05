@@ -137,9 +137,9 @@ public class MovieServiceImpl implements MovieService {
         }
 
         // Check if the movie has the same title
-//        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
-//            throw new GlobalException()(MovieErrorConstants.ERROR_MOVIE_EXISTED);
-//        }
+        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
+            throw new GlobalException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
+        }
 
         Movie movie = convertMovieRequestToMovie(request);
         Movie moveSaved = movieDao.save(movie);
@@ -168,7 +168,7 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public Movie updateMovie(int id, MovieRequest request) {
         Movie movie = movieDao.findById(id).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
-        List<String> fieldsSkip = List.of("genreIds", "galleries", "monthToSchedule", "yearToSchedule", "totalDateShowingsInMonth", "totalShowings", "priceEachSeat", "detailShowingTypes");
+        List<String> fieldsSkip = List.of("genreIds", "galleries", "detailShowingTypes");
         for (Field updateField : request.getClass().getDeclaredFields()) {
             updateField.setAccessible(true);
             try {
@@ -192,6 +192,10 @@ public class MovieServiceImpl implements MovieService {
         // update genre
         Set<Genre> genres = new HashSet<>(genreDao.findAllByIdIn(request.getGenreIds()));
         movie.setGenres(genres);
+
+        for (int i = 0; i < request.getDetailShowingTypes().size(); i++) {
+            movie.getDetailShowingTypes().get(i).setShowings(request.getDetailShowingTypes().get(i).getShowings());
+        }
 
         // update galleries
         List<Gallery> newGalleries = new ArrayList<>();

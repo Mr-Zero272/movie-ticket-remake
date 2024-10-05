@@ -1,6 +1,6 @@
 import { DetailShowingType } from './detail-showing-type.model';
 
-export interface AddMovieRequest {
+export class AddMovieRequest {
   title: string;
   adult: boolean;
   budget: number;
@@ -20,6 +20,30 @@ export interface AddMovieRequest {
   totalShowings: number;
   totalDateShowingsInMonth: number;
   priceEachSeat: number;
-  detailShowingTypes: Array<{ name: string; showings: number }>;
+  detailShowingTypes: Array<DetailShowingType>;
   galleries: string[];
+
+  constructor() {
+    this.title = '';
+    this.adult = false;
+    this.budget = 0;
+    this.originalLanguage = '';
+    this.overview = '';
+    this.status = 'Released';
+    this.video = '';
+    this.posterPath = '';
+    this.backdropPath = '';
+    this.voteAverage = 0;
+    this.voteCount = 0;
+    this.runtime = 0;
+    this.releaseDate = '';
+    this.genreIds = [];
+    this.monthToSchedule = 0;
+    this.yearToSchedule = 0;
+    this.totalShowings = 0;
+    this.totalDateShowingsInMonth = 0;
+    this.priceEachSeat = 0;
+    this.detailShowingTypes = [];
+    this.galleries = [];
+  }
 }

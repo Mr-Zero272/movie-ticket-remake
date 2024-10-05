@@ -69,4 +69,16 @@ export class MovieService {
       },
     });
   }
+
+  getMovie(movieId: number) {
+    const token = this.authService.getToken();
+    if (!token) {
+      return throwError(() => new Error('Token is missing'));
+    }
+    return this.http.get<Movie>(API + '/' + movieId, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 }

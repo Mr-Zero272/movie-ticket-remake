@@ -15,6 +15,7 @@ import { DetailScheduleComponent } from './features/schedule/components/detail/d
 import { TestPageComponent } from './features/test/componets/test-page/test-page.component';
 import { GenresComponent } from './features/genres/componets/genres/genres.component';
 import { OrdersComponent } from './features/orders/componets/orders/orders.component';
+import { EditMovieComponent } from './features/movies/components/edit-movie/edit-movie.component';
 
 export const routes: Routes = [
   {
@@ -40,6 +41,15 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: {
           breadcrumb: 'adding',
+        },
+      },
+      {
+        path: 'movie/:id',
+        title: 'Edit movie',
+        component: EditMovieComponent,
+        canActivate: [authGuard],
+        data: {
+          breadcrumb: 'editing',
         },
       },
       {
