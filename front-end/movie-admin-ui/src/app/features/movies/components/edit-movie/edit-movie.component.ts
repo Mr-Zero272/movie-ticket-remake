@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EditImagesComponent } from '../edit-images/edit-images.component';
 import { EditTrailerComponent } from '../edit-trailer/edit-trailer.component';
 import { AddMovieRequest } from '../../../../shared/models/add-movie-request.model';
@@ -10,7 +10,7 @@ import { MediaService } from '../../services/media.service';
 import { MovieService } from '../../services/movie.service';
 import { ErrorDisplayComponent } from '../../../../shared/components/ui/error-display/error-display.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
-import { NgIf } from '@angular/common';
+import { Location, NgIf } from '@angular/common';
 import { SelectImagesComponent } from '../select-images/select-images.component';
 import { SelectVideosTrailerComponent } from '../select-videos-trailer/select-videos-trailer.component';
 import { MultiSelectComponent } from '../../../../shared/components/ui/multi-select/multi-select.component';
@@ -79,6 +79,7 @@ export class EditMovieComponent implements OnInit {
     private formMovieService: FormMovieService,
     private toastService: ToastService,
     private route: ActivatedRoute,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -146,12 +147,14 @@ export class EditMovieComponent implements OnInit {
   // images handler edit
   handleEditImages(images: Array<ImageBase>) {
     this.isImagesTouched = true;
+    this.images = images;
     console.log(images);
   }
 
   // trailer handler edit
   handleEditTrailer(trailer: { url: string; file: File } | null) {
     this.isTrailerTouched = true;
+    this.trailer = trailer;
     console.log(trailer);
   }
 
@@ -221,7 +224,7 @@ export class EditMovieComponent implements OnInit {
         );
       }
       this.images
-        .filter((img) => img.file !== null && !img.needDelete)
+        .filter((img) => img.file === null && !img.needDelete)
         .forEach((img) => {
           if (img.type === 'horizontal') {
             this.urlImagesHorizontalSubmitted.push(img.url);
@@ -234,7 +237,7 @@ export class EditMovieComponent implements OnInit {
     if (this.urlTrailerSubmitted.length === 0) {
       if (this.trailer !== null) {
         this.urlTrailerSubmitted = await lastValueFrom(
-          this.mediaService.addMediaMaterial({ type: 'video', files: [this.movieForm.value.trailer?.file as File] }),
+          this.mediaService.addMediaMaterial({ type: 'video', files: [this.trailer?.file as File] }),
         );
       }
     }
@@ -287,22 +290,21 @@ export class EditMovieComponent implements OnInit {
       .setGalleries(galleries)
       .build();
 
-    console.log(dataSubmit);
-
-    // this.movieService.addNewMovie(dataSubmit).subscribe({
-    //   next: (data) => {
-    //     this.movieForm.reset();
-    //     this.isFormSubmitted = false;
-    //     this.isFormLoading = false;
-    //     this.globalError = '';
-    //     this.toastService.showToast('success', 'Edit movie information success!');
-    //   },
-    //   error: (err) => {
-    //     this.isFormSubmitted = false;
-    //     this.isFormLoading = false;
-    //     this.globalError = err?.error?.message;
-    //     this.toastService.showToast('danger', 'Cannot edit movie information!');
-    //   },
-    // });
+    this.movieService.editMovieInfo(dataSubmit, this.movieId ? +this.movieId : 0).subscribe({
+      next: (data) => {
+        this.movieForm.reset();
+        this.isFormSubmitted = false;
+        this.isFormLoading = false;
+        this.globalError = '';
+        this.toastService.showToast('success', 'Edit movie with title is' + data.title + ' information success!');
+        this.location.back();
+      },
+      error: (err) => {
+        this.isFormSubmitted = false;
+        this.isFormLoading = false;
+        this.globalError = err?.error?.message;
+        this.toastService.showToast('danger', 'Cannot edit movie information!');
+      },
+    });
   }
 }

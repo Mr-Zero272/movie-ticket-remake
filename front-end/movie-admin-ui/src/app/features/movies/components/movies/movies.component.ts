@@ -105,8 +105,8 @@ export class MoviesComponent implements AfterViewInit, OnInit {
     q = '',
     page = 1,
     size = 7,
-    originalLanguage = 'en',
-    status = 'Released',
+    originalLanguage = '',
+    status = '',
   }: {
     q?: string;
     page?: number;
@@ -178,7 +178,7 @@ export class MoviesComponent implements AfterViewInit, OnInit {
     if (this.activeTab && this.activeTab.value !== 'all' && genres.some((g) => g.id === this.activeTab?.value)) {
       return this.activeTab.label;
     } else {
-      return genres[0].name;
+      return genres[0] ? genres[0].name : 'unknow';
     }
   }
 }

@@ -63,12 +63,15 @@ public class MovieServiceImpl implements MovieService {
     public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, String sortOrder, int page, int size) {
         if (genreId != null && genreId == 0) genreId = null;
         List<String> queries = new ArrayList<>();
-        queries.add(query);
         if (query == null || query.isEmpty()) {
             queries = List.of("%");
         } else {
-            queries = Arrays.stream(query.split(" ")).toList();
+            if (Arrays.stream(query.split(" ")).toList().size() != 1) {
+                queries.addAll(Arrays.stream(query.split(" ")).toList());
+            }
+            queries.add(query);
         }
+        System.out.println(queries);
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Movie> pageMovie = movieDaoCustom.findAllWithFilters(queries, genreId, originalLanguage, status, sort, sortOrder, pageable);
         PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()

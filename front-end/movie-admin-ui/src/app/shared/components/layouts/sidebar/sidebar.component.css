@@ -1,0 +1,18 @@
+.active-sidebar-line {
+  position: relative;
+}
+
+.active-sidebar-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 2rem;
+  border-radius: 10px;
+  height: 20px;
+  background-color: white;
+  opacity: 0;
+}
+
+.sidebar-item:hover ~ .active-sidebar-line {
+  opacity: 1;
+}

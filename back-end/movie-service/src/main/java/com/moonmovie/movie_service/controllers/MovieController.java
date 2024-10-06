@@ -27,8 +27,8 @@ public class MovieController {
             @RequestParam(value = "genreId", required = false, defaultValue = "") Integer genreId,
             @RequestParam(value = "sort", defaultValue = "none", required = false) String sort,
             @RequestParam(value = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
-            @RequestParam(value = "originalLanguage", defaultValue = "en", required = false) String originalLanguage,
-            @RequestParam(value = "status", defaultValue = "Released", required = false) String status,
+            @RequestParam(value = "originalLanguage", defaultValue = "", required = false) String originalLanguage,
+            @RequestParam(value = "status", defaultValue = "", required = false) String status,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {

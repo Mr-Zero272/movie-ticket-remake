@@ -37,6 +37,7 @@
   ></app-table>
   <ng-template #movieTemplate let-movie>
     <app-movie-horizontal-card
+      [movieId]="movie.id"
       [title]="movie.title"
       [poster]="movie.posterPath"
       [runtime]="movie.runtime"

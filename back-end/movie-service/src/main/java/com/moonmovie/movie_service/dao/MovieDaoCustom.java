@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MovieDaoCustom{
+public class MovieDaoCustom {
     private final EntityManager entityManager;
 
     public MovieDaoCustom(EntityManager entityManager) {
@@ -26,22 +26,39 @@ public class MovieDaoCustom{
         Root<Movie> movieRoot = query.from(Movie.class);
 
         // Build predicates based on your criteria
-        List<Predicate> titlePredicates  = new ArrayList<>();
+        List<Predicate> titlePredicates = new ArrayList<>();
+        Expression<Integer> relevanceScore = cb.literal(0);
+
         for (String queryString : queries) {
+            Predicate likePredicate;
             if (queryString.equalsIgnoreCase("%")) {
-                titlePredicates.add(cb.like(movieRoot.get("title"), "%"));
-                continue;
+                likePredicate = cb.like(movieRoot.get("title"), "%");
+            } else {
+                likePredicate = cb.like(movieRoot.get("title"), "%" + queryString + "%");
             }
-            titlePredicates.add(cb.like(movieRoot.get("title"), "%" + queryString + "%"));
+            titlePredicates.add(likePredicate);
+
+            // Increment relevance score when the term is present in the title
+            relevanceScore = cb.sum(relevanceScore, cb.<Integer>selectCase().when(likePredicate, 1).otherwise(0));
         }
 
         Predicate titlePredicate = cb.or(titlePredicates.toArray(new Predicate[0]));
 
         // Predicate for original language matching the genreId
-        Predicate languagePredicate = cb.equal(movieRoot.get("originalLanguage"), originalLanguage);
+        Predicate languagePredicate;
+        if (originalLanguage == null || originalLanguage.equalsIgnoreCase("")) {
+            languagePredicate = cb.like(movieRoot.get("originalLanguage"), "%");
+        } else {
+            languagePredicate = cb.equal(movieRoot.get("originalLanguage"), originalLanguage);
+        }
 
         // Predicate for status matching the genreId
-        Predicate statusPredicate = cb.equal(cb.lower(movieRoot.get("status")), status.toLowerCase());
+        Predicate statusPredicate;
+        if (status == null || status.equalsIgnoreCase("")) {
+            statusPredicate = cb.like(movieRoot.get("status"), "%");
+        } else {
+            statusPredicate = cb.equal(cb.lower(movieRoot.get("status")), status.toLowerCase());
+        }
 
         // Combine predicates
         if (genreId == null) {
@@ -53,13 +70,15 @@ public class MovieDaoCustom{
             query.where(cb.and(titlePredicate, genrePredicate, languagePredicate, statusPredicate));
         }
 
-        // Apply sorting
+        // Apply sorting by relevance first, then by the requested sort field
         if (!sort.equalsIgnoreCase("none") && !sort.equalsIgnoreCase("")) {
             if (sortOrder.equalsIgnoreCase("desc")) {
-                query.orderBy(cb.desc(movieRoot.get(sort)));
+                query.orderBy(cb.desc(relevanceScore), cb.desc(movieRoot.get(sort)));
             } else {
-                query.orderBy(cb.asc(movieRoot.get(sort)));
+                query.orderBy(cb.desc(relevanceScore), cb.asc(movieRoot.get(sort)));
             }
+        } else {
+            query.orderBy(cb.desc(relevanceScore));  // Default to sorting by relevance if no sort field is specified
         }
 
         // Fetch paginated data
@@ -75,16 +94,29 @@ public class MovieDaoCustom{
         // Recreate the predicates
         List<Predicate> countTitlePredicates = new ArrayList<>();
         for (String queryString : queries) {
+            Predicate likePredicate;
             if (queryString.equalsIgnoreCase("%")) {
-                countTitlePredicates.add(cb.like(countRoot.get("title"), "%"));
-                continue;
+                likePredicate = cb.like(countRoot.get("title"), "%");
+            } else {
+                likePredicate = cb.like(countRoot.get("title"), "%" + queryString + "%");
             }
-            countTitlePredicates.add(cb.like(countRoot.get("title"), "%" + queryString + "%"));
+            countTitlePredicates.add(likePredicate);
         }
 
         Predicate countTitlePredicate = cb.or(countTitlePredicates.toArray(new Predicate[0]));
-        Predicate countLanguagePredicate = cb.equal(countRoot.get("originalLanguage"), originalLanguage);
-        Predicate countStatusPredicate = cb.equal(cb.lower(countRoot.get("status")), status.toLowerCase());
+        Predicate countLanguagePredicate;
+        if (originalLanguage == null || originalLanguage.equalsIgnoreCase("")) {
+            countLanguagePredicate = cb.like(countRoot.get("originalLanguage"), "%");
+        } else {
+            countLanguagePredicate = cb.equal(countRoot.get("originalLanguage"), originalLanguage);
+        }
+
+        Predicate countStatusPredicate;
+        if (status == null || status.equalsIgnoreCase("")) {
+            countStatusPredicate = cb.like(countRoot.get("status"), "%");
+        } else {
+            countStatusPredicate = cb.equal(cb.lower(countRoot.get("status")), status.toLowerCase());
+        }
 
         // Apply the predicates to the count query
         if (genreId == null) {
