@@ -2,7 +2,6 @@ package com.moonmovie.movie_service.controllers;
 
 import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.models.Movie;
-import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.requests.ScheduleRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
@@ -88,6 +87,11 @@ public class MovieController {
     @GetMapping("/movie-showing/{showingId}")
     public ResponseEntity<MovieDto> getMovieInforFromShowing(@PathVariable("showingId") Integer showingId) {
         return ResponseEntity.ok(movieService.getMovieByShowingId(showingId));
+    }
+
+    @GetMapping("/recommend/{movieId}")
+    public ResponseEntity<List<Movie>> getMovieRecommendation(@PathVariable("movieId") Integer movieId) {
+        return ResponseEntity.ok(movieService.getRecommendMoviesByMovieId(movieId));
     }
 
 }

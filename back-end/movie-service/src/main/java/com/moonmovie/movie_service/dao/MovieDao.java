@@ -16,6 +16,8 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
 
     Optional<Movie> findByTitle(String title);
 
+    Page<Movie> findAllByIdIn(List<Integer> ids, Pageable pageable);
+
     Page<Movie> findAllByDeleteFlagIsFalse(Pageable pageable);
 
     Page<Movie> findAllByVoteCountGreaterThanEqual(int voteCount, Pageable pageable);

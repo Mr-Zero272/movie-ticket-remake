@@ -5,6 +5,7 @@ import com.moonmovie.movie_service.dao.*;
 import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.dto.ScheduleMovie;
 import com.moonmovie.movie_service.exceptions.GlobalException;
+import com.moonmovie.movie_service.feign.RecommendServiceInterface;
 import com.moonmovie.movie_service.feign.SeatServiceInterface;
 import com.moonmovie.movie_service.helpers.DateTimeTransfer;
 import com.moonmovie.movie_service.kafka.KafkaMessage;
@@ -13,6 +14,7 @@ import com.moonmovie.movie_service.models.*;
 import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
+import com.moonmovie.movie_service.responses.RecommendMovieResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,9 @@ public class MovieServiceImpl implements MovieService {
 
     @Autowired
     private SeatServiceInterface seatServiceInterface;
+
+    @Autowired
+    private RecommendServiceInterface recommendServiceInterface;
 
     @Autowired
     private KafkaProducerService kafkaProducerService;
@@ -438,6 +443,17 @@ public class MovieServiceImpl implements MovieService {
     public MovieDto getMovieByShowingId(int showingId) {
         Showing showing = showingDao.findById(showingId).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_SHOWING_NOT_EXISTS));
         return convertMovieToMovieDto(showing.getMovie());
+    }
+
+    @Override
+    public List<Movie> getRecommendMoviesByMovieId(int movieId) {
+        RecommendMovieResponse res = recommendServiceInterface.fetchRecommendMovieById(movieId).getBody();
+        List<Integer> movieRecommendIds = (List<Integer>) res.getSuggestions().stream().map(s -> {
+            return s.get(0).intValue();
+        }).toList();
+        Pageable pageable = PageRequest.of(0, movieRecommendIds.size());
+        Page<Movie> pageMovie = movieDao.findAllByIdIn(movieRecommendIds, pageable);
+        return pageMovie.getContent();
     }
 
     private MovieDto convertMovieToMovieDto(Movie movie) {

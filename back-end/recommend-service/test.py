@@ -10,7 +10,7 @@ def get_db_connection():
         password="Imgemini",
         database="moonmovie-movie-service"  # e.g., "movies_db"
     )
-    
+
 # Fetch movie data
 def fetch_movie_data():
     conn = get_db_connection()
@@ -73,8 +73,12 @@ def build_movie_vectors():
 # Example Usage
 movie_vectors, genre_to_index = build_movie_vectors()
 
+from flask import Flask, request, jsonify
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
 # Function to compute cosine similarity between two vectors
-def cosine_similarity_cus(vec1, vec2):
+def cosine_similarity(vec1, vec2):
     dot_product = np.dot(vec1, vec2)
     norm_vec1 = np.linalg.norm(vec1)
     norm_vec2 = np.linalg.norm(vec2)
@@ -93,7 +97,7 @@ def suggest_movies(movieId, movie_vectors, top_n=5):
     similarity_scores = {}
     for other_movieId, other_vector in movie_vectors.items():
         if other_movieId != movieId:  # Skip the same movie
-            similarity = cosine_similarity_cus(target_vector, other_vector)
+            similarity = cosine_similarity(target_vector, other_vector)
             similarity_scores[other_movieId] = similarity
 
     # Sort the movies by similarity score in descending order
@@ -102,45 +106,6 @@ def suggest_movies(movieId, movie_vectors, top_n=5):
     # Return the top N most similar movies
     return sorted_movies[:top_n]
 
-# Fetch movie tittle data
-def fetch_movie_title_data():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    query = "SELECT title FROM movie"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    
-    # Close the cursor and connection
-    cursor.close()
-    conn.close()
-    
-    return rows
-
-# Title data
-movie_titles = fetch_movie_title_data()
-movie_titles = [title[0] for title in movie_titles]
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-## Title data vector
-vectorizer = TfidfVectorizer()
-tfidf_matrix = vectorizer.fit_transform(movie_titles)
-
-
-cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix);
-
-def recommend_keywords(query):
-    user_query_vectorized = vectorizer.transform([query])
-    similarity_scores = cosine_similarity(user_query_vectorized, tfidf_matrix).flatten();
-    # Get indices of top matches
-    related_docs_indices = similarity_scores.argsort()[:-8:-1]
-    
-    # Get suggestions
-    suggestions = [movie_titles[i] for i in related_docs_indices]
-    return suggestions
-
-    
 from flask import Flask, request, jsonify
 import py_eureka_client.eureka_client as eureka_client
 
@@ -151,13 +116,6 @@ eureka_client.init(eureka_server="http://localhost:8761/eureka",
                    instance_port=rest_port)
 
 app = Flask(__name__)
-
-@app.route('/api/v2/moon-movie/recommend', methods=['GET'])
-def recommend():
-    user_input = request.args.get('query')
-    recommendations = recommend_keywords(user_input)
-    return jsonify(recommendations)
-
 
 @app.route('/api/v2/moon-movie/recommend/<int:movieId>', methods=['GET'])
 def suggest(movieId):
@@ -173,6 +131,5 @@ def suggest(movieId):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port = rest_port)

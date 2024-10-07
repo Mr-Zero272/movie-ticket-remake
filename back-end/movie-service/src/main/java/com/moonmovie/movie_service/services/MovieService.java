@@ -7,6 +7,8 @@ import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface MovieService {
     /**
@@ -68,4 +70,6 @@ public interface MovieService {
     PaginationResponse<Movie> getUpcomingMovies(int page, int size);
 
     MovieDto getMovieByShowingId(int showingId);
+
+    List<Movie> getRecommendMoviesByMovieId(int movieId);
 }
