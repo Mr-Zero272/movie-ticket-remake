@@ -46,7 +46,7 @@ public class MovieDaoCustom {
 
         // Predicate for original language matching the genreId
         Predicate languagePredicate;
-        if (originalLanguage == null || originalLanguage.equalsIgnoreCase("")) {
+        if (originalLanguage == null || originalLanguage.equalsIgnoreCase("") || originalLanguage.equalsIgnoreCase("none")) {
             languagePredicate = cb.like(movieRoot.get("originalLanguage"), "%");
         } else {
             languagePredicate = cb.equal(movieRoot.get("originalLanguage"), originalLanguage);
@@ -54,7 +54,7 @@ public class MovieDaoCustom {
 
         // Predicate for status matching the genreId
         Predicate statusPredicate;
-        if (status == null || status.equalsIgnoreCase("")) {
+        if (status == null || status.equalsIgnoreCase("") || status.equalsIgnoreCase("none")) {
             statusPredicate = cb.like(movieRoot.get("status"), "%");
         } else {
             statusPredicate = cb.equal(cb.lower(movieRoot.get("status")), status.toLowerCase());
@@ -105,14 +105,14 @@ public class MovieDaoCustom {
 
         Predicate countTitlePredicate = cb.or(countTitlePredicates.toArray(new Predicate[0]));
         Predicate countLanguagePredicate;
-        if (originalLanguage == null || originalLanguage.equalsIgnoreCase("")) {
+        if (originalLanguage == null || originalLanguage.equalsIgnoreCase("")  || originalLanguage.equalsIgnoreCase("none")) {
             countLanguagePredicate = cb.like(countRoot.get("originalLanguage"), "%");
         } else {
             countLanguagePredicate = cb.equal(countRoot.get("originalLanguage"), originalLanguage);
         }
 
         Predicate countStatusPredicate;
-        if (status == null || status.equalsIgnoreCase("")) {
+        if (status == null || status.equalsIgnoreCase("") || status.equalsIgnoreCase("none")) {
             countStatusPredicate = cb.like(countRoot.get("status"), "%");
         } else {
             countStatusPredicate = cb.equal(cb.lower(countRoot.get("status")), status.toLowerCase());

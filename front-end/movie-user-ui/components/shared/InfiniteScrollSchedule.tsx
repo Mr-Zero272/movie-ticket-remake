@@ -1,12 +1,14 @@
 'use client';
 import { Showing } from '@/types/showing';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, SearchX } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import { fetchScheduleShowings } from '@/services/movieServices';
 import { useRouter } from 'next/navigation';
+import DatePickerCustom from '../ui/date-picker-custom';
+import ScrollTopButton from './ScrollTopButton';
 
 const InfiniteScrollSchedule = () => {
     const router = useRouter();
@@ -14,27 +16,40 @@ const InfiniteScrollSchedule = () => {
     const [hasMore, setHasMore] = useState(true);
     const [index, setIndex] = useState(2);
     const [loading, setLoading] = useState(false);
+    const [activeDate, setActiveDate] = useState(() => new Date().toISOString().split('T')[0] + 'T00:00:00');
 
     const fetchMoreData = useCallback(async () => {
         if (loading || !hasMore) return;
         setLoading(true);
-        const res = await fetchScheduleShowings(new Date().toISOString().split('T')[0] + 'T00:00:00', index);
+        const res = await fetchScheduleShowings(activeDate, index);
         if (res.page > res.totalPages) {
             setHasMore(false);
         }
         setData((prevData) => [...prevData, ...res.data]);
         setIndex((prevIndex) => prevIndex + 1);
         setLoading(false);
-    }, [index, loading, hasMore]);
+    }, [index, loading, hasMore, activeDate]);
+
+    const handleChooseDate = async (date: string) => {
+        const res = await fetchScheduleShowings(date);
+        setActiveDate(date);
+        setIndex(2);
+        setData(res.data);
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    };
 
     useEffect(() => {
         const fetchApi = async () => {
             setLoading(true);
-            const res = await fetchScheduleShowings(new Date().toISOString().split('T')[0] + 'T00:00:00');
+            const res = await fetchScheduleShowings(activeDate);
             setData(res.data);
             setLoading(false);
         };
         fetchApi();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -52,7 +67,14 @@ const InfiniteScrollSchedule = () => {
     }, [fetchMoreData]);
     return (
         <div className="container mx-auto px-5 pt-4">
+            <ScrollTopButton />
+            <DatePickerCustom
+                className="sticky top-20 bg-white dark:bg-[#121212]"
+                initialDate={new Date().toISOString().split('T')[0] + 'T00:00:00'}
+                onChooseDate={handleChooseDate}
+            />
             {data &&
+                data.length !== 0 &&
                 data.map((showing) => (
                     <div className="-my-8 divide-y-2 divide-gray-100" key={showing.id}>
                         <div className="flex flex-wrap py-8 md:flex-nowrap">
@@ -100,6 +122,15 @@ const InfiniteScrollSchedule = () => {
                         </div>
                     </div>
                 ))}
+
+            {data && data.length === 0 && (
+                <div className="flex flex-col items-center gap-y-3 text-center text-gray-500">
+                    <SearchX strokeWidth={1} className="size-20 text-primary" />
+                    <h2 className="text-3xl font-bold">Whoops!</h2>
+                    <p>It seems like this date do not have any showings.</p>
+                    <p>Please try another one.</p>
+                </div>
+            )}
             {loading && (
                 <div className="flex justify-center py-3">
                     <LoaderCircle className="size-7 animate-spin text-primary" />

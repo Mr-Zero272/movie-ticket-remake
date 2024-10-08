@@ -14,8 +14,8 @@ function Footerbar({}: Props) {
     const pathname = usePathname();
     // const { userId } = useAuth();
     return (
-        <section className="xs:px-7 fixed bottom-0 z-10 w-full rounded-t-3xl border bg-white p-4 dark:border-none dark:bg-[#121417] md:hidden">
-            <div className="xs:gap-5 flex items-center justify-between gap-3">
+        <section className="fixed bottom-0 z-10 w-full rounded-t-3xl border bg-white p-3 dark:border-none dark:bg-[#121417] sm:px-7 md:hidden">
+            <div className="flex items-center justify-between gap-3 sm:gap-5">
                 {navbarLinks.map((link) => {
                     const isActive =
                         (pathname.includes(link.route) && link.route.length > 1) || pathname === link.route;

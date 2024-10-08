@@ -52,8 +52,8 @@ const FilterMovie = (props: PropsWithTypeNormal | PropsWithTypePopular) => {
     const [movieData, setMovieData] = useState(props.initialData);
     const [loading, setLoading] = useState(false);
     const isFirstTimeRun = useRef(false);
-    const [language, setLanguage] = useState('languageData' in props ? props.languageData[0].value : '');
-    const [status, setStatus] = useState('statusData' in props ? props.statusData[0].value : '');
+    const [language, setLanguage] = useState('languageData' in props ? props.languageData[0].value : 'none');
+    const [status, setStatus] = useState('statusData' in props ? props.statusData[0].value : 'none');
 
     useEffect(() => {
         if (isFirstTimeRun.current) {

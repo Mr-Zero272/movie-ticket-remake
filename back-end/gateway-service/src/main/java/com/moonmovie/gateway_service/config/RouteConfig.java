@@ -35,6 +35,7 @@ public class RouteConfig {
                                 .uri("lb://movie-service"))
                 .route("recommend-service", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/recommend/**")
+                                .filters(f -> f.filter(authenticationFilter))
                                 .uri("lb://recommend-service"))
                 .route("seat-service", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/seat/**")

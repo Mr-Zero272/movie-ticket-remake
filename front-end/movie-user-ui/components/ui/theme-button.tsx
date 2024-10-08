@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { Switch } from './switch';
 
 type Props = {
@@ -11,7 +11,9 @@ type Props = {
     isSwitch?: boolean;
 };
 
-function ThemeButton({ className, isSwitch = false }: Props) {
+type ButtonProps = React.HTMLProps<HTMLButtonElement>;
+
+const ThemeButton = forwardRef<HTMLButtonElement, Props>(({ isSwitch = false, className }, ref) => {
     const { theme, setTheme } = useTheme();
     const [hydrated, setHydrated] = useState(false);
 
@@ -44,6 +46,8 @@ function ThemeButton({ className, isSwitch = false }: Props) {
             )}
         </button>
     );
-}
+});
+
+ThemeButton.displayName = 'ThemeButton';
 
 export default ThemeButton;

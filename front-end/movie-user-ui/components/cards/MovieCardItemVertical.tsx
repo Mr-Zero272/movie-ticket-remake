@@ -30,9 +30,7 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
     if ('loading' in props) {
         const { className } = props;
         return (
-            <figure
-                className={`w-56 animate-pulse max-[500px]:w-48 max-[420px]:w-44 max-[385px]:w-40 ${className as string}`}
-            >
+            <figure className={`max-[500px]:w-48 max-[420px]:w-44 max-[385px]:w-40 ${className as string}`}>
                 <div className="group relative cursor-pointer">
                     <div className="h-72 w-full bg-gray-500" />
                 </div>
@@ -78,12 +76,12 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
                     className="h-72 w-full"
                     quality={100}
                 />
-                <div className="absolute right-0 top-0 hidden h-72 w-full items-center justify-center bg-gray-700 bg-opacity-35 group-hover:flex">
+                <div className="absolute inset-0 hidden h-72 w-full items-center justify-center bg-gray-700 bg-opacity-35 group-hover:flex">
                     <Link
                         href={`/detail/${movieId}`}
                         className="flex size-12 items-center justify-center rounded-full bg-white"
                     >
-                        <Play className="size-6 fill-black" />
+                        <Play className="size-5 fill-black dark:text-black" />
                     </Link>
                 </div>
             </div>

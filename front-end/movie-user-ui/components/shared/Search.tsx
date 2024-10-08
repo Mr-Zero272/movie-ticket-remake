@@ -4,20 +4,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { useDebounce } from '@/hooks';
 import { cn } from '@/lib/utils';
-import { fetchRecommendKeywords } from '@/services/recommendServices';
-import { LoaderCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { DropdownMenu, DropdownMenuItem } from '../ui/dropdown-menu-custom';
+import { fetchHistoryKeywords, fetchRecommendKeywords } from '@/services/recommendServices';
+import { History, LoaderCircle, SearchIcon } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator } from '../ui/dropdown-menu-custom';
 
 type Props = {
     className?: string;
 };
 
 function Search({ className }: Props) {
+    const params = useParams();
     const router = useRouter();
-    const [searchValue, setSearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState(() =>
+        decodeURI(params?.q as string) === 'undefined' ? '' : decodeURI(params?.q as string),
+    );
     const [searchResult, setSearchResult] = useState<string[]>([]);
-    const [showResult, setShowResult] = useState(true);
+    const [historyKeywords, setHistoryKeywords] = useState<string[]>([]);
+    const [showResult, setShowResult] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const debounced = useDebounce<string>(searchValue, 500);
@@ -35,6 +39,15 @@ function Search({ className }: Props) {
     const handleHideResult = () => {
         setShowResult(false);
     };
+
+    useEffect(() => {
+        const fetchHistoryKeywordsApi = async () => {
+            const historyKeywords = await fetchHistoryKeywords();
+            setHistoryKeywords(historyKeywords);
+        };
+
+        fetchHistoryKeywordsApi();
+    }, []);
 
     useEffect(() => {
         const handleFocusSearchBar = (e: KeyboardEvent) => {
@@ -57,21 +70,25 @@ function Search({ className }: Props) {
         }
 
         const fetchApi = async () => {
+            if (loading) {
+                return;
+            }
             setLoading(true);
 
-            const res = await fetchRecommendKeywords(debounced);
+            const historyKeywords = await fetchHistoryKeywords();
 
-            // const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${debounced}`, {
-            //     headers: {
-            //         Authorization:
-            //             'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMTQxODgzNDUzN2I0MThjYWE2MGYxYTM1Njk5YWFlNSIsIm5iZiI6MTcyMTMxODM3NS4wNzQ5MzQsInN1YiI6IjY2OTkzYWVhZGExMjIxZjdmM2NlOWI5MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.G-fUWJhJCjqA0MbSnzUZ0j1cyUrNOSdBQT1Fih8CHik',
-            //     },
-            // });
-            // const data = await response.json();
-            // TODO: delete this block code
+            let recommendKeywords = await fetchRecommendKeywords(debounced);
 
-            res.push(debounced);
-            setSearchResult(res);
+            // add current keyword
+            recommendKeywords = [debounced, ...recommendKeywords];
+
+            // filter unique keywords
+            recommendKeywords = Array.from(new Set(recommendKeywords));
+
+            recommendKeywords = recommendKeywords.slice(0, 7);
+
+            setSearchResult(recommendKeywords);
+            setHistoryKeywords(historyKeywords);
 
             setLoading(false);
         };
@@ -143,13 +160,33 @@ function Search({ className }: Props) {
                     onChange={handleSearchInputChange}
                     onKeyDown={handleOnKeyDown}
                 />
-                {showResult && searchResult && searchResult.length > 0 && (
+                {((showResult && searchResult && searchResult.length > 0) ||
+                    (showResult && historyKeywords && historyKeywords.length > 0)) && (
                     <DropdownMenu
                         className="absolute -left-4 top-12 w-96 max-sm:w-64"
                         title="Movie"
                         onOutSideClick={handleHideResult}
                     >
-                        {searchResult.slice(0, searchResult.length - 1).map((result, index) => (
+                        <div className="mb-2 flex flex-wrap items-center gap-2 py-2">
+                            {historyKeywords.map((keywordHistory, index) => (
+                                <div
+                                    className="w-fit cursor-pointer rounded-full border px-2 py-1 hover:bg-accent dark:border-gray-700"
+                                    key={keywordHistory + index}
+                                    onClick={() => {
+                                        setSearchValue(keywordHistory);
+                                        setShowResult(false);
+                                        router.replace('/search/' + keywordHistory);
+                                    }}
+                                >
+                                    <div className="flex items-center gap-x-1">
+                                        <History className="size-5 text-gray-500" />
+                                        {keywordHistory}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <DropdownMenuSeparator />
+                        {searchResult.map((result, index) => (
                             <DropdownMenuItem
                                 key={result + index}
                                 isFocused={searchValue === result}
@@ -159,7 +196,10 @@ function Search({ className }: Props) {
                                     router.replace('/search/' + result);
                                 }}
                             >
-                                {result}
+                                <div className="flex items-center gap-x-3">
+                                    <SearchIcon className="size-5 text-gray-500" />
+                                    {result}
+                                </div>
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenu>

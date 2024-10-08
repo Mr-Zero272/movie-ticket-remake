@@ -133,20 +133,20 @@ export const fetchPopularMovies = async ({
 
 export const fetchMovies = async ({
     q = '',
-    originalLanguage = 'en',
-    status = 'Released',
-    sort = 'releaseDate',
+    originalLanguage = '',
+    status = '',
+    sort = 'none',
     genreId = 0,
     page = 1,
     size = 20,
 }: {
-    q: string;
-    originalLanguage: string;
-    status: string;
-    size: number;
-    page: number;
-    sort: string;
-    genreId: string | number;
+    q?: string;
+    originalLanguage?: string;
+    status?: string;
+    size?: number;
+    page?: number;
+    sort?: string;
+    genreId?: string | number;
 }) => {
     try {
         const res = await axios.get(`${API_URL}`, {
