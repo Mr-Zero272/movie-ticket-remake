@@ -197,7 +197,7 @@ const SignInForm = (props: Props) => {
                             </FormItem>
                         )}
                     />
-                    <Link href="/" className="text-purple-blue-500 mr-4 text-sm font-medium">
+                    <Link href="/change-pass" className="text-purple-blue-500 mr-4 text-sm font-medium">
                         Forget password?
                     </Link>
                 </div>

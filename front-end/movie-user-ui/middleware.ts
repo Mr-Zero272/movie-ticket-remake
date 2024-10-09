@@ -9,6 +9,7 @@ export function middleware(request: NextRequest) {
     if (
         pathname.startsWith('/sign-in') ||
         pathname.startsWith('/sign-up') ||
+        pathname.startsWith('/change-pass') ||
         pathname.startsWith('/api/user') ||
         pathname.startsWith('/api/uploadthing')
     ) {

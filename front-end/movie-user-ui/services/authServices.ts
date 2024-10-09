@@ -180,3 +180,62 @@ export const updateUser = async (userInfo: {
         }
     }
 };
+
+export const sendOtpCodeChangePassword = async (email: string) => {
+    try {
+        const response = await instanceAuthService.get('/change-pass', {
+            params: { email },
+        });
+
+        return response.data as ResponseApiTemplate;
+    } catch (error: any) {
+        console.log(error);
+        if (isAxiosError(error)) {
+            if (error.response?.data) {
+                return error.response.data as ResponseApiTemplate;
+            }
+        } else {
+            throw new Error('Cannot send otp code for user!');
+        }
+    }
+};
+
+export const validCode = async ({ email, code }: { email: string; code: string }) => {
+    try {
+        const response = await instanceAuthService.post('/valid-otp', {
+            email,
+            code,
+        });
+
+        return response.data as ResponseApiTemplate;
+    } catch (error: any) {
+        console.log(error);
+        if (isAxiosError(error)) {
+            if (error.response?.data) {
+                return error.response.data as ResponseApiTemplate;
+            }
+        } else {
+            throw new Error('Cannot valid otp code for user!');
+        }
+    }
+};
+
+export const changePassword = async ({ email, newPassword }: { email: string; newPassword: string }) => {
+    try {
+        const response = await instanceAuthService.post('/change-pass', {
+            email,
+            newPassword,
+        });
+
+        return response.data as ResponseApiTemplate;
+    } catch (error: any) {
+        console.log(error);
+        if (isAxiosError(error)) {
+            if (error.response?.data) {
+                return error.response.data as ResponseApiTemplate;
+            }
+        } else {
+            throw new Error('Cannot change password for user!');
+        }
+    }
+};

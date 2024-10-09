@@ -9,12 +9,18 @@ import com.moonmovie.auth_service.jwt.JwtService;
 import com.moonmovie.auth_service.models.Authentication;
 import com.moonmovie.auth_service.models.Role;
 import com.moonmovie.auth_service.models.User;
+import com.moonmovie.auth_service.request.AuthenticateOtpCodeRequest;
 import com.moonmovie.auth_service.request.AuthenticationRequest;
+import com.moonmovie.auth_service.request.ChangePasswordRequest;
 import com.moonmovie.auth_service.request.RegisterRequest;
 import com.moonmovie.auth_service.response.AuthenticationResponse;
+import com.moonmovie.auth_service.response.ResponseTemplate;
 import com.moonmovie.auth_service.services.AuthenticationService;
+import com.moonmovie.auth_service.services.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,11 +34,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.context.Context;
 
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -48,11 +57,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private MailService mailService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     @Value("${app.local.variable.client_id}")
     private String clientGoogleId;
 
     @Value("${app.local.variable.client_secret}")
     private String clientGoogleSecret;
+
+    private static final String OTP_CHARACTERS = "0123456789";
 
     private MethodArgumentNotValidException createMethodArgumentNotValidException(String field, String message) {
         return createMethodArgumentNotValidException(field, message, "user");
@@ -277,5 +294,88 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .refreshToken(refreshToken)
                 .message("Sign in successfully!")
                 .build();
+    }
+
+    private String generateRandomString(int length, String characters) {
+        // a class in java.security
+        SecureRandom random = new SecureRandom();
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            result.append(characters.charAt(index));
+        }
+        return result.toString();
+    }
+
+    @Override
+    @Cacheable(value = "codeTmp", key = "#email")
+    public ResponseTemplate sendOtpChangePassCode(String email) {
+
+        ResponseTemplate responseMessage = new ResponseTemplate(200, "Check your otp code in your email!");
+        Optional<User> user = userDao.findByEmail(email);
+        // create otp code
+        String code = generateRandomString(5, OTP_CHARACTERS);
+
+        // create context for send mail
+        Context context = new Context();
+        if (user.isPresent()) {
+            context.setVariable("code", code);
+            context.setVariable("message", "Thank you for choosing Moon Movie. Use the following OTP to complete your Reset Password procedures. OTP is valid for 5 minutes.");
+            responseMessage.setMessage("Receive otp code in your email!");
+            mailService.sendEmailWithHtmlTemplate(email, "Code OTP", "otpCode", context);
+            // send mail and save otp code in redis
+            redisTemplate.opsForValue().set(email, code, 6, TimeUnit.MINUTES);
+        } else {
+            responseMessage.setMessage("This email has no account exist!");
+            responseMessage.setStatus(400);
+        }
+        return responseMessage;
+    }
+
+    @Override
+    public ResponseTemplate validCodeChangePass(AuthenticateOtpCodeRequest request) {
+        ResponseTemplate responseMessage = new ResponseTemplate(200, "");
+        String code = redisTemplate.opsForValue().get(request.getEmail());
+        if (request.getCode() != null && request.getCode().equals(code)) {
+            responseMessage.setMessage("The otp code is valid");
+        } else {
+            responseMessage.setMessage("The opt code is invalid");
+            responseMessage.setStatus(400);
+        }
+        return responseMessage;
+    }
+
+    @Override
+    public ResponseTemplate changePassword(ChangePasswordRequest request) {
+        ResponseTemplate responseMessage = new ResponseTemplate(200, "");
+        Optional<User> user = userDao.findByEmail(request.getEmail());
+        if (user.isPresent()) {
+            if (user.get().getAuthentications().size() == 1) {
+                if (user.get().getAuthentications().get(0).getProvider().equalsIgnoreCase("google")) {
+                    Authentication authentication = new Authentication();
+                    authentication.setProvider("local");
+                    authentication.setPassword(passwordEncoder.encode((request.getNewPassword())));
+                    authentication.setCreatedAt(LocalDateTime.now());
+                    authentication.setModifiedAt(LocalDateTime.now());
+                    user.get().getAuthentications().add(authentication);
+                } else {
+                    user.get().getAuthentications().get(0).setPassword(passwordEncoder.encode((request.getNewPassword())));
+                }
+            } else {
+                user.get().getAuthentications().forEach(authentication -> {
+                    if (authentication.getProvider().equalsIgnoreCase("local")) {
+                        authentication.setPassword(passwordEncoder.encode((request.getNewPassword())));
+                    }
+                });
+            }
+
+            userDao.save(user.get());
+            responseMessage.setMessage("Change password successfully!");
+        } else {
+            responseMessage.setStatus(400);
+            responseMessage.setMessage("This email have no account exists!");
+        }
+        return responseMessage;
     }
 }

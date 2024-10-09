@@ -1,21 +1,18 @@
 package com.moonmovie.auth_service.controllers;
 
 import com.moonmovie.auth_service.models.Role;
-import com.moonmovie.auth_service.request.AuthenticationGoogleRequest;
-import com.moonmovie.auth_service.request.AuthenticationRequest;
-import com.moonmovie.auth_service.request.RegisterRequest;
+import com.moonmovie.auth_service.request.*;
 import com.moonmovie.auth_service.response.AuthenticationResponse;
+import com.moonmovie.auth_service.response.ResponseTemplate;
 import com.moonmovie.auth_service.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 
@@ -91,5 +88,23 @@ public class AuthController {
         response.addCookie(tokenCookie);
         response.addCookie(refreshTokenCookie);
         return ResponseEntity.ok(authenticationResponse);
+    }
+
+    @GetMapping("/change-pass")
+    public ResponseEntity<ResponseTemplate> sendMailRegisterChangePass(@RequestParam("email") String email) {
+        ResponseTemplate res = authenticationService.sendOtpChangePassCode(email);
+        return new ResponseEntity<>(res, HttpStatusCode.valueOf(res.getStatus()));
+    }
+
+    @PostMapping("/valid-otp")
+    public ResponseEntity<ResponseTemplate> validCodeOtpChangePassword(@RequestBody AuthenticateOtpCodeRequest request) {
+        ResponseTemplate res = authenticationService.validCodeChangePass(request);
+        return new ResponseEntity<>(res, HttpStatusCode.valueOf(res.getStatus()));
+    }
+
+    @PostMapping("/change-pass")
+    public ResponseEntity<ResponseTemplate> changePassword(@RequestBody ChangePasswordRequest request) {
+        ResponseTemplate res = authenticationService.changePassword(request);
+        return new ResponseEntity<>(res, HttpStatusCode.valueOf(res.getStatus()));
     }
 }
