@@ -4,11 +4,11 @@
       <ng-icon name="heroPlusCircle" size="24"></ng-icon>
     </div>
     <div class="flex flex-col">
-      <span class="font-medium group-hover:underline">Order: efvsFe</span>
-      <span class="text-xs text-gray-500">2 tickets</span>
+      <span class="font-medium group-hover:underline">Order: {{ order.id.slice(16) }} ...</span>
+      <span class="text-xs text-gray-500">{{ order.orderStatus }}</span>
     </div>
   </div>
   <div class="text-sm text-green-400">
-    {{ '340000' | currency: 'VND' }}
+    {{ order.amount | currency: 'VND' }}
   </div>
 </div>

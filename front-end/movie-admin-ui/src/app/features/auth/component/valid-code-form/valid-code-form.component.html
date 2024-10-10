@@ -1,0 +1,44 @@
+<div class="flex flex-col">
+  <app-header-mobile title="Valid code" />
+  <form
+    class="mx-auto max-w-lg space-y-6 max-sm:w-full max-sm:px-10"
+    [formGroup]="validCodeForm"
+    (ngSubmit)="handleSubmit()"
+  >
+    <div>
+      <h5 class="mb-5 text-xl font-medium">Please enter the one-time opt code sent to your email.</h5>
+    </div>
+
+    <div>
+      <div class="mb-2">
+        <label for="code" class="mb-2">Otp code</label>
+
+        <ng-otp-input
+          id="code"
+          [formCtrl]="getControl('code')"
+          [config]="{ length: 5, allowNumbersOnly: true }"
+        ></ng-otp-input>
+      </div>
+
+      <app-error-display [control]="validCodeForm.controls['code']" [isFormSubmitted]="false" />
+      <div class="flex items-center text-sm text-gray-500">
+        <p>Didn&apos;t receive the opt code?</p>
+        <app-button
+          variant="link"
+          (click)="handleResendCode()"
+          [loading]="reSendCodeLoading"
+          [disabled]="reSendCodeLoading"
+        >
+          Send again
+        </app-button>
+      </div>
+      <div *ngIf="isReSendCode && !reSendCodeLoading" class="flex items-center text-sm text-gray-500">
+        Check your email again!
+      </div>
+    </div>
+
+    <div class="w-ful">
+      <app-button type="submit" class="w-full" [loading]="loading" [disabled]="loading"> Submit </app-button>
+    </div>
+  </form>
+</div>

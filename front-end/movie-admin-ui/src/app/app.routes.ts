@@ -16,6 +16,7 @@ import { TestPageComponent } from './features/test/componets/test-page/test-page
 import { GenresComponent } from './features/genres/componets/genres/genres.component';
 import { OrdersComponent } from './features/orders/componets/orders/orders.component';
 import { EditMovieComponent } from './features/movies/components/edit-movie/edit-movie.component';
+import { ChangePassComponent } from './features/auth/component/change-pass/change-pass.component';
 
 export const routes: Routes = [
   {
@@ -109,6 +110,11 @@ export const routes: Routes = [
         path: 'sign-up',
         title: 'Sign up',
         component: SignUpComponent,
+      },
+      {
+        path: 'change-pass',
+        title: 'Reset your password',
+        component: ChangePassComponent,
       },
     ],
   },

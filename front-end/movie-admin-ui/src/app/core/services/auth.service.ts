@@ -4,6 +4,8 @@ import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { ResponseApiTemplate, ResponseAuthType, User } from '../../shared/models/auth.model';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +17,7 @@ export class AuthService {
     private http: HttpClient,
     private cookieService: CookieService,
     private router: Router,
+    private toast: ToastService,
   ) {}
 
   login(loginInfo: { usernameOrEmail: string; password: string; keepLogin: boolean }): Observable<ResponseAuthType> {
@@ -23,6 +26,11 @@ export class AuthService {
       .pipe(
         tap((response) => {
           if ('token' in response) {
+            if (!this.isAdmin(response.token)) {
+              this.toast.showToast('danger', 'Do not have permission!');
+              return;
+            }
+
             if (loginInfo.keepLogin) {
               this.cookieService.set('mmtk', response.token, 7, '/', 'localhost', false, 'Lax');
               this.cookieService.set('mmrtk', response.refreshToken, 9, '/', 'localhost', false, 'Lax');
@@ -44,6 +52,11 @@ export class AuthService {
       .pipe(
         tap((response) => {
           if ('token' in response) {
+            if (!this.isAdmin(response.token)) {
+              this.toast.showToast('danger', 'Do not have permission!');
+              return;
+            }
+
             if (loginInfo.keepLogin) {
               this.cookieService.set('mmtk', response.token, 3600 * 24 * 7, '/', 'localhost', false, 'Lax');
               this.cookieService.set('mmrtk', response.refreshToken, 3600 * 24 * 7, '/', 'localhost', false, 'Lax');
@@ -78,6 +91,11 @@ export class AuthService {
     this.loading = true;
     const token = this.getToken(); // Get token from cookie
     if (token) {
+      if (!this.isAdmin(token)) {
+        this.router.navigate(['/sign-in']);
+        this.logout();
+      }
+
       // Call your API to get user info using the token
       this.http
         .get<any>('http://localhost:8272/api/v2/moon-movie/auth/user', {
@@ -135,5 +153,14 @@ export class AuthService {
   // To access the current user outside the service
   getUser() {
     return this.user$.asObservable(); // Return an observable for the current user
+  }
+
+  isAdmin(token: string) {
+    const decodeToken = jwtDecode(token);
+    if ('role' in decodeToken && decodeToken.role === 'ADMIN') {
+      return true;
+    }
+
+    return false;
   }
 }

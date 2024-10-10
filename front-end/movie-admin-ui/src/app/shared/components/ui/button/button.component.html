@@ -1,8 +1,7 @@
 <button
   [type]="type"
-  class="mb-2 me-2 flex items-center gap-x-2 rounded-lg px-5 py-2.5 text-sm font-medium"
+  [class]="'mb-2 me-2 flex items-center justify-center gap-x-2 rounded-lg px-5 py-2.5 text-sm font-medium ' + class"
   [ngClass]="classBaseOnVariant[variant]"
-  ngClass="class"
   (click)="handleClick($event)"
 >
   <svg

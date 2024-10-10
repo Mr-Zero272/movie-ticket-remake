@@ -1,0 +1,8 @@
+<div class="flex h-full w-full flex-col items-center justify-center">
+  <app-send-otp-form
+    *ngIf="step === 'sendOtpCode'"
+    (onSendOtpCodeChangePassword)="handleSendOtpCodeChangePassword($event)"
+  />
+  <app-valid-code-form *ngIf="step === 'validCode'" [email]="currentEmail" (onValidCode)="handleChangeForm()" />
+  <app-change-password-form *ngIf="step === 'changePassword'" [email]="currentEmail" />
+</div>
