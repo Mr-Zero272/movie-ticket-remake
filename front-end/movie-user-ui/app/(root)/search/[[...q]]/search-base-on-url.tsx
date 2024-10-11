@@ -122,7 +122,7 @@ const SearchBaseOnUrl = (props: Props) => {
                 setMovieData(res);
                 setFilters(filtersObj);
             } else {
-                const res = await fetchMovies({ q: '', ...filters });
+                const res = await fetchMovies({ q: q, ...filters });
                 setMovieData(res);
             }
             setLoading(false);

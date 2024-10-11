@@ -2,7 +2,7 @@
   <div class="mb-10 flex gap-x-7">
     <article class="flex-1">
       <div class="mb-3 flex items-center justify-between">
-        <div class="text-2xl font-semibold">Earnings</div>
+        <div class="text-2xl font-semibold">Earnings {{ loading }}</div>
         <button class="flex items-center rounded-md px-3 py-1.5 hover:bg-accent">
           <span class="me-2 font-medium">More</span>
           <ng-icon name="heroSquares2x2" size="20"></ng-icon>
@@ -29,17 +29,45 @@
       </div>
       <div class="grid grid-cols-4 gap-7">
         <ng-template #iconBalance>
-          <ng-icon name="heroChartBarSquare" size="28"></ng-icon>
+          <ng-icon name="heroChartBarSquare" size="28" class="text-green-500"></ng-icon>
+        </ng-template>
+        <ng-template #iconOrders>
+          <ng-icon name="heroShoppingCart" size="28" class="text-orange-500"></ng-icon>
+        </ng-template>
+        <ng-template #iconMovies>
+          <ng-icon name="heroViewfinderCircle" size="28" class="text-blue-500"></ng-icon>
+        </ng-template>
+        <ng-template #iconUsers>
+          <ng-icon name="heroUsers" size="28" class="text-indigo-500"></ng-icon>
         </ng-template>
         <app-statistical-card
+          [loading]="loading"
           [icon]="iconBalance"
           valueType="currency"
           [value]="balance"
-          describe="Total balance"
-        ></app-statistical-card>
-        <app-statistical-card></app-statistical-card>
-        <app-statistical-card></app-statistical-card>
-        <app-statistical-card></app-statistical-card>
+          describe="Total balance this year"
+        />
+        <app-statistical-card
+          [loading]="loading"
+          [icon]="iconOrders"
+          valueType="normal"
+          [value]="getTotalOrderByMonth() + ' orders'"
+          describe="Total order this month"
+        />
+        <app-statistical-card
+          [loading]="loading"
+          [icon]="iconMovies"
+          valueType="normal"
+          [value]="getTotalMovies() + ' movies'"
+          describe="Total order this month"
+        />
+        <app-statistical-card
+          [loading]="loading"
+          [icon]="iconUsers"
+          valueType="normal"
+          [value]="getTotalUsers() + ' users'"
+          describe="Total order this month"
+        />
       </div>
     </article>
     <article class="flex w-1/5 flex-col gap-y-5">
@@ -88,7 +116,13 @@
       <div class="my-3 flex-1">
         <ul class="flex flex-col gap-y-2" *ngIf="recentOrders.length !== 0">
           <li *ngFor="let order of recentOrders">
-            <app-order-item [order]="order"></app-order-item>
+            <app-order-item
+              [loading]="loading"
+              [title]="'Order: ' + order.id.slice(16)"
+              [describe]="order.orderStatus"
+              valueType="currency"
+              [value]="order.amount"
+            ></app-order-item>
           </li>
         </ul>
       </div>

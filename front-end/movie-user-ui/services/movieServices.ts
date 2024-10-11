@@ -191,3 +191,22 @@ export const fetchAllGenres = async (page: number = 1, size: number = 30) => {
         throw new Error('Cannot fetch list genres information');
     }
 };
+
+export const fetchRecommendMovies = async (movieId: number) => {
+    try {
+        const res = await axios.get(`${API_URL}/recommend`, {
+            params: {
+                movieId,
+            },
+        });
+        const result = z.array(MovieSchema).safeParse(res.data);
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid recommend movies information');
+        }
+    } catch (error: any) {
+        console.error('Error fetching list recommend movies:', error.message);
+        throw new Error('Cannot fetch list recommend movies');
+    }
+};

@@ -8,5 +8,6 @@ export interface OrderYearStatistical {
 export interface OrderStatistical {
   totalAmount: number;
   totalServiceFee: number;
+  totalOrders: number;
   month: number;
 }

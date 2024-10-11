@@ -7,7 +7,10 @@ import {
   heroArrowTrendingUp,
   heroChartBarSquare,
   heroCubeTransparent,
+  heroShoppingCart,
   heroSquares2x2,
+  heroUsers,
+  heroViewfinderCircle,
 } from '@ng-icons/heroicons/outline';
 import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import Chart, { Legend } from 'chart.js/auto';
@@ -22,6 +25,11 @@ import {
 } from '../../../../shared/models/order-statistical.model';
 import { Order } from '../../../../shared/models/order.model';
 import { OrdersService } from '../../../orders/services/orders.service';
+import { MovieService } from '../../../../shared/services/movie.service';
+import { MovieStatistical } from '../../../../shared/models/movie-statistical.model';
+import { lastValueFrom } from 'rxjs';
+import { UserStatistical } from '../../../../shared/models/users-statistical.model';
+import { UserService } from '../../../../shared/services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -45,11 +53,10 @@ import { OrdersService } from '../../../orders/services/orders.service';
       heroCubeTransparent,
       heroArrowTrendingUp,
       heroArrowLongRight,
-    }),
-  ],
-  providers: [
-    provideIcons({
+      heroViewfinderCircle,
       heroChartBarSquare,
+      heroShoppingCart,
+      heroUsers,
     }),
   ],
 })
@@ -59,10 +66,14 @@ export class HomeComponent implements AfterViewInit, OnInit {
   digitalClock: Date = new Date();
   user: User | null = null;
 
+  loading: boolean = false;
+  loadingAfterView: boolean = false;
   differencePercentBalance: number = 0;
   balance: number = 0;
   orderStatisticalData: OrderStatisticalList = [];
   recentOrders: Array<Order> = [];
+  moviesStatistical: Array<MovieStatistical> = [];
+  usersStatistical: Array<UserStatistical> = [];
 
   @ViewChild('balanceChart') balanceChartElement!: ElementRef;
   @ViewChild('incomesChart') incomesChartElement!: ElementRef;
@@ -71,6 +82,8 @@ export class HomeComponent implements AfterViewInit, OnInit {
     private authService: AuthService,
     private homeService: HomeService,
     private orderService: OrdersService,
+    private movieService: MovieService,
+    private userService: UserService,
   ) {}
 
   dataBalanceChart = {
@@ -86,34 +99,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
     ],
   };
 
-  dataIncomesChart = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-    datasets: [
-      {
-        label: 'Income 2024',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-          'rgba(255, 205, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(201, 203, 207, 0.2)',
-        ],
-        borderColor: [
-          'rgb(255, 99, 132)',
-          'rgb(255, 159, 64)',
-          'rgb(255, 205, 86)',
-          'rgb(75, 192, 192)',
-          'rgb(54, 162, 235)',
-          'rgb(153, 102, 255)',
-          'rgb(201, 203, 207)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  dataIncomesChart: any = null;
 
   sliceThickness = {
     id: 'sliceThickness',
@@ -130,6 +116,22 @@ export class HomeComponent implements AfterViewInit, OnInit {
       this.digitalClock = new Date();
     }, 1000);
 
+    const fetchApi = async () => {
+      this.recentOrders = await (
+        await lastValueFrom(this.orderService.fetchOrders({ page: 1, sort: 'timestamp', sortOrder: 'desc', size: 7 }))
+      ).data;
+      this.moviesStatistical = await lastValueFrom(this.movieService.fetchMovieStatistical(2024));
+      this.authService.getUser().subscribe((user) => {
+        this.user = user;
+      });
+      this.usersStatistical = await lastValueFrom(this.userService.fetchUserStatistical(2024));
+      this.loading = false;
+    };
+    this.loading = true;
+    fetchApi();
+  }
+
+  ngAfterViewInit(): void {
     this.homeService.getOrderStatistical(2024).subscribe((data) => {
       this.orderStatisticalData = data;
       this.balance = this.homeService.getBalance(2024, data);
@@ -159,66 +161,65 @@ export class HomeComponent implements AfterViewInit, OnInit {
         ],
       };
 
-      this.incomesChart = new Chart(this.incomesChartElement.nativeElement, {
-        type: 'line',
-        data: this.dataIncomesChart,
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'top',
-            },
-            title: {
-              display: true,
-              text: 'Income chart',
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
-      });
+      this.renderIncomeChart();
     }).closed;
 
-    this.authService.getUser().subscribe((data) => {
-      this.user = data;
-    }).closed;
-
-    this.orderService.fetchOrders({ page: 1, sort: 'timestamp', sortOrder: 'desc', size: 7 }).subscribe((orders) => {
-      this.recentOrders = orders.data;
-    }).closed;
-  }
-
-  ngAfterViewInit(): void {
     this.balanceChart = new Chart(this.balanceChartElement.nativeElement, {
       type: 'doughnut',
       data: this.dataBalanceChart,
       options: {},
       plugins: [this.sliceThickness],
     });
+  }
 
-    // this.incomesChart = new Chart(this.incomesChartElement.nativeElement, {
-    //   type: 'line',
-    //   data: this.dataIncomesChart,
-    //   options: {
-    //     responsive: true,
-    //     plugins: {
-    //       legend: {
-    //         position: 'top',
-    //       },
-    //       title: {
-    //         display: true,
-    //         text: 'Income chart',
-    //       },
-    //     },
-    //     scales: {
-    //       y: {
-    //         beginAtZero: true,
-    //       },
-    //     },
-    //   },
-    // });
+  renderIncomeChart() {
+    if (!this.dataIncomesChart) {
+      return;
+    }
+    this.incomesChart = new Chart(this.incomesChartElement.nativeElement, {
+      type: 'line',
+      data: this.dataIncomesChart,
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Income chart',
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+  }
+
+  getTotalOrderByMonth(month: number = new Date().getMonth(), year: number = 2024) {
+    if (this.orderStatisticalData.length === 0) {
+      return 0;
+    }
+
+    return (this.orderStatisticalData.find((osl) => osl.year === year) as OrderYearStatistical).orderStatisticalList[
+      month
+    ].totalOrders;
+  }
+
+  getTotalMovies() {
+    if (this.moviesStatistical.length === 0) {
+      return 0;
+    }
+
+    return this.moviesStatistical.reduce((accumulator, currentValue) => accumulator + currentValue.totalMovies, 0);
+  }
+
+  getTotalUsers() {
+    if (this.usersStatistical.length === 0) return 0;
+
+    return this.usersStatistical.reduce((accumulator, currentValue) => accumulator + currentValue.totalUsers, 0);
   }
 }

@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroPlusCircle } from '@ng-icons/heroicons/outline';
@@ -8,7 +8,7 @@ import { MarqueeTextComponent } from '../marquee-text/marquee-text.component';
 @Component({
   selector: 'app-order-item',
   standalone: true,
-  imports: [NgIconComponent, CurrencyPipe, MarqueeTextComponent],
+  imports: [NgIf, NgIconComponent, CurrencyPipe, MarqueeTextComponent],
   templateUrl: './order-item.component.html',
   styleUrl: './order-item.component.scss',
   viewProviders: [
@@ -18,5 +18,9 @@ import { MarqueeTextComponent } from '../marquee-text/marquee-text.component';
   ],
 })
 export class OrderItemComponent {
-  @Input({ required: true }) order!: Order;
+  @Input() loading: boolean = false;
+  @Input() title: string = 'Title';
+  @Input() describe: string = '';
+  @Input() valueType: 'currency' | 'normal' = 'currency';
+  @Input() value: string | number = 0;
 }

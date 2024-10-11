@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Trailer from './trailer';
 import { redirect } from 'next/navigation';
 import { currentUser } from '@/services/authServices';
+import RecommendMovies from '@/components/shared/RecommendMovies';
 
 type Props = {
     params: { movieId: number };
@@ -101,6 +102,7 @@ const Page = async ({ params }: Props) => {
                         ))}
                     </div>
                 </div>
+                <RecommendMovies movieId={params.movieId} userId={userInfo.id} />
                 <div>
                     <h3 className="mb-3 text-xl">Shared</h3>
                     <div className="flex gap-x-5">

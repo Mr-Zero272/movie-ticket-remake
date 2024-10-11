@@ -9,6 +9,7 @@ import { Component, Input, TemplateRef } from '@angular/core';
   styleUrl: './statistical-card.component.css',
 })
 export class StatisticalCardComponent {
+  @Input() loading: boolean = false;
   @Input() describe: string = '';
   @Input() valueType: 'currency' | 'normal' = 'normal';
   @Input() value: string | number = 'normal value';

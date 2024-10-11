@@ -1,4 +1,4 @@
-<figure class="rounded-2xl bg-white p-7 shadow-lg hover:bg-accent">
+<figure *ngIf="!loading; else loadingState" class="rounded-2xl bg-white p-7 shadow-lg hover:bg-accent">
   <div class="mb-3 flex items-center justify-between">
     <ng-container *ngTemplateOutlet="icon || defaultIcon"></ng-container>
     <ng-template #defaultIcon>
@@ -19,7 +19,7 @@
     </ng-template>
   </div>
   <div class="text-md my-2 line-clamp-2 text-gray-500">
-    <div class="capitalize">Potential Monthly Profit</div>
+    <div class="capitalize">{{ describe }}</div>
   </div>
   <div class="text-xl font-semibold">
     <span *ngIf="valueType === 'currency'; else normalValue">{{ value | currency: 'VND' }}</span>
@@ -28,3 +28,21 @@
     </ng-template>
   </div>
 </figure>
+
+<ng-template #loadingState>
+  <figure class="animate-pulse rounded-2xl bg-white p-7 shadow-lg hover:bg-accent">
+    <div class="mb-3 flex items-center justify-between">
+      <ng-container *ngTemplateOutlet="icon || defaultIcon"></ng-container>
+      <ng-template #defaultIcon>
+        <div class="size-7 rounded-lg border bg-gray-200"></div>
+      </ng-template>
+    </div>
+    <div class="text-md my-5 text-gray-500">
+      <div class="my-3 h-3 w-32 rounded-full bg-gray-200"></div>
+      <div class="mb-1 h-3 w-24 rounded-full bg-gray-200"></div>
+    </div>
+    <div class="text-xl font-semibold">
+      <div class="h-4 w-24 rounded-full bg-gray-200"></div>
+    </div>
+  </figure>
+</ng-template>

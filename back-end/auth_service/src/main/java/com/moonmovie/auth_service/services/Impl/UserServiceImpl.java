@@ -5,6 +5,7 @@ import com.moonmovie.auth_service.dto.UserDto;
 import com.moonmovie.auth_service.exception.GlobalException;
 import com.moonmovie.auth_service.helpers.Helpers;
 import com.moonmovie.auth_service.models.User;
+import com.moonmovie.auth_service.models.UserStatistical;
 import com.moonmovie.auth_service.request.UpdateUserRequest;
 import com.moonmovie.auth_service.response.PaginationResponse;
 import com.moonmovie.auth_service.services.UserService;
@@ -91,6 +92,11 @@ public class UserServiceImpl implements UserService {
                 .totalElements(pageMovie.getTotalElements())
                 .build();
         return resp;
+    }
+
+    @Override
+    public List<UserStatistical> fetchUserStatistical(int year) {
+        return userDao.getUserStatistical(year);
     }
 
     private UserDto convertUserToDto(User user) {

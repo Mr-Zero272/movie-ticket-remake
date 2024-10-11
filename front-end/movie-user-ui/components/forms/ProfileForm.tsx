@@ -14,6 +14,8 @@ import { Textarea } from '../ui/textarea';
 import { useToast } from '../ui/use-toast';
 import { ErrorDetail, User } from '@/types/auth';
 import { updateUser } from '@/services/authServices';
+import { useAuth } from '../auth/AuthProvider';
+import { addImageFiles } from '@/services/mediaServices';
 
 type UserInfo = {
     username: string;
@@ -38,6 +40,7 @@ export const UserSchema = z.object({
 });
 
 function ProfileForm({ user, title, sub }: Props) {
+    const { updateUser: updateUserInContext } = useAuth();
     const { toast } = useToast();
 
     const [files, setFiles] = useState<File[]>([]);
@@ -84,15 +87,17 @@ function ProfileForm({ user, title, sub }: Props) {
         const hasImageChanged = isBase64Image(blob);
 
         if (hasImageChanged) {
-            console.log(files[0].name);
-            const imgRes = await startUpload(files);
+            const imgRes = await addImageFiles(files);
 
-            if (imgRes && imgRes[0].url) {
-                values.avatar = imgRes[0].url;
+            if (imgRes && imgRes[0]) {
+                values.avatar = imgRes[0];
             }
         }
 
         const res = await updateUser({ ...values });
+        if (res && 'username' in res) {
+            updateUserInContext(res);
+        }
 
         if (res && 'status' in res && res.status >= 400) {
             if (res.errors && 'errors' in res && Object.keys(res.errors).length !== 0) {

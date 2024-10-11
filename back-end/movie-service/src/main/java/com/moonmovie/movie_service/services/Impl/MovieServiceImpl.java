@@ -29,7 +29,9 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -216,6 +218,7 @@ public class MovieServiceImpl implements MovieService {
 
         movie.getGalleries().clear();
         movie.getGalleries().addAll(newGalleries);
+        movie.setModifiedAt(LocalDateTime.now());
         Movie movieSaved = movieDao.save(movie);
 
         return movieSaved;
@@ -237,6 +240,7 @@ public class MovieServiceImpl implements MovieService {
         movie.setTotalShowings(request.getTotalShowings());
         movie.setTotalDateShowingsInMonth(request.getTotalDateShowingsInMonth());
         movie.setPriceEachSeat(request.getPriceEachSeat());
+        movie.setModifiedAt(LocalDateTime.now());
         for (int i = 0; i < 4; i++) {
             movie.getDetailShowingTypes().get(i).setShowings(request.getDetailShowingTypes().get(i).getShowings());
         }
@@ -456,6 +460,36 @@ public class MovieServiceImpl implements MovieService {
         return pageMovie.getContent();
     }
 
+    @Override
+    public List<MovieStatistical> getMovieStatistical(int year) {
+        return movieDao.getMovieStatistical(year);
+    }
+
+    @Override
+    public List<MovieStatistical> getScheduleMovieStatistical(int year) {
+        return movieDao.getMovieScheduleStatistical(year);
+    }
+
+    @Override
+    public void updateDataMovie() {
+        List<Movie> movies = movieDao.findAll();
+        for (Movie movie : movies) {
+            LocalDateTime randomDate = getRandomDate(LocalDateTime.of(2024, 1,1,0,0), LocalDateTime.of(2024, 11, 30, 23, 59));
+            movie.setCreatedAt(randomDate);
+            movie.setModifiedAt(randomDate);
+        }
+        movieDao.saveAll(movies);
+    }
+
+    private LocalDateTime getRandomDate(LocalDateTime start, LocalDateTime end) {
+        long startEpochSecond = start.toEpochSecond(ZoneOffset.UTC);
+        long endEpochSecond = end.toEpochSecond(ZoneOffset.UTC);
+
+        long randomEpochSecond = ThreadLocalRandom.current().nextLong(startEpochSecond, endEpochSecond);
+
+        return LocalDateTime.ofEpochSecond(randomEpochSecond, 0, ZoneOffset.UTC);
+    }
+
     private MovieDto convertMovieToMovieDto(Movie movie) {
         return MovieDto.builder()
                 .id(movie.getId())
@@ -491,6 +525,8 @@ public class MovieServiceImpl implements MovieService {
         movie.setVoteCount(movieRequest.getVoteCount());
         movie.setRuntime(movieRequest.getRuntime());
         movie.setReleaseDate(movieRequest.getReleaseDate());
+        movie.setModifiedAt(LocalDateTime.now());
+        movie.setCreatedAt(LocalDateTime.now());
 
         List<Genre> genres = genreDao.findAllByIdIn(movieRequest.getGenreIds());
         Set<Genre> setGenres = new HashSet<>(genres);

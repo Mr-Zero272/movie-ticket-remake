@@ -16,9 +16,9 @@ public interface OrderDao extends MongoRepository<Order, String> {
 
     @Aggregation({"{ $project: { month: { $month: \"$timestamp\" }, year: {$year: \"$timestamp\"}, amount: 1, serviceFee: 1, customerId: 1, orderStatus: 1 }}",
             "{ $match: { year: ?0 }}",
-            "{ $group: { _id: { month: \"$month\"}, totalAmount: { $sum: \"$amount\" }, totalServiceFee: { $sum: \"$serviceFee\" }}}",
+            "{ $group: { _id: { month: \"$month\"}, totalAmount: { $sum: \"$amount\" }, totalServiceFee: { $sum: \"$serviceFee\" }, totalOrders: { $sum: 1 }}}",
             "{ $sort: { \"_id.month\": 1} }",
-            "{ $project: { _id: 0, month: \"$_id.month\", totalAmount: 1, totalServiceFee: 1}}",
+            "{ $project: { _id: 0, month: \"$_id.month\", totalAmount: 1, totalServiceFee: 1, totalOrders: 1}}",
             "{ $limit: 12 }"})
     List<OrderStatistical> getOrderStatisticalByYear(int year);
 }

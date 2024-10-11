@@ -64,7 +64,7 @@ const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: 
     };
 
     return (
-        <figure className={`flex w-full gap-x-5 ${props.className as string}`}>
+        <figure className={`flex w-full gap-x-5 ${className ? className : ''}`}>
             <div className="group relative flex-none cursor-pointer">
                 <Image
                     src={poster}

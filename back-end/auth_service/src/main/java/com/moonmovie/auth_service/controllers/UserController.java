@@ -1,6 +1,7 @@
 package com.moonmovie.auth_service.controllers;
 
 import com.moonmovie.auth_service.dto.UserDto;
+import com.moonmovie.auth_service.models.UserStatistical;
 import com.moonmovie.auth_service.request.UpdateUserRequest;
 import com.moonmovie.auth_service.response.PaginationResponse;
 import com.moonmovie.auth_service.services.UserService;
@@ -39,5 +40,10 @@ public class UserController {
             @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder
     ) {
         return ResponseEntity.ok(userService.getUsers(page, size, userId, usernameOrEmail, sortBy, sortOrder));
+    }
+
+    @GetMapping("/users/statistical")
+    public ResponseEntity<List<UserStatistical>> getStatisticalUsers(@RequestParam("year") int year) {
+        return ResponseEntity.ok(userService.fetchUserStatistical(year));
     }
 }

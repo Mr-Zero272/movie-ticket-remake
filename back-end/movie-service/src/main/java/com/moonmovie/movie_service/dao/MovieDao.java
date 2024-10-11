@@ -2,6 +2,7 @@ package com.moonmovie.movie_service.dao;
 
 import com.moonmovie.movie_service.dto.ScheduleMovie;
 import com.moonmovie.movie_service.models.Movie;
+import com.moonmovie.movie_service.models.MovieStatistical;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,4 +41,10 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
 
     @Query("SELECT DISTINCT m FROM Movie m JOIN m.genres g WHERE LOWER(m.title) LIKE LOWER(?1) AND g.id = ?2 AND m.originalLanguage = ?3 AND m.status = ?4 ")
     Page<Movie> findAllPagination(Pageable pageable, String q, int genreId, String originalLanguage, String status);
+
+    @Query("SELECT COUNT(*) as totalMovies, MONTH(m.createdAt) as month  FROM Movie m WHERE YEAR(m.createdAt) = ?1 GROUP BY MONTH(m.createdAt) ORDER BY MONTH(m.createdAt)")
+    List<MovieStatistical> getMovieStatistical(int year);
+
+    @Query("SELECT Count(*) as totalMovies, m.monthToSchedule as month  FROM Movie m WHERE m.yearToSchedule = ?1 GROUP BY m.monthToSchedule ORDER BY m.monthToSchedule")
+    List<MovieStatistical> getMovieScheduleStatistical(int year);
 }

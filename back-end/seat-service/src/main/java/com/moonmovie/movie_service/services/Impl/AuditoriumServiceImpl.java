@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -88,8 +89,18 @@ public class AuditoriumServiceImpl implements AuditoriumService {
     }
 
     @Override
-    public PaginationResponse<Auditorium> getPaginationAuditorium(String q, int size, int page) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public PaginationResponse<Auditorium> getPaginationAuditorium(String q, String sort, String sortOrder, int size, int page) {
+        Pageable pageable;
+        if (sort.isEmpty() || sort.equalsIgnoreCase("none")) {
+            pageable = PageRequest.of(page - 1, size);
+        } else {
+            if (sortOrder.equals("asc")) {
+                pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, sort));
+            } else {
+                pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sort));
+            }
+        }
+
         Page<Auditorium> auditoriumPage;
         if ( q == null || q.isEmpty()) {
             auditoriumPage = auditoriumDao.findAll(pageable);

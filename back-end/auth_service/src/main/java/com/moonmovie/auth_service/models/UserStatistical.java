@@ -1,4 +1,4 @@
-package com.moonmovie.movie_service.models;
+package com.moonmovie.auth_service.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderStatistical {
-    private long totalAmount;
-    private long totalServiceFee;
-    private int totalOrders;
+public class UserStatistical {
+    private int totalUsers;
     private int month;
 }

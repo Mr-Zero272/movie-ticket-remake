@@ -1,0 +1,14 @@
+<div
+  class="flex size-10 items-center justify-center rounded-full font-medium text-white"
+  [ngClass]="{
+    'bg-blue-500': backgroundColor === 'blue',
+    'bg-green-500': backgroundColor === 'green',
+    'bg-indigo-500': backgroundColor === 'blue',
+    'bg-purple-500': backgroundColor === 'purple',
+    'bg-orange-500': backgroundColor === 'orange',
+    'bg-yellow-500': backgroundColor === 'yellow',
+    'bg-red-500': backgroundColor === 'red',
+  }"
+>
+  {{ name | firstLetter }}
+</div>

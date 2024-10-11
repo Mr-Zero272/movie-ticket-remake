@@ -17,5 +17,5 @@ public interface AuditoriumService {
 
     public Auditorium getAuditoriumById(String id);
 
-    public PaginationResponse<Auditorium> getPaginationAuditorium(String q, int size, int page);
+    public PaginationResponse<Auditorium> getPaginationAuditorium(String q, String sort, String sortOrder, int size, int page);
 }

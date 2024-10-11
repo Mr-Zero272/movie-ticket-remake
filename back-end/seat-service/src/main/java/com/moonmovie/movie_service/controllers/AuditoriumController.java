@@ -37,10 +37,13 @@ public class AuditoriumController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginationResponse<Auditorium>> searchAuditorium(@RequestParam(required = false, defaultValue = "") String q,
-                                                               @RequestParam(required = false, defaultValue = "20") int size,
-                                                               @RequestParam(required = false, defaultValue = "1") int page) {
-        return ResponseEntity.ok(auditoriumService.getPaginationAuditorium(q, size, page));
+    public ResponseEntity<PaginationResponse<Auditorium>> searchAuditorium(
+            @RequestParam(value = "query", required = false, defaultValue = "") String q,
+            @RequestParam(value = "sort", required = false, defaultValue = "none") String sort,
+            @RequestParam(value = "sortOrder", required = false, defaultValue = "desc") String sortOrder,
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(auditoriumService.getPaginationAuditorium(q, sort, sortOrder, size, page));
     }
 
     @GetMapping("/all")

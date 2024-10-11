@@ -2,6 +2,7 @@ package com.moonmovie.movie_service.services;
 
 import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.models.Movie;
+import com.moonmovie.movie_service.models.MovieStatistical;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
@@ -72,4 +73,10 @@ public interface MovieService {
     MovieDto getMovieByShowingId(int showingId);
 
     List<Movie> getRecommendMoviesByMovieId(int movieId);
+
+    List<MovieStatistical> getMovieStatistical(int year);
+
+    List<MovieStatistical> getScheduleMovieStatistical(int year);
+
+    void updateDataMovie();
 }

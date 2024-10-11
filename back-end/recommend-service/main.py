@@ -223,7 +223,7 @@ def recommend():
 def suggest(movieId):
     try:
         # Get the top 5 similar movies (you can adjust top_n if needed)
-        suggested_movies = suggest_movies(movieId, movie_vectors, top_n=5)
+        suggested_movies = suggest_movies(movieId, movie_vectors, top_n=10)
         
         # Return the results as JSON
         return jsonify({

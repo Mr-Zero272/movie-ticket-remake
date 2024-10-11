@@ -47,7 +47,7 @@ export default async function Home() {
                             poster={movie.posterPath}
                             title={movie.title}
                             runtime={movie.runtime}
-                            firstGenre={movie.genres[0].name}
+                            firstGenre={movie.genres.length === 0 ? 'unknown' : movie.genres[0].name}
                             love={movie.userFavoriteMovies.some((m) => m.userId === userInfo.id)}
                         />
                     ))}

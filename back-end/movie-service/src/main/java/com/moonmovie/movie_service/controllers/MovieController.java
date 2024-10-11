@@ -2,6 +2,7 @@ package com.moonmovie.movie_service.controllers;
 
 import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.models.Movie;
+import com.moonmovie.movie_service.models.MovieStatistical;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.requests.ScheduleRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
@@ -89,9 +90,24 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMovieByShowingId(showingId));
     }
 
-    @GetMapping("/recommend/{movieId}")
-    public ResponseEntity<List<Movie>> getMovieRecommendation(@PathVariable("movieId") Integer movieId) {
+    @GetMapping("/recommend")
+    public ResponseEntity<List<Movie>> getMovieRecommendation(@RequestParam("movieId") Integer movieId) {
         return ResponseEntity.ok(movieService.getRecommendMoviesByMovieId(movieId));
     }
 
+    @PutMapping("/edit-data")
+    public ResponseEntity<ResponseTemplate> editDate() {
+        movieService.updateDataMovie();
+        return  ResponseEntity.ok(new ResponseTemplate("Edit movies data success!"));
+    }
+
+    @GetMapping("/statistical")
+    public ResponseEntity<List<MovieStatistical>> getMovieStatistical(@RequestParam(value = "year", defaultValue = "2024") Integer year ) {
+        return ResponseEntity.ok(movieService.getMovieStatistical(year));
+    }
+
+    @GetMapping("/schedule/statistical")
+    public ResponseEntity<List<MovieStatistical>> getScheduleMovieStatistical(@RequestParam(value = "year", defaultValue = "2024") Integer year ) {
+        return ResponseEntity.ok(movieService.getScheduleMovieStatistical(year));
+    }
 }

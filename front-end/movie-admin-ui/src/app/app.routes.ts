@@ -17,6 +17,7 @@ import { GenresComponent } from './features/genres/componets/genres/genres.compo
 import { OrdersComponent } from './features/orders/componets/orders/orders.component';
 import { EditMovieComponent } from './features/movies/components/edit-movie/edit-movie.component';
 import { ChangePassComponent } from './features/auth/component/change-pass/change-pass.component';
+import { HallComponent } from './features/hall/components/hall/hall.component';
 
 export const routes: Routes = [
   {
@@ -87,6 +88,12 @@ export const routes: Routes = [
         path: 'orders',
         title: 'Manage orders',
         component: OrdersComponent,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'hall',
+        title: 'Manage halls',
+        component: HallComponent,
         canActivate: [authGuard],
       },
       {
