@@ -1,4 +1,8 @@
-<div *ngIf="control.invalid && (control.dirty || control.touched || isFormSubmitted)" class="mt-2 w-full text-left">
+<div
+  *ngIf="control.invalid && (control.dirty || control.touched || isFormSubmitted)"
+  class="mt-2 w-full text-left"
+  [ngClass]="class"
+>
   <div class="text-sm italic text-red-500" *ngIf="getErrorMessages().length !== 0">
     {{ getErrorMessages()[0] }}
   </div>

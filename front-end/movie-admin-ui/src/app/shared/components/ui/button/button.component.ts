@@ -24,7 +24,7 @@ export class ButtonComponent {
     alternative:
       'border border-gray-200 bg-white text-gray-900 hover:bg-gray-100 hover:text-orange-500 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700',
     outline:
-      'text-orange-400 hover:text-white border border-orange-500 hover:bg-orange-500 focus:ring-4 focus:outline-none focus:ring-orange-300 dark:border-orange-400 dark:text-orange-400 dark:hover:text-white dark:hover:bg-orange-500 dark:focus:ring-orange-900',
+      'text-orange-400 border border-orange-500 hover:bg-gray-100/50 focus:ring-4 focus:outline-none focus:ring-orange-300 dark:border-orange-400 dark:text-orange-400 dark:focus:ring-orange-900',
     link: 'hover:underline',
   };
 
@@ -42,6 +42,7 @@ export class ButtonComponent {
   }
 
   handleClick(e: MouseEvent) {
+    e.stopPropagation();
     if (this.href !== '') {
       e.preventDefault();
       this.router.navigate([this.href]);

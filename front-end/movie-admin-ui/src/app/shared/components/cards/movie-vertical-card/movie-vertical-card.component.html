@@ -1,0 +1,66 @@
+<div
+  *ngIf="!loading; else loadingState"
+  class="relative flex h-56 flex-col justify-between rounded-xl border p-4"
+  [style.background]="'url(' + poster + ')'"
+  [style.backgroundSize]="'cover'"
+>
+  <div class="flex justify-between text-sm text-white">
+    <div class="w-fit rounded-full bg-slate-700 px-2 py-1.5 text-xs text-white">
+      {{ startTime | date: 'MMM dd, HH:mm' }}
+    </div>
+    <div
+      [matMenuTriggerFor]="menu"
+      class="flex cursor-pointer items-center justify-between rounded-full bg-gray-300/65 p-1.5"
+    >
+      <ng-icon name="heroEllipsisHorizontal" size="16" />
+    </div>
+    <mat-menu #menu="matMenu">
+      <a
+        [routerLink]="'/schedule/' + showingId"
+        class="w-full cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+      >
+        Detail
+      </a>
+    </mat-menu>
+  </div>
+
+  <div class="flex items-end justify-between">
+    <div class="w-4/5 text-xs">
+      <app-marquee-text [text]="title" [duration]="2" class="text-sm font-medium text-white" />
+      <div class="line-clamp-3 text-gray-300">
+        {{ overview }}
+      </div>
+    </div>
+    <div>
+      <a
+        [routerLink]="'/schedule/' + showingId"
+        class="flex size-9 cursor-pointer items-center justify-center rounded-full bg-white p-1.5"
+      >
+        <ng-icon name="heroPlay" size="14" class="fill-black" />
+      </a>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingState>
+  <div class="flex h-56 animate-pulse flex-col justify-between rounded-xl border bg-cover p-4">
+    <div class="flex justify-between text-sm text-white">
+      <div class="w-20 rounded-full bg-slate-700 px-2 py-1.5 text-xs text-white"></div>
+      <div class="flex cursor-pointer items-center justify-between rounded-full bg-gray-300/65 p-1.5">
+        <ng-icon name="heroEllipsisHorizontal" size="16" />
+      </div>
+    </div>
+
+    <div class="flex items-end justify-between">
+      <div class="w-4/5 text-xs">
+        <div class="mb-2 h-3 w-24 rounded-full bg-gray-200"></div>
+        <div class="mb-1 h-2 w-20 rounded-full bg-gray-200"></div>
+        <div class="mb-1 h-2 w-16 rounded-full bg-gray-200"></div>
+        <div class="mb-1 h-2 w-20 rounded-full bg-gray-200"></div>
+      </div>
+      <div>
+        <div class="flex size-9 cursor-pointer items-center justify-center rounded-full bg-gray-200 p-1.5"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>

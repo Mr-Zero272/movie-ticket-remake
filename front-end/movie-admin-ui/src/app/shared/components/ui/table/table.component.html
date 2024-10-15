@@ -97,10 +97,10 @@
     </tr>
   </tbody>
   <tbody *ngIf="!loading && tableData && tableData.data.length === 0">
-    <div className="flex flex-col items-center justify-center w-full gap-y-3 text-center text-gray-500">
+    <div class="flex flex-col items-center justify-center">
       <ng-icon name="heroXCircle" size="70" class="text-primary"></ng-icon>
-      <h2 className="text-3xl font-bold">Whoops!</h2>
-      <p>It seems like you do not have any favorite movies here.</p>
+      <h3 className="text-3xl font-bold">Whoops!</h3>
+      <p class="text-center">It seems like you do not have any favorite movies here.</p>
     </div>
   </tbody>
   <ng-template #loadingBody>

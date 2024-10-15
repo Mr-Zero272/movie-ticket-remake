@@ -12,4 +12,6 @@ public interface SeatDetailDao extends MongoRepository<SeatDetail, String> {
     List<SeatDetail> findAllByShowingId(int showingId);
 
     List<SeatDetail> findAllByShowingIdAndUserIdAndStatus(int showingId, String userId, String status);
+
+    List<SeatDetail> findALlByShowingId(int showingId);
 }

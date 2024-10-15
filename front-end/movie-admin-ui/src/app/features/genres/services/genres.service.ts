@@ -1,21 +1,26 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
-import { map, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, map, Observable, take, tap, throwError } from 'rxjs';
 import { Pagination } from '../../../shared/models/pagination-obj.model';
 import { Genre } from '../../../shared/models/genre.model';
 import { LabelAndValue } from '../../../shared/models/labelAndValue';
-
-const API_URL = 'http://localhost:8272/api/v2/moon-movie/movie/genre';
-
+import { OrdersService } from '../../orders/services/orders.service';
 @Injectable({
   providedIn: 'root',
 })
 export class GenresService {
+  private genreUrl: string = 'http://localhost:8272/api/v2/moon-movie/movie/genre';
+  private token: string = '';
+  private genreSubject = new BehaviorSubject<Pagination<Genre>>(new Pagination([], 1, 7, 1, 1));
+  private genre$ = this.genreSubject.asObservable();
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-  ) {}
+  ) {
+    this.token = this.authService.getToken();
+  }
 
   fetchGenres({
     q = '',
@@ -30,23 +35,54 @@ export class GenresService {
     sort?: string;
     sortOrder?: 'desc' | 'asc';
   }) {
-    const token = this.authService.getToken();
-    if (!token) {
+    if (!this.token) {
       return throwError(() => new Error('Token is missing'));
     }
 
-    return this.http.get<Pagination<Genre>>(API_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: {
-        q,
-        page,
-        size,
-        sort,
-        sortOrder,
-      },
-    });
+    return this.http
+      .get<Pagination<Genre>>(this.genreUrl, {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+        params: {
+          q,
+          page,
+          size,
+          sort,
+          sortOrder,
+        },
+      })
+      .pipe(
+        tap((genreData) => {
+          this.genreSubject.next(genreData);
+        }),
+      );
+  }
+
+  getGenreData(): Observable<Pagination<Genre>> {
+    return this.genre$;
+  }
+
+  updateGenre(genre: Genre) {
+    const currentData = this.genreSubject.getValue();
+    if (!this.token) {
+      return throwError(() => new Error('Token is missing'));
+    }
+
+    return this.http
+      .put<Genre>(`${this.genreUrl}/${genre.id}`, genre, {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      })
+      .pipe(
+        tap((genreUpdated) => {
+          this.genreSubject.next({
+            ...currentData,
+            data: currentData.data.map((g) => (g.id === genre.id ? genreUpdated : g)),
+          });
+        }),
+      );
   }
 
   fetchGenresForSearching({
@@ -62,15 +98,14 @@ export class GenresService {
     sort?: string;
     sortOrder?: 'desc' | 'asc';
   }): Observable<{ key: string; value: number }[]> {
-    const token = this.authService.getToken();
-    if (!token) {
+    if (!this.token) {
       return throwError(() => new Error('Token is missing'));
     }
 
     return this.http
-      .get<Pagination<Genre>>(API_URL, {
+      .get<Pagination<Genre>>(this.genreUrl, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${this.token}`,
         },
         params: {
           q,

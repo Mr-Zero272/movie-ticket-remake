@@ -78,7 +78,7 @@ public class MovieServiceImpl implements MovieService {
             }
             queries.add(query);
         }
-        System.out.println(queries);
+
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Movie> pageMovie = movieDaoCustom.findAllWithFilters(queries, genreId, originalLanguage, status, sort, sortOrder, pageable);
         PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
@@ -264,7 +264,7 @@ public class MovieServiceImpl implements MovieService {
         YearMonth yearMonthObject = YearMonth.of(year, month);
         final int totalDaysInThisMonth = yearMonthObject.lengthOfMonth();
         final int restTime = 20;
-        final int maxScreeningsPerDay = 8;
+        final int maxScreeningsPerDay = 9;
 
         List<ScheduleMovie> scheduleMovieInfo = movies.stream().map(ScheduleMovie::new).toList();
 
@@ -312,7 +312,7 @@ public class MovieServiceImpl implements MovieService {
                     int showings3DSubtitles = scheduleMovieInfo.get(z).getDetailShowingTypes().get(3).getShowings();
 
 
-                    if (infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() > maxScreeningsPerDay) {
+                    if (infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() >= maxScreeningsPerDay) {
                         if (checkedAu == 10) {
                             currentDate += 1;
                             checkedAu = 0;

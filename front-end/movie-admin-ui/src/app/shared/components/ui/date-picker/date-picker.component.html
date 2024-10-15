@@ -1,75 +1,72 @@
-<div class="p-3" [ngClass]="class">
+<div class="max-w-[57rem] p-3" [ngClass]="class">
+  <div
+    *ngIf="month !== 0"
+    class="no-scrollbar mb-3 flex gap-x-5 overflow-auto rounded-lg"
+    #monthPickerRef
+    (mousedown)="handleMouseDown($event, 'month')"
+    (mouseleave)="handleMouseLeave()"
+    (mouseup)="handleMouseUp()"
+    (mousemove)="handleMouseMove($event, 'month')"
+  >
     <div
-        *ngIf="month !== 0"
-        class="no-scrollbar mb-3 flex gap-x-5 overflow-auto rounded-lg"
-        #monthPickerRef
-        (mousedown)="handleMouseDown($event, 'month')"
-        (mouseleave)="handleMouseLeave()"
-        (mouseup)="handleMouseUp()"
-        (mousemove)="handleMouseMove($event, 'month')"
+      *ngFor="let m of listMonths"
+      [id]="'month' + m.month"
+      class="cursor-pointer"
+      [ngClass]="{ 'text-primary': m.month === month }"
+      (click)="handleMonthClick(m.month)"
     >
-        <div
-            *ngFor="let m of listMonths"
-            [id]="'month' + m.month"
-            class="cursor-pointer"
-            [ngClass]="{ 'text-primary': m.month === month }"
-            (click)="handleMonthClick(m.month)"
-        >
-            {{ m.label }}
-        </div>
+      {{ m.label }}
     </div>
-    <div class="flex items-center gap-x-5">
-        <div class="rounded-full p-2 hover:bg-accent active:scale-90">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="3"
-                stroke="currentColor"
-                class="size-6 cursor-pointer text-primary"
-                (click)="handleClickPrevDate()"
-            >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-        </div>
-        <div
-            class="no-scrollbar mb-3 flex overflow-auto rounded-lg"
-            #datePickerRef
-            (mousedown)="handleMouseDown($event, 'date')"
-            (mouseleave)="handleMouseLeave()"
-            (mouseup)="handleMouseUp()"
-            (mousemove)="handleMouseMove($event, 'date')"
-        >
-            <div
-                *ngFor="let date of listDate"
-                class="cursor-pointer select-none rounded-lg p-2 text-center text-sm"
-                [ngClass]="{ 'bg-primary': date === activeDate }"
-                [id]="date"
-                (click)="handleDateClick(date)"
-            >
-                <div class="mb-2 text-gray-500" [ngClass]="{ 'text-white': date === activeDate }">
-                    {{ date | date: 'EEE' }}
-                </div>
-                <div
-                    class="rounded-lg px-2 py-1 font-semibold"
-                    [ngClass]="{ 'bg-white text-primary': date === activeDate }"
-                >
-                    {{ date | date: 'dd/MM' }}
-                </div>
-            </div>
-        </div>
-        <div class="rounded-full p-2 hover:bg-accent active:scale-90">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="3"
-                stroke="currentColor"
-                class="size-6 cursor-pointer text-primary"
-                (click)="handleClickNextDate()"
-            >
-                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
-        </div>
+  </div>
+  <div class="flex items-center gap-x-5">
+    <div class="rounded-full p-2 hover:bg-accent active:scale-90">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="3"
+        stroke="currentColor"
+        class="size-6 cursor-pointer text-primary"
+        (click)="handleClickPrevDate()"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+      </svg>
     </div>
+    <div
+      class="no-scrollbar mb-3 flex overflow-auto rounded-lg"
+      #datePickerRef
+      (mousedown)="handleMouseDown($event, 'date')"
+      (mouseleave)="handleMouseLeave()"
+      (mouseup)="handleMouseUp()"
+      (mousemove)="handleMouseMove($event, 'date')"
+    >
+      <div
+        *ngFor="let date of listDate"
+        class="cursor-pointer select-none rounded-lg p-2 text-center text-sm"
+        [ngClass]="{ 'bg-primary': date === activeDate }"
+        [id]="date"
+        (click)="handleDateClick(date)"
+      >
+        <div class="mb-2 text-gray-500" [ngClass]="{ 'text-white': date === activeDate }">
+          {{ date | date: 'EEE' }}
+        </div>
+        <div class="rounded-lg px-2 py-1 font-semibold" [ngClass]="{ 'bg-white text-primary': date === activeDate }">
+          {{ date | date: 'dd/MM' }}
+        </div>
+      </div>
+    </div>
+    <div class="rounded-full p-2 hover:bg-accent active:scale-90">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="3"
+        stroke="currentColor"
+        class="size-6 cursor-pointer text-primary"
+        (click)="handleClickNextDate()"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+      </svg>
+    </div>
+  </div>
 </div>

@@ -1,7 +1,7 @@
-<section class="flex gap-10">
+<section class="flex gap-3">
   <article class="flex-1">
     <div
-      class="mb-5 flex items-end gap-x-3 rounded-lg bg-[#FBAB7E] bg-[linear-gradient(62deg,#FBAB7E_0%,#F7CE68_100%)] p-5"
+      class="mb-5 flex w-full items-end gap-x-3 rounded-lg bg-[#FBAB7E] bg-[linear-gradient(62deg,#FBAB7E_0%,#F7CE68_100%)] p-5"
     >
       <div
         class="flex items-center justify-center rounded-lg bg-[#FBAB7E] bg-[linear-gradient(62deg,#FBAB7E_0%,#F7CE68_100%)] p-3"
@@ -25,280 +25,59 @@
     </div>
     <div>
       <h4>Filter</h4>
-      <div class="relative mb-5 w-72">
-        <div
-          class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
-        >
-          <svg
-            class="h-4 w-4 text-gray-500 dark:text-gray-400"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-            />
-          </svg>
-        </div>
-        <input
-          type="search"
-          id="default-search"
-          class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-1.5 ps-10 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-          placeholder="Search"
-          autocomplete="off"
-        />
-      </div>
-      <ul
-        class="space-y-1 p-3 text-sm text-gray-700 dark:text-gray-200"
-        aria-labelledby="dropdownHelperRadioButton"
-      >
-        <li>
-          <div
-            class="flex rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-          >
-            <div class="flex h-5 items-center">
-              <input
-                id="helper-radio-4"
-                name="helper-radio"
-                type="radio"
-                value=""
-                class="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-700"
-              />
-            </div>
-            <div class="ms-2 text-sm">
-              <label
-                for="helper-radio-4"
-                class="font-medium text-gray-900 dark:text-gray-300"
-              >
-                <div>Individual</div>
-                <p
-                  id="helper-radio-text-4"
-                  class="text-xs font-normal text-gray-500 dark:text-gray-300"
-                >
-                  Some helpful instruction goes over here.
-                </p>
-              </label>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div
-            class="flex rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-          >
-            <div class="flex h-5 items-center">
-              <input
-                id="helper-radio-5"
-                name="helper-radio"
-                type="radio"
-                value=""
-                class="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-700"
-              />
-            </div>
-            <div class="ms-2 text-sm">
-              <label
-                for="helper-radio-5"
-                class="font-medium text-gray-900 dark:text-gray-300"
-              >
-                <div>Company</div>
-                <p
-                  id="helper-radio-text-5"
-                  class="text-xs font-normal text-gray-500 dark:text-gray-300"
-                >
-                  Some helpful instruction goes over here.
-                </p>
-              </label>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div
-            class="flex rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-          >
-            <div class="flex h-5 items-center">
-              <input
-                id="helper-radio-6"
-                name="helper-radio"
-                type="radio"
-                value=""
-                class="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-700"
-              />
-            </div>
-            <div class="ms-2 text-sm">
-              <label
-                for="helper-radio-6"
-                class="font-medium text-gray-900 dark:text-gray-300"
-              >
-                <div>Non profit</div>
-                <p
-                  id="helper-radio-text-6"
-                  class="text-xs font-normal text-gray-500 dark:text-gray-300"
-                >
-                  Some helpful instruction goes over here.
-                </p>
-              </label>
-            </div>
-          </div>
-        </li>
-      </ul>
+      <app-schedule-search (onSearch)="handleSearchKeywordChange($event)" />
     </div>
   </article>
-  <article class="w-1/2">
-    <app-date-picker class="mb-5 rounded-lg bg-white"></app-date-picker>
+  <article class="w-4/5">
+    <app-date-picker class="rounded-lg bg-white" (onChooseDate)="handleChangeDate($event)"></app-date-picker>
     <div class="rounded-lg bg-white p-5">
       <div class="mb-5 text-2xl font-bold">List movies</div>
-      <div class="flex max-h-96 flex-col gap-y-5 overflow-y-scroll">
-        <div class="flex items-center justify-between gap-x-3">
-          <div
-            class="flex w-1/6 flex-col items-center gap-y-2 text-sm font-semibold"
-          >
-            <span>{{ "2024-08-14T20:20:00" | date : "dd MMM yyyy" }}</span>
-            <span>{{ "2024-08-14T20:20:00" | date : "h:mm a" }}</span>
-          </div>
-          <div
-            class="flex-1 rounded-e-lg border-l-2 border-r-2 border-green-500 py-2 pl-3"
-          >
-            <app-movie-horizontal-card></app-movie-horizontal-card>
-          </div>
-          <div class="w-1/6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6 text-green-500"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-          </div>
-        </div>
-        <div class="flex items-center justify-between gap-x-3">
-          <div
-            class="flex w-1/6 flex-col items-center gap-y-2 text-sm font-semibold"
-          >
-            <span>{{ "2024-08-14T20:20:00" | date : "dd MMM yyyy" }}</span>
-            <span>{{ "2024-08-14T20:20:00" | date : "h:mm a" }}</span>
-          </div>
-          <div
-            class="flex-1 rounded-e-lg border-l-2 border-r-2 border-green-500 py-2 pl-3"
-          >
-            <app-movie-horizontal-card></app-movie-horizontal-card>
-          </div>
-          <div class="w-1/6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6 text-green-500"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-          </div>
-        </div>
-        <div class="flex items-center justify-between gap-x-3">
-          <div
-            class="flex w-1/6 flex-col items-center gap-y-2 text-sm font-semibold"
-          >
-            <span>{{ "2024-08-14T20:20:00" | date : "dd MMM yyyy" }}</span>
-            <span>{{ "2024-08-14T20:20:00" | date : "h:mm a" }}</span>
-          </div>
-          <div
-            class="flex-1 rounded-e-lg border-l-2 border-r-2 border-green-500 py-2 pl-3"
-          >
-            <app-movie-horizontal-card></app-movie-horizontal-card>
-          </div>
-          <div class="w-1/6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6 text-green-500"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-          </div>
-        </div>
-        <div class="flex items-center justify-between gap-x-3">
-          <div
-            class="flex w-1/6 flex-col items-center gap-y-2 text-sm font-semibold"
-          >
-            <span>{{ "2024-08-14T20:20:00" | date : "dd MMM yyyy" }}</span>
-            <span>{{ "2024-08-14T20:20:00" | date : "h:mm a" }}</span>
-          </div>
-          <div
-            class="flex-1 rounded-e-lg border-l-2 border-r-2 border-green-500 py-2 pl-3"
-          >
-            <app-movie-horizontal-card></app-movie-horizontal-card>
-          </div>
-          <div class="w-1/6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6 text-green-500"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-          </div>
-        </div>
-        <div class="flex items-center justify-between gap-x-3">
-          <div
-            class="flex w-1/6 flex-col items-center gap-y-2 text-sm font-semibold"
-          >
-            <span>{{ "2024-08-14T20:20:00" | date : "dd MMM yyyy" }}</span>
-            <span>{{ "2024-08-14T20:20:00" | date : "h:mm a" }}</span>
-          </div>
-          <div
-            class="flex-1 rounded-e-lg border-l-2 border-r-2 border-green-500 py-2 pl-3"
-          >
-            <app-movie-horizontal-card></app-movie-horizontal-card>
-          </div>
-          <div class="w-1/6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6 text-green-500"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-          </div>
-        </div>
+      <div *ngIf="!loading && showingData.data.length === 0" class="flex flex-col items-center justify-center">
+        <ng-icon name="heroXCircle" size="70" class="text-primary"></ng-icon>
+        <h3 className="text-3xl font-bold">Whoops!</h3>
+        <p class="text-center">It seems like you do not have any showings here.</p>
       </div>
+      <div *ngIf="!loading && showingData.data.length !== 0" class="grid grid-cols-5 gap-2">
+        <ng-container *ngFor="let showing of showingData.data">
+          <app-movie-vertical-card
+            [showingId]="showing.id"
+            [title]="showing.movie.title"
+            [overview]="showing.movie.overview"
+            [startTime]="showing.startTime"
+            [poster]="showing.movie.posterPath"
+          />
+        </ng-container>
+      </div>
+      <ng-container *ngIf="loading">
+        <div class="grid grid-cols-5 gap-2">
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+          <app-movie-vertical-card [loading]="true" />
+        </div>
+      </ng-container>
+      <div *ngIf="loading; else paginationState">
+        <app-pagination [loading]="loading" />
+      </div>
+      <ng-template #paginationState>
+        <div>
+          <app-pagination
+            [page]="showingData.page"
+            [size]="showingData.size"
+            [totalPages]="showingData.totalPages"
+            [totalElements]="showingData.totalElements"
+            (choosePage)="handleChangePage($event)"
+            (nextPage)="handleChangePage($event)"
+            (prevPage)="handleChangePage($event)"
+          />
+        </div>
+      </ng-template>
     </div>
   </article>
-  <article class="w-1/4"></article>
 </section>

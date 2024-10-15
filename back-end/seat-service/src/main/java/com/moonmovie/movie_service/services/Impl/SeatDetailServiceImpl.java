@@ -133,6 +133,12 @@ public class SeatDetailServiceImpl implements SeatDetailService {
         return seatDetailDtos;
     }
 
+    @Override
+    @Transactional
+    public void deleteSeatDetails(int showingId) {
+        seatDetailDao.deleteAll(seatDetailDao.findAllByShowingId(showingId));
+    }
+
     private SeatDetailDto convertSeatDetailToSeatDetailDto(SeatDetail seatDetail) {
         return SeatDetailDto.builder()
                 .id(seatDetail.getId())

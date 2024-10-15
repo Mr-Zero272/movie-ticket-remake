@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -60,19 +59,22 @@ public class ShowingServiceImpl implements ShowingService {
     }
 
     @Override
-    public PaginationResponse<Showing> getPaginationShowings(String query, LocalDateTime date, Integer genreId, String type, int page, int size) {
+    public PaginationResponse<Showing> getPaginationShowings(String query, LocalDateTime date, String auditoriumId, Integer genreId, String type, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Showing> pageShowing;
         query = "%" + query + "%";
+        if (auditoriumId.equalsIgnoreCase("")) {
+            auditoriumId = "%";
+        }
 
         if (genreId == 0 && type.equalsIgnoreCase("")) {
-            pageShowing = showingDao.findAllByTitleLikeAndDateEqual(query, date, pageable);
+            pageShowing = showingDao.findAllByTitleLikeAndDateEqual(query, date, auditoriumId, pageable);
         } else if (genreId == 0 && !type.equalsIgnoreCase("")) {
-            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndTypeEqualIgnoreCase(query, date, type, pageable);
+            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndTypeEqualIgnoreCase(query, date, type, auditoriumId, pageable);
         } else if (genreId != 0 && type.equalsIgnoreCase("")) {
-            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndGenreEqual(query, date, genreId, pageable);
+            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndGenreEqual(query, date, genreId, auditoriumId, pageable);
         } else if (genreId != 0 && !type.equalsIgnoreCase("")) {
-            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndGenreEqualAndTypeEqualIgnoreCase(query, date, genreId, type, pageable);
+            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndGenreEqualAndTypeEqualIgnoreCase(query, date, genreId, type, auditoriumId, pageable);
         } else {
             pageShowing = showingDao.findAll(pageable);
         }
@@ -98,7 +100,21 @@ public class ShowingServiceImpl implements ShowingService {
         Showing showing = showingDao.findById(request.getShowingId()).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_SHOWING_NOT_EXISTS));
         int oldTotalShowing = showingDao.countByStartTimeAndAuditoriumIdIsOrderAsc(request.getOldDate(), request.getOldAuditoriumId());
         int totalShowing = showingDao.countByStartTimeAndAuditoriumIdIsOrderAsc(request.getNewDate(), request.getNewAuditoriumId());
-        if (totalShowing >= 10) {
+        boolean isJustChangePosition = request.getOldAuditoriumId().equalsIgnoreCase(request.getNewAuditoriumId()) && request.getOldDate().isEqual(request.getNewDate());
+
+        if (isJustChangePosition) {
+            if (request.getOldPosition() == request.getNewPosition()) {
+                return showing;
+            }
+            List<Showing> oldShowings = showingDao.findAllByStartTimeAndAuditoriumIdIsOrderAsc(request.getOldDate(), request.getOldAuditoriumId());
+            Showing removedShowing = oldShowings.remove(request.getOldPosition() - 1);
+            oldShowings.add(request.getNewPosition() - 1, removedShowing);
+            List<Showing> showingUpdatedTime = editShowingTime(oldShowings, dateTimeTransfer.transperStrToLocalDateTime(request.getOldDate() + " 06:00"));
+            showingDao.saveAll(showingUpdatedTime);
+            return oldShowings.get(request.getNewPosition() - 1);
+        }
+
+        if (totalShowing >= 9) {
             throw new GlobalException(400, "The number of screenings at this theater on this day has reached its limit.");
         }
 
@@ -115,7 +131,6 @@ public class ShowingServiceImpl implements ShowingService {
         }
 
         // end update old data
-
         LocalDateTime startTime;
         List<Showing> showings = showingDao.findAllByStartTimeAndAuditoriumIdIsOrderAsc(request.getNewDate(), request.getNewAuditoriumId());
         if (request.getNewPosition() <= totalShowing ) {
@@ -172,6 +187,13 @@ public class ShowingServiceImpl implements ShowingService {
         Showing savedShowing = showingDao.save(showing);
         generateSeatForShowing(savedShowing);
         return savedShowing;
+    }
+
+    @Override
+    public void deleteShowing(int showingId) {
+        Showing showing = showingDao.findById(showingId).orElseThrow(()-> new GlobalException(400, "This showing does not exist int he system."));
+        showingDao.delete(showing);
+        kafkaProducerService.sendMessageDeleteSeatDetail("seat-delete", showingId);
     }
 
     private List<Showing> editShowingTime(List<Showing> showings, LocalDateTime startTime) {

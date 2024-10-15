@@ -1,2 +1,36 @@
-<p>hall works!</p>
-<app-avatar-first-letter></app-avatar-first-letter>
+<section>
+  <ng-template #headerTable>
+    <span class="text-lg font-semibold text-gray-900 rtl:text-right dark:bg-gray-800 dark:text-white">Halls</span>
+    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">View and manage halls</p>
+  </ng-template>
+  <ng-template #lastColumn let-hall>
+    <app-button variant="link" (click)="openDialog(hall)">Detail</app-button>
+  </ng-template>
+
+  <app-table
+    [headerTable]="headerTable"
+    [columns]="columns"
+    [tableData]="hallsData"
+    [sortData]="sortData"
+    [loading]="loading || hallsData === undefined"
+    [lastColumn]="lastColumn"
+    (onChooseSort)="handleChangeSort($event)"
+    (onSearch)="handleSearchChange($event)"
+    (onChoosePage)="handleChangePage($event)"
+  />
+  <ng-template #hallNameTemplate let-hall>
+    <app-auditorium-badge class="w-[9.5rem]" [hall]="hall.name" subInfo="Seat(s): 156"></app-auditorium-badge>
+  </ng-template>
+
+  <ng-template #hallNameTemplateLoading>
+    <div class="flex items-center gap-x-2">
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+    </div>
+  </ng-template>
+  <ng-template #createdAtTemplate let-hall>
+    <div>{{ hall.createdAt | date: 'yyy-MM-dd HH:mm:ss' }}</div>
+  </ng-template>
+  <ng-template #lastModifiedTemplate let-hall>
+    <div>{{ hall.modifiedAt | date: 'yyy-MM-dd HH:mm:ss' }}</div>
+  </ng-template>
+</section>

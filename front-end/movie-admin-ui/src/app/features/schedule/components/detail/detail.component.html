@@ -1,230 +1,101 @@
 <section class="flex w-full gap-5">
-    <article class="w-1/4 rounded-lg bg-white p-5 shadow-lg">
-        <app-movie-schedule-vertical-card></app-movie-schedule-vertical-card>
-    </article>
-    <article class="flex-1 rounded-lg bg-white p-5 shadow-lg">
-        <div class="mb-5">
-            <p class="text-xl font-semibold">Edit showing information</p>
-            <form class="flex gap-x-5">
-                <div class="w-1/2">
-                    <label
-                        class="mb-2 flex items-center gap-x-3 text-sm font-medium text-gray-900 dark:text-white"
-                        for="datepicker"
-                    >
-                        <span>Choose date</span>
-                        <div class="cursor-pointer p-1 hover:bg-accent">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-5 rounded-full"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                                />
-                            </svg>
-                        </div>
-                    </label>
-                    <div class="relative mt-2">
-                        <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-                            <svg
-                                class="h-4 w-4 text-gray-500 dark:text-gray-400"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-                                />
-                            </svg>
-                        </div>
-                        <input
-                            id="datepicker"
-                            datepicker
-                            datepicker-autohide
-                            type="text"
-                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                            placeholder="Select date"
-                        />
-                    </div>
-                </div>
-                <div class="w-1/2">
-                    <label
-                        for="countries"
-                        class="mb-2 flex items-center gap-x-3 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                        <span>Position</span>
-                        <div class="cursor-pointer p-1 hover:bg-accent">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-5 rounded-full"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                                />
-                            </svg>
-                        </div>
-                    </label>
-                    <select
-                        id="countries"
-                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                    >
-                        <option value="1" selected>1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
-            </form>
-        </div>
-        <div class="h-20">
-            <label for="countries" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                List auditorium
-            </label>
-            <div class="flex flex-wrap gap-2">
-                <app-auditorium-badge [loading]="true"></app-auditorium-badge>
-                <app-auditorium-badge hall="Alpha" subInfo="Seat: 156" [colorIndex]="8"></app-auditorium-badge>
-                <app-auditorium-badge
-                    hall="Beta"
-                    subInfo="Seat: 156"
-                    [colorIndex]="1"
-                    [active]="true"
-                ></app-auditorium-badge>
+  <article class="w-1/4 rounded-lg bg-white p-5 shadow-lg">
+    <ng-container *ngIf="showingInfo; else loadingCard">
+      <app-movie-schedule-vertical-card
+        [title]="showingInfo.movie.title"
+        [poster]="showingInfo.movie.posterPath"
+        [startTime]="showingInfo.startTime"
+        [runTime]="showingInfo.movie.runtime"
+        [firstGenre]="showingInfo.movie.genres.length === 0 ? 'unknown' : showingInfo.movie.genres[0].name"
+        [overview]="showingInfo.movie.overview"
+        [type]="showingInfo.type"
+      />
+    </ng-container>
+    <ng-template #loadingCard>
+      <app-movie-schedule-vertical-card [loading]="true"></app-movie-schedule-vertical-card>
+    </ng-template>
+  </article>
+  <article class="flex-1 rounded-lg bg-white p-5 shadow-lg">
+    <div class="mb-5">
+      <p class="text-xl font-semibold">Edit showing information</p>
+      <form class="flex gap-x-5" [formGroup]="editShowingInfoForm" (ngSubmit)="handleSubmit()">
+        <div class="w-full">
+          <label
+            class="mb-2 flex items-center gap-x-3 text-sm font-medium text-gray-900 dark:text-white"
+            for="showing-date"
+          >
+            <span>Choose date</span>
+            <div class="cursor-pointer p-1 hover:bg-accent">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-5 rounded-full"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+                />
+              </svg>
             </div>
+          </label>
+          <div class="relative mt-2">
+            <input
+              id="showing-date"
+              type="date"
+              [disabled]="true"
+              formControlName="date"
+              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary dark:focus:ring-primary"
+              placeholder="Select date"
+            />
+          </div>
         </div>
-    </article>
-    <article class="w-1/3 rounded-lg bg-white p-5 shadow-lg">
-        <div class="flex justify-between">
-            <div class="w-52">
-                <div class="mb-5 flex flex-col items-center justify-center rounded-lg border p-3">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-5 text-gray-500"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"
-                        />
-                    </svg>
-                    <div class="font-medium">Alpha</div>
-                </div>
-                <ul class="flex flex-col gap-y-2">
-                    <app-showing-badge [loading]="true"></app-showing-badge>
-                    <app-showing-badge></app-showing-badge>
-                    <app-showing-badge [active]="true"></app-showing-badge>
-                    <li class="flex gap-x-2 text-xs">
-                        <div class="flex w-1/6 items-center justify-center bg-green-500 p-1 text-white">1</div>
-                        <div class="w-5/6 p-1">
-                            <app-marquee-text
-                                text="Lorem ipsum dolor sit amet consectetur adipisicing."
-                                [duration]="3"
-                                class="font-semibold"
-                            ></app-marquee-text>
-                            <div class="text-gray-500">Jul 14, 2024 - 11:00 AM</div>
-                        </div>
-                    </li>
-                    <li class="flex gap-x-2 border border-primary text-xs">
-                        <div class="flex w-1/6 items-center justify-center bg-primary p-1 text-white">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-4"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                                />
-                            </svg>
-                        </div>
-                        <div class="w-5/6 p-1">
-                            <app-marquee-text
-                                text="Lorem ipsum dolor sit amet consectetur adipisicing."
-                                [duration]="3"
-                                class="font-semibold"
-                            ></app-marquee-text>
-
-                            <div class="text-gray-500">Jul 14, 2024 - 11:00 AM</div>
-                        </div>
-                    </li>
-                    <li class="flex gap-x-2 text-xs">
-                        <div class="flex w-1/6 items-center justify-center bg-indigo-500 p-1 text-white">3</div>
-                        <div class="w-5/6 p-1">
-                            <app-marquee-text
-                                text="Lorem ipsum dolor sit amet consectetur adipisicing."
-                                [duration]="3"
-                                class="font-semibold"
-                            ></app-marquee-text>
-                            <div class="text-gray-500">Jul 14, 2024 - 11:00 AM</div>
-                        </div>
-                    </li>
-                    <li class="flex gap-x-2 text-xs">
-                        <div class="flex w-1/6 items-center justify-center bg-blue-500 p-1 text-white">4</div>
-                        <div class="w-5/6 p-1">
-                            <app-marquee-text
-                                text="Lorem ipsum dolor sit amet consectetur adipisicing."
-                                [duration]="3"
-                                class="font-semibold"
-                            ></app-marquee-text>
-                            <div class="text-gray-500">Jul 14, 2024 - 11:00 AM</div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="w-52">
-                <div
-                    class="mb-5 flex flex-col items-center justify-center rounded-lg border p-3 text-primary hover:bg-[linear-gradient(to_right,#43e97b_0%,#38f9d7_100%)] hover:text-white"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-5"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"
-                        />
-                    </svg>
-                    <div>Alpha</div>
-                </div>
-                <ul>
-                    <li class="flex gap-x-2 text-xs shadow-md">
-                        <div class="flex w-1/6 items-center justify-center bg-green-500 p-1 text-white">1</div>
-                        <div class="w-5/6 p-1">
-                            <app-marquee-text
-                                text="Lorem ipsum dolor sit amet consectetur adipisicing."
-                                [duration]="3"
-                                class="font-semibold"
-                            ></app-marquee-text>
-                            <div class="text-gray-500">Jul 14, 2024 - 11:00 AM</div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+      </form>
+    </div>
+    <div class="">
+      <label for="countries" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+        List auditorium
+      </label>
+      <div class="flex flex-wrap gap-2" *ngIf="halls.length !== 0; else loadingHalls">
+        <ng-container *ngFor="let hall of halls; index as i">
+          <app-auditorium-badge
+            [hall]="hall.name"
+            subInfo="Seat: 156"
+            [colorIndex]="i"
+            [randomColor]="false"
+            [active]="activeHall ? (activeHall.id === hall.id ? true : false) : false"
+            (click)="handleChooseHall(hall)"
+          />
+        </ng-container>
+      </div>
+      <ng-template #loadingHalls>
+        <div class="flex flex-wrap gap-2">
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+          <app-auditorium-badge [loading]="true"></app-auditorium-badge>
         </div>
-    </article>
+      </ng-template>
+    </div>
+    <div class="mt-5 flex">
+      <app-button (click)="handleSubmit()">Save</app-button>
+      <app-button variant="outline" (click)="back()">Back</app-button>
+    </div>
+  </article>
+  <article class="w-2/5 rounded-lg bg-white p-5 shadow-lg">
+    <app-edit-showing-drag-drop
+      [editHall]="activeHall"
+      [editDate]="editShowingInfoForm ? editShowingInfoForm.value.date : ''"
+      (onEdit)="handleEdit($event)"
+    ></app-edit-showing-drag-drop>
+  </article>
 </section>

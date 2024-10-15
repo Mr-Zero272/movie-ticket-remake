@@ -33,16 +33,22 @@ public class ShowingController {
     public ResponseEntity<PaginationResponse<Showing>> getScheduledShowings(
             @RequestParam(value = "query", defaultValue = "") String query,
             @RequestParam(value = "genreId", defaultValue = "0") Integer genreId,
+            @RequestParam(value = "auditoriumId", defaultValue = "") String auditoriumId,
             @RequestParam(value = "type", defaultValue = "") String type,
-            @RequestParam("date") LocalDateTime date,
+            @RequestParam(value = "date", defaultValue = "2024-11-01") LocalDateTime date,
             @RequestParam(value = "page", defaultValue = "1", required = false) int page,
             @RequestParam(value = "size", defaultValue = "20", required = false) int size) {
-        return ResponseEntity.ok(showingService.getPaginationShowings(query, date, genreId, type, page, size));
+        return ResponseEntity.ok(showingService.getPaginationShowings(query, date, auditoriumId, genreId, type, page, size));
     }
 
     @GetMapping("/{showingId}")
     public ResponseEntity<Showing> getShowing(@PathVariable("showingId") int showingId) {
         return ResponseEntity.ok(showingService.getShowing(showingId));
+    }
+
+    @DeleteMapping("/{showingId}")
+    public void deleteShowing(@PathVariable("showingId") int showingId) {
+       showingService.deleteShowing(showingId);
     }
 
     @GetMapping("/auditorium")

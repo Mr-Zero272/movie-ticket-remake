@@ -1,17 +1,18 @@
-import { NgIf } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { AbstractControl, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-error-display',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf, NgClass],
   templateUrl: './error-display.component.html',
   styleUrl: './error-display.component.scss',
 })
 export class ErrorDisplayComponent {
   @Input({ required: true }) control!: AbstractControl<any, any>;
   @Input({ required: true }) isFormSubmitted: boolean = false;
+  @Input() class: string = '';
 
   private errorMessages = {
     required: 'This field is required',

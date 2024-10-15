@@ -131,6 +131,8 @@ export class MoviesComponent implements AfterViewInit, OnInit {
           sortOrder: this.activeSort.order,
         })
         .subscribe((data) => {
+          console.log(data);
+
           this.moviesData = data;
         }).closed;
     } else {
@@ -149,7 +151,6 @@ export class MoviesComponent implements AfterViewInit, OnInit {
           this.moviesData = data;
         }).closed;
     }
-
     this.loading = false;
   }
 
@@ -178,7 +179,7 @@ export class MoviesComponent implements AfterViewInit, OnInit {
     if (this.activeTab && this.activeTab.value !== 'all' && genres.some((g) => g.id === this.activeTab?.value)) {
       return this.activeTab.label;
     } else {
-      return genres[0] ? genres[0].name : 'unknow';
+      return genres[0] ? genres[0].name : 'unknown';
     }
   }
 }

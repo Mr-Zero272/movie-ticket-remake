@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Document(collection = "auditorium")
 @Data
@@ -24,6 +25,8 @@ public class Auditorium implements Serializable {
 	private String id;
 	private String name;
 	private String address;
+	private LocalDateTime createdAt;
+	private LocalDateTime modifiedAt;
 
 	@Override
 	public int hashCode() {

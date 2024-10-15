@@ -22,4 +22,6 @@ public interface SeatDetailService {
     public List<String> checkoutSeat(List<String> seatIds);
 
     List<SeatDetailDto> getListSeatDetailDto(int showingId, String userId);
+
+    void deleteSeatDetails(int showingId);
 }

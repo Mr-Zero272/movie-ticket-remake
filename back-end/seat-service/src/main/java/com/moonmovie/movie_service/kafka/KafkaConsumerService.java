@@ -7,6 +7,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,6 +25,13 @@ public class KafkaConsumerService {
         log.info("Event: " + message.getEvent());
         log.info("Timestamp: " + message.getTimestamp());
         seatDetailService.generateSeatDetails(message.getData());
+    }
+
+    @KafkaListener(topics = "seat-delete", groupId = "moon-movie")
+    public void listenOnSeatDeleteTopics(@Payload Integer showingId) {
+        log.info("Event: delete seat detail of " + showingId);
+        log.info("Timestamp: " + LocalDateTime.now());
+        seatDetailService.deleteSeatDetails(showingId);
     }
 
     @KafkaListener(topics = "choosing_seat",  groupId = "moon-movie")

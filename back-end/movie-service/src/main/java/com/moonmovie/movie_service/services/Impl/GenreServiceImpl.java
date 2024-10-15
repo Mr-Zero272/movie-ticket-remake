@@ -1,6 +1,7 @@
 package com.moonmovie.movie_service.services.Impl;
 
 import com.moonmovie.movie_service.dao.GenreDao;
+import com.moonmovie.movie_service.exceptions.GlobalException;
 import com.moonmovie.movie_service.models.Genre;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.GenreService;
@@ -10,10 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GenreServiceImpl implements GenreService {
@@ -56,13 +53,13 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public Genre updateGenre(Genre genre, int genreId) {
-        Optional<Genre> genreOptional = genreDao.findById(genreId);
-        if (genreOptional.isPresent()) {
-            Genre genreToUpdate = genreOptional.get();
-            genreToUpdate.setName(genre.getName());
-            return genreDao.save(genreToUpdate);
+    public Genre updateGenre(Genre genreUpdate, int genreId) {
+        Genre genre = genreDao.findById(genreId).orElseThrow(() -> new GlobalException(400, "This genre does not exist in the system."));
+        if (!genre.getName().equals(genreUpdate.getName()) && genreDao.countByName(genreUpdate.getName()) == 1) {
+            throw new GlobalException(400, "This genre's name already exists in the system.");
         }
-        return null;
+
+        genre.setName(genreUpdate.getName());
+        return genreDao.save(genre);
     }
 }

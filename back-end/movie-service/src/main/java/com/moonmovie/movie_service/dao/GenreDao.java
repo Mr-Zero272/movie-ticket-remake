@@ -12,4 +12,5 @@ import java.util.List;
 public interface GenreDao extends JpaRepository<Genre, Integer> {
     List<Genre> findAllByIdIn(List<Integer> ids);
     Page<Genre> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
+    Integer countByName(String name);
 }

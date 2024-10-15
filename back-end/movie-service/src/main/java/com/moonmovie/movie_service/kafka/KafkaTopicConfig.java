@@ -9,8 +9,14 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopicConfig {
 
     @Bean
-    public NewTopic cartTopic() {
+    public NewTopic seatGenerate() {
         return TopicBuilder.name("seat-generate")
+                .build();
+    }
+
+    @Bean
+    public NewTopic seatDelete() {
+        return TopicBuilder.name("seat-delete")
                 .build();
     }
 }
