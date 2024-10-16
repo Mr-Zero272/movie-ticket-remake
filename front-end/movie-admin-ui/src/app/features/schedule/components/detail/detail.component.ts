@@ -22,6 +22,7 @@ import {
 import { EditShowingDragDropComponent } from '../edit-showing-drag-drop/edit-showing-drag-drop.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { EditShowingRequest } from '../../../../shared/models/edit-showing-request.model';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-detail',
@@ -51,12 +52,14 @@ export class DetailScheduleComponent implements OnInit {
   activeHall: Hall | null = null;
   showingId: number = 0;
   editRequest: EditShowingRequest | null = null;
+  submitLoading: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private scheduleService: ScheduleService,
     private hallService: HallService,
     private location: Location,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -103,16 +106,36 @@ export class DetailScheduleComponent implements OnInit {
   }
 
   handleSubmit() {
-    console.log(this.editRequest);
+    if (this.editRequest === null) {
+      this.toastService.showToast('info', 'Nothing has changed.');
+      return;
+    }
 
-    if (this.editRequest === null) return;
     if (
       this.editRequest.newPosition === this.editRequest.oldPosition &&
       this.editRequest.newDate === this.editRequest.newDate &&
       this.editRequest.newAuditoriumId === this.editRequest.oldAuditoriumId
-    )
+    ) {
+      this.toastService.showToast('info', 'Nothing has changed.');
       return;
-    alert('submit');
+    }
+
+    if (this.submitLoading || !this.showingInfo) return;
+    this.submitLoading = true;
+    this.scheduleService.editShowingInfo(this.showingInfo.id, this.editRequest).subscribe({
+      next: (showingUpdated) => {
+        this.toastService.showToast('success', 'Update showing with id: ' + showingUpdated.id + ' successfully!');
+      },
+      error: (err) => {
+        console.log(err);
+        if (err.error) {
+          this.toastService.showToast('danger', 'Cannot update showing, ' + err.error.message);
+        } else {
+          this.toastService.showToast('danger', 'Cannot update showing, something went wrong!');
+        }
+      },
+    });
+    this.submitLoading = false;
   }
 
   drop(event: CdkDragDrop<Showing[]>) {

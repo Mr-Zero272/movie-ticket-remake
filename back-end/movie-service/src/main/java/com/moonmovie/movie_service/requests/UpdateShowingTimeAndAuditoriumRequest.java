@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 @Data
 public class UpdateShowingTimeAndAuditoriumRequest {
-    private int showingId;
     private String oldAuditoriumId;
     private LocalDate oldDate;
     private int oldPosition;

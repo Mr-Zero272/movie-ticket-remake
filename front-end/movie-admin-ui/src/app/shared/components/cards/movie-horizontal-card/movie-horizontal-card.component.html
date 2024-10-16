@@ -1,4 +1,4 @@
-<figure *ngIf="!loading; else loadingCard" class="flex w-full gap-x-5" [ngClass]="class">
+<figure *ngIf="!loading; else loadingCard" class="relative flex w-full items-center gap-x-3" [ngClass]="class">
   <div class="group relative flex-none cursor-pointer">
     <img [src]="poster" alt="movie 1 image" class="size-14 rounded-md object-cover" />
   </div>
@@ -30,6 +30,18 @@
         />
       </svg>
     </div>
+  </div>
+  <div *ngIf="active" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="3"
+      stroke="currentColor"
+      class="size-5 text-green-500"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+    </svg>
   </div>
 </figure>
 

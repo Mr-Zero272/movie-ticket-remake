@@ -22,7 +22,7 @@ public interface ShowingService {
 
     List<ShowingDto> getShowingsByDateAndAuditorium(LocalDate date, String auditoriumId);
 
-    Showing updateShowingTimeAndAuditorium(UpdateShowingTimeAndAuditoriumRequest request);
+    Showing updateShowingTimeAndAuditorium(int showingId, UpdateShowingTimeAndAuditoriumRequest request);
 
     Showing addShowing(AddShowingRequest request);
 

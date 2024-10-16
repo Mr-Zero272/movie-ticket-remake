@@ -1,0 +1,29 @@
+<div class="">
+  <label for="countries" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> List auditorium </label>
+  <div class="flex flex-wrap gap-2">
+    <ng-container *ngFor="let hall of halls; index as i">
+      <app-auditorium-badge
+        [hall]="hall.name"
+        subInfo="Seat: 156"
+        [colorIndex]="i"
+        [randomColor]="false"
+        [active]="auditorium ? auditorium.id === hall.id : false"
+        (click)="handleChooseHall(hall)"
+      />
+    </ng-container>
+  </div>
+  <ng-template #loadingHalls>
+    <div class="flex flex-wrap gap-2">
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+      <app-auditorium-badge [loading]="true"></app-auditorium-badge>
+    </div>
+  </ng-template>
+</div>

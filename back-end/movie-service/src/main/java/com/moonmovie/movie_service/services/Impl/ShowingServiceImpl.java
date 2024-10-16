@@ -96,8 +96,8 @@ public class ShowingServiceImpl implements ShowingService {
 
     @Override
     @Transactional
-    public Showing updateShowingTimeAndAuditorium(UpdateShowingTimeAndAuditoriumRequest request) {
-        Showing showing = showingDao.findById(request.getShowingId()).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_SHOWING_NOT_EXISTS));
+    public Showing updateShowingTimeAndAuditorium(int showingId, UpdateShowingTimeAndAuditoriumRequest request) {
+        Showing showing = showingDao.findById(showingId).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_SHOWING_NOT_EXISTS));
         int oldTotalShowing = showingDao.countByStartTimeAndAuditoriumIdIsOrderAsc(request.getOldDate(), request.getOldAuditoriumId());
         int totalShowing = showingDao.countByStartTimeAndAuditoriumIdIsOrderAsc(request.getNewDate(), request.getNewAuditoriumId());
         boolean isJustChangePosition = request.getOldAuditoriumId().equalsIgnoreCase(request.getNewAuditoriumId()) && request.getOldDate().isEqual(request.getNewDate());
@@ -153,14 +153,14 @@ public class ShowingServiceImpl implements ShowingService {
     @Override
     public Showing addShowing(AddShowingRequest request) {
         int totalShowing = showingDao.countByStartTimeAndAuditoriumIdIsOrderAsc(request.getDate(), request.getAuditoriumId());
-        if (totalShowing >= 10) {
+        if (totalShowing >= 9) {
             throw new GlobalException(400, "The number of screenings at this theater on this day has reached its limit.");
         }
 
         Movie movie = movieService.getMovieById(request.getMovieId());
         List<Showing> showings = showingDao.findAllByStartTimeAndAuditoriumIdIsOrderAsc(request.getDate(), request.getAuditoriumId());
 
-        if (request.getPosition() == totalShowing + 1) {
+        if (request.getPosition() > totalShowing) {
             Showing showing = Showing.builder()
                     .startTime(dateTimeTransfer.calculateDatePlusMinutes(showings.get(showings.size() - 1).getStartTime(), showings.get(showings.size() - 1).getMovie().getRuntime() + 20))
                     .auditoriumId(request.getAuditoriumId())

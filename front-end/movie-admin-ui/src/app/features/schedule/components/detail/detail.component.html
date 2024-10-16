@@ -87,7 +87,7 @@
       </ng-template>
     </div>
     <div class="mt-5 flex">
-      <app-button (click)="handleSubmit()">Save</app-button>
+      <app-button (click)="handleSubmit()" [loading]="submitLoading" [disabled]="submitLoading">Save</app-button>
       <app-button variant="outline" (click)="back()">Back</app-button>
     </div>
   </article>

@@ -18,6 +18,8 @@ import { OrdersComponent } from './features/orders/componets/orders/orders.compo
 import { EditMovieComponent } from './features/movies/components/edit-movie/edit-movie.component';
 import { ChangePassComponent } from './features/auth/component/change-pass/change-pass.component';
 import { HallComponent } from './features/hall/components/hall/hall.component';
+import { AddingShowingComponent } from './features/schedule/components/adding-showing/adding-showing.component';
+import { DoScheduleComponent } from './features/schedule/components/do-schedule/do-schedule.component';
 
 export const routes: Routes = [
   {
@@ -67,7 +69,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
       {
-        path: 'schedule/:id',
+        path: 'showing/:id',
         title: 'Manage schedule movie',
         component: DetailScheduleComponent,
         canActivate: [authGuard],
@@ -77,6 +79,18 @@ export const routes: Routes = [
         title: 'Manage schedule movie',
         component: ScheduleComponent,
         canActivate: [authGuard],
+      },
+      {
+        path: 'showing/manage/create',
+        title: 'Add new showing',
+        canActivate: [authGuard],
+        component: AddingShowingComponent,
+      },
+      {
+        path: 'schedule/manage/do-schedule',
+        title: 'Do scheduling',
+        canActivate: [authGuard],
+        component: DoScheduleComponent,
       },
       {
         path: 'genres',

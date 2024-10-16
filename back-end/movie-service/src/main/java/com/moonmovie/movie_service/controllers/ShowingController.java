@@ -6,6 +6,7 @@ import com.moonmovie.movie_service.requests.AddShowingRequest;
 import com.moonmovie.movie_service.requests.UpdateShowingTimeAndAuditoriumRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.ShowingService;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,8 +62,9 @@ public class ShowingController {
     @PutMapping("/auditorium/{showingId}")
     public ResponseEntity<Showing> updateShowingTimeAndAuditorium(
 //            @RequestHeader("role") String role,
+            @PathVariable("showingId") Integer showingId,
             @RequestBody UpdateShowingTimeAndAuditoriumRequest request) {
-        return ResponseEntity.ok(showingService.updateShowingTimeAndAuditorium(request));
+        return ResponseEntity.ok(showingService.updateShowingTimeAndAuditorium(showingId, request));
     }
 
     @PostMapping

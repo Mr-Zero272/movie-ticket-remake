@@ -9,7 +9,9 @@ import { Pagination } from '../../../../shared/models/pagination-obj.model';
 import { Showing } from '../../../../shared/models/showing.model';
 import { ScheduleService } from '../../services/schedule.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroXCircle } from '@ng-icons/heroicons/outline';
+import { heroPlus, heroXCircle } from '@ng-icons/heroicons/outline';
+import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-schedule',
@@ -24,12 +26,15 @@ import { heroXCircle } from '@ng-icons/heroicons/outline';
     MovieVerticalCardComponent,
     PaginationComponent,
     NgIconComponent,
+    ButtonComponent,
+    MatTooltipModule,
   ],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
   viewProviders: [
     provideIcons({
       heroXCircle,
+      heroPlus,
     }),
   ],
 })

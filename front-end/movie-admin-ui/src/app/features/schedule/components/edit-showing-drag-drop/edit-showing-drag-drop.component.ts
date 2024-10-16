@@ -1,24 +1,22 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { MarqueeTextComponent } from '../../../../shared/components/ui/marquee-text/marquee-text.component';
-import { NgFor, NgIf } from '@angular/common';
-import { ShowingBadgeComponent } from '../showing-badge/showing-badge.component';
 import {
-  CdkDragDrop,
   CdkDrag,
+  CdkDragDrop,
   CdkDropList,
   CdkDropListGroup,
   moveItemInArray,
   transferArrayItem,
-  CdkDragStart,
-  CdkDragEnd,
 } from '@angular/cdk/drag-drop';
-import { Showing } from '../../../../shared/models/showing.model';
-import { ScheduleService } from '../../services/schedule.service';
-import { HallService } from '../../../hall/services/hall.service';
+import { NgFor, NgIf } from '@angular/common';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Hall } from '../../../../shared/models/hall.model';
-import { UtilsService } from '../../../../shared/services/utils.service';
+import { MarqueeTextComponent } from '../../../../shared/components/ui/marquee-text/marquee-text.component';
 import { EditShowingRequest } from '../../../../shared/models/edit-showing-request.model';
+import { Hall } from '../../../../shared/models/hall.model';
+import { Showing } from '../../../../shared/models/showing.model';
+import { UtilsService } from '../../../../shared/services/utils.service';
+import { HallService } from '../../../hall/services/hall.service';
+import { ScheduleService } from '../../services/schedule.service';
+import { ShowingBadgeComponent } from '../showing-badge/showing-badge.component';
 
 @Component({
   selector: 'app-edit-showing-drag-drop',
@@ -132,37 +130,33 @@ export class EditShowingDragDropComponent implements OnInit, OnChanges {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
-      this.reCalculateStarTime();
+      this.reCalculateStarTime(event.container.data);
       this.editInfo.newPosition = this.getPositionInList(event.container.data);
     } else {
       if (event.container.data.length + 1 > 9) {
         return;
       }
       transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-      this.reCalculateStarTime('transfer');
+      this.reCalculateStarTime(event.previousContainer.data, event.container.data);
 
       this.editInfo.newPosition = this.getPositionInList(event.container.data);
     }
   }
 
-  reCalculateStarTime(type: 'move' | 'transfer' = 'move') {
+  reCalculateStarTime(data1: Array<Showing>, data2: Array<Showing> = []) {
     if (this.showingInfo) {
-      const length = this.currentListShowings.length;
+      const length = data1.length;
       let startTime = this.showingInfo.startTime.split('T')[0] + 'T06:00:00';
       for (let i = 0; i < length; i++) {
-        this.currentListShowings[i].startTime = startTime;
-        startTime = this.utilsService.addMinutesToDateTime(startTime, this.currentListShowings[i].movie.runtime + 20);
+        data1[i].startTime = startTime;
+        startTime = this.utilsService.addMinutesToDateTime(startTime, data1[i].movie.runtime + 20);
       }
-
-      if (type === 'transfer') {
-        const lengthEdit = this.editListShowings.length;
+      if (data2.length !== 0) {
+        const lengthEdit = data2.length;
         let startTimeEdit = this.showingInfo.startTime.split('T')[0] + 'T06:00:00';
         for (let i = 0; i < lengthEdit; i++) {
-          this.editListShowings[i].startTime = startTimeEdit;
-          startTimeEdit = this.utilsService.addMinutesToDateTime(
-            startTime,
-            this.editListShowings[i].movie.runtime + 20,
-          );
+          data2[i].startTime = startTimeEdit;
+          startTimeEdit = this.utilsService.addMinutesToDateTime(startTime, data2[i].movie.runtime + 20);
         }
       }
     }
@@ -174,7 +168,6 @@ export class EditShowingDragDropComponent implements OnInit, OnChanges {
 
   onDragEnd() {
     this.isDrag = false;
-    console.log(this.hallEnd);
 
     if (this.hallEnd === this.editInfo.oldAuditoriumId) {
       this.editInfo.newAuditoriumId = this.editInfo.oldAuditoriumId;

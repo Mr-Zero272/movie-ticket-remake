@@ -1,0 +1,47 @@
+<section>
+  <form class="flex gap-x-5" (ngSubmit)="handleSubmit()" [formGroup]="addShowingForm">
+    <div class="flex-1">
+      <h6>Adding new showing</h6>
+      <div class="mb-3 flex gap-x-5">
+        <div class="flex-1">
+          <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white" for="showing-date">
+            Choose date
+          </label>
+
+          <input
+            id="showing-date"
+            type="date"
+            formControlName="date"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary dark:focus:ring-primary"
+            placeholder="Select date"
+          />
+        </div>
+        <div class="w-1/2">
+          <label for="type" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Cinema type </label>
+          <select
+            id="type"
+            formControlName="type"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500 dark:focus:ring-orange-500"
+          >
+            <option value="2D">2D</option>
+            <option value="2D subtitles">2D subtitles</option>
+            <option value="3D">3D</option>
+            <option value="3D subtitles">3D subtitles</option>
+          </select>
+        </div>
+      </div>
+      <app-select-auditorium formControlName="auditorium"></app-select-auditorium>
+      <app-select-movie formControlName="movie"></app-select-movie>
+      <div class="mt-5">
+        <app-button type="submit">Submit</app-button>
+      </div>
+    </div>
+    <div class="w-1/4">
+      <app-add-showing-drag-drop
+        formControlName="position"
+        [listShowings]="listShowingToAdd"
+        [showingAdding]="newShowing"
+      ></app-add-showing-drag-drop>
+    </div>
+  </form>
+</section>

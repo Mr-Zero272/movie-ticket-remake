@@ -1,9 +1,8 @@
-import { Component, EventEmitter, forwardRef, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { DropdownMenuComponent } from '../dropdown-menu/dropdown-menu.component';
-import { OutsideClickDirective } from '../../../directives/outside-click.directive';
 import { NgFor, NgIf } from '@angular/common';
-import { DropdownMenuItemComponent } from '../dropdown-menu-item/dropdown-menu-item.component';
+import { Component, forwardRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { OutsideClickDirective } from '../../../directives/outside-click.directive';
+import { DropdownMenuItemComponent } from '../dropdown-menu-item/dropdown-menu-item.component';
 
 @Component({
   selector: 'app-multi-select',

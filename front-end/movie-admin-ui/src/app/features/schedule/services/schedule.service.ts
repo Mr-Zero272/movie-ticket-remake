@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Pagination } from '../../../shared/models/pagination-obj.model';
 import { Showing } from '../../../shared/models/showing.model';
 import { BehaviorSubject, tap } from 'rxjs';
+import { EditShowingRequest } from '../../../shared/models/edit-showing-request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -46,5 +47,9 @@ export class ScheduleService {
 
   getShowingInfo() {
     return this.showingInfo$.asObservable();
+  }
+
+  editShowingInfo(showingId: number, showingEdit: EditShowingRequest) {
+    return this.httpClient.put<Showing>(`${this.showingUrl}/auditorium/${showingId}`, showingEdit);
   }
 }

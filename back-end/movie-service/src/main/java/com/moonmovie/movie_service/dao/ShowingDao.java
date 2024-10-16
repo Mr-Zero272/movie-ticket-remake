@@ -29,21 +29,21 @@ public interface ShowingDao extends JpaRepository<Showing, Integer> {
             "FROM Showing s WHERE DATE(s.startTime) = ?1 AND s.auditoriumId = ?2 ORDER BY s.startTime ASC")
     List<ShowingDto> findAllByStartTimeAndAuditoriumIdIsOrderAscConvertShowingDto(LocalDate date, String auditoriumId);
 
-    @Query("SELECT count(s) FROM Showing s WHERE DATE(s.startTime) = ?1 AND s.auditoriumId = ?2")
+    @Query("SELECT count(s) FROM Showing s WHERE DATE(s.startTime) = ?1 AND s.auditoriumId = ?2 ORDER BY s.startTime ASC")
     Integer countByStartTimeAndAuditoriumIdIsOrderAsc(LocalDate date, String auditoriumId);
 
     @Query("SELECT s FROM Showing s WHERE DATE(s.startTime) = ?1 AND s.auditoriumId = ?2 ORDER BY s.startTime ASC")
     List<Showing> findAllByStartTimeAndAuditoriumIdIsOrderAsc(LocalDate date, String auditoriumId);
 
-    @Query("SELECT s FROM Showing s JOIN s.movie m WHERE m.title LIKE ?1 AND DATE(s.startTime) = DATE(?2) AND s.startTime >= ?2 AND s.auditoriumId LIKE ?3")
+    @Query("SELECT s FROM Showing s JOIN s.movie m WHERE m.title LIKE ?1 AND DATE(s.startTime) = DATE(?2) AND s.startTime >= ?2 AND s.auditoriumId LIKE ?3 ORDER BY s.startTime ASC")
     Page<Showing> findAllByTitleLikeAndDateEqual(String title, LocalDateTime date, String auditoriumId, Pageable pageable);
 
-    @Query("SELECT s FROM Showing s JOIN s.movie m JOIN m.genres g WHERE m.title LIKE ?1 AND DATE(s.startTime) = DATE(?2) AND s.startTime >= ?2 AND g.id = ?3 AND s.auditoriumId LIKE ?4")
+    @Query("SELECT s FROM Showing s JOIN s.movie m JOIN m.genres g WHERE m.title LIKE ?1 AND DATE(s.startTime) = DATE(?2) AND s.startTime >= ?2 AND g.id = ?3 AND s.auditoriumId LIKE ?4 ORDER BY s.startTime ASC")
     Page<Showing> findAllByTitleLikeAndDateEqualAndGenreEqual(String title, LocalDateTime date, Integer genreId, String auditoriumId, Pageable pageable);
 
-    @Query("SELECT s FROM Showing s JOIN s.movie m WHERE m.title LIKE ?1 AND DATE(s.startTime) = DATE(?2) AND s.startTime >= ?2 AND lower(s.type) =  lower(?3) AND s.auditoriumId LIKE ?4")
+    @Query("SELECT s FROM Showing s JOIN s.movie m WHERE m.title LIKE ?1 AND DATE(s.startTime) = DATE(?2) AND s.startTime >= ?2 AND lower(s.type) =  lower(?3) AND s.auditoriumId LIKE ?4 ORDER BY s.startTime ASC")
     Page<Showing> findAllByTitleLikeAndDateEqualAndTypeEqualIgnoreCase(String title, LocalDateTime date, String type, String auditoriumId, Pageable pageable);
 
-    @Query("SELECT s FROM Showing s JOIN s.movie m JOIN m.genres g WHERE m.title LIKE ?1 AND DATE(s.startTime) = DATE(?2) AND s.startTime >= ?2 AND g.id = ?3 AND lower(s.type) =  lower(?4) AND s.auditoriumId LIKE ?5")
+    @Query("SELECT s FROM Showing s JOIN s.movie m JOIN m.genres g WHERE m.title LIKE ?1 AND DATE(s.startTime) = DATE(?2) AND s.startTime >= ?2 AND g.id = ?3 AND lower(s.type) =  lower(?4) AND s.auditoriumId LIKE ?5 ORDER BY s.startTime ASC")
     Page<Showing> findAllByTitleLikeAndDateEqualAndGenreEqualAndTypeEqualIgnoreCase(String title, LocalDateTime date, Integer genreId, String type, String auditoriumId, Pageable pageable);
 }

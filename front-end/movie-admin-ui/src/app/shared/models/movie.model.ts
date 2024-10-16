@@ -47,7 +47,6 @@ export class Movie {
     this.deleteFlag = false;
     this.genres = [];
     this.monthToSchedule = 0;
-    0;
     this.yearToSchedule = 0;
     this.totalShowings = 0;
     this.totalDateShowingsInMonth = 0;
