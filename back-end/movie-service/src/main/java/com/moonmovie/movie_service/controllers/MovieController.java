@@ -7,6 +7,7 @@ import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.requests.ScheduleRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
+import com.moonmovie.movie_service.responses.ScheduleResponse;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class MovieController {
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(movieService.getUpcomingMovies( page, size));
+        return ResponseEntity.ok(movieService.getUpcomingMovies(page, size));
     }
 
     @GetMapping("/{movieId}")
@@ -74,19 +75,21 @@ public class MovieController {
     }
 
     @PostMapping("/schedule")
-    public ResponseEntity<ResponseTemplate> scheduleMovie(@RequestBody ScheduleRequest request) {
+    public ResponseEntity<ScheduleResponse> scheduleMovie(
+            @RequestHeader("role") String role,
+            @RequestBody ScheduleRequest request) {
         // TODO check role in the request
-        return ResponseEntity.ok(movieService.schedule(request.getMonth(), request.getYear(), "ADMIN"));
+        return ResponseEntity.ok(movieService.schedule(request.getMonth(), request.getYear(), role));
     }
 
     @DeleteMapping("/{movieId}")
     public ResponseEntity<ResponseTemplate> deleteMovie(@PathVariable("movieId") int id) {
         movieService.deleteMovie(id);
-        return  ResponseEntity.ok(new ResponseTemplate("Delete movie with id: " + id + " successfully!"));
+        return ResponseEntity.ok(new ResponseTemplate(200, "Delete movie with id: " + id + " successfully!"));
     }
 
     @GetMapping("/movie-showing/{showingId}")
-    public ResponseEntity<MovieDto> getMovieInforFromShowing(@PathVariable("showingId") Integer showingId) {
+    public ResponseEntity<MovieDto> getMovieInfoFromShowing(@PathVariable("showingId") Integer showingId) {
         return ResponseEntity.ok(movieService.getMovieByShowingId(showingId));
     }
 
@@ -98,16 +101,16 @@ public class MovieController {
     @PutMapping("/edit-data")
     public ResponseEntity<ResponseTemplate> editDate() {
         movieService.updateDataMovie();
-        return  ResponseEntity.ok(new ResponseTemplate("Edit movies data success!"));
+        return ResponseEntity.ok(new ResponseTemplate(200, "Edit movies data success!"));
     }
 
     @GetMapping("/statistical")
-    public ResponseEntity<List<MovieStatistical>> getMovieStatistical(@RequestParam(value = "year", defaultValue = "2024") Integer year ) {
+    public ResponseEntity<List<MovieStatistical>> getMovieStatistical(@RequestParam(value = "year", defaultValue = "2024") Integer year) {
         return ResponseEntity.ok(movieService.getMovieStatistical(year));
     }
 
     @GetMapping("/schedule/statistical")
-    public ResponseEntity<List<MovieStatistical>> getScheduleMovieStatistical(@RequestParam(value = "year", defaultValue = "2024") Integer year ) {
+    public ResponseEntity<List<MovieStatistical>> getScheduleMovieStatistical(@RequestParam(value = "year", defaultValue = "2024") Integer year) {
         return ResponseEntity.ok(movieService.getScheduleMovieStatistical(year));
     }
 }

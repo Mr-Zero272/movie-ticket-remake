@@ -1,13 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent } from '@angular/material/dialog';
-import { ErrorDisplayComponent } from '../../../../shared/components/ui/error-display/error-display.component';
-import { lastValueFrom } from 'rxjs';
-import { HallService } from '../../services/hall.service';
-import { Hall } from '../../../../shared/models/hall.model';
-import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { ToastService } from '../../../../core/services/toast.service';
+import { ErrorDisplayComponent } from '../../../../shared/components/ui/error-display/error-display.component';
+import { Hall } from '../../../../shared/models/hall.model';
+import { HallService } from '../../services/hall.service';
 
 @Component({
   selector: 'app-edit-hall-dialog',
@@ -19,7 +17,6 @@ import { ToastService } from '../../../../core/services/toast.service';
     MatDialogClose,
     ErrorDisplayComponent,
     MatButtonModule,
-    ButtonComponent,
   ],
   templateUrl: './edit-hall-dialog.component.html',
   styleUrl: './edit-hall-dialog.component.scss',

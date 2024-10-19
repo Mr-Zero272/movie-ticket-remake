@@ -77,4 +77,6 @@ public interface TicketDao extends MongoRepository<Ticket, String> {
     Integer countPaidTicketsByUserId(String userId, String orderStatus, LocalDateTime date);
 
     List<Ticket> findAllByOrderId(ObjectId orderId);
+
+    List<Ticket> findAllByShowingId(int showingId);
 }

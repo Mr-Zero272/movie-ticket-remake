@@ -9,18 +9,20 @@
       {{ startTime | date: 'MMM dd, HH:mm' }}
     </div>
     <div
-      [matMenuTriggerFor]="menu"
+      *ngIf="menu.length !== 0"
+      [matMenuTriggerFor]="menuCard"
       class="flex cursor-pointer items-center justify-between rounded-full bg-gray-300/65 p-1.5"
     >
       <ng-icon name="heroEllipsisHorizontal" size="16" />
     </div>
-    <mat-menu #menu="matMenu">
-      <a
-        [routerLink]="'/showing/' + showingId"
+    <mat-menu #menuCard="matMenu">
+      <div
+        *ngFor="let menuItem of menu"
         class="w-full cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+        (click)="menuItem.action()"
       >
-        Detail
-      </a>
+        {{ menuItem.label }}
+      </div>
     </mat-menu>
   </div>
 

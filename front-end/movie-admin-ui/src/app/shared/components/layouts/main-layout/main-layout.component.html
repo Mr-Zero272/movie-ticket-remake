@@ -1,10 +1,20 @@
-<main class="min-h-screen">
-  <app-sidebar></app-sidebar>
-  <div class="p-4 xl:ml-56">
-    <app-header></app-header>
-    <div class="min-h-[40rem] w-full p-5 pl-10">
-      <router-outlet></router-outlet>
+<main>
+  <mat-sidenav-container class="mat-sidenav-container">
+    <mat-sidenav
+      class="sidebar-wrapper"
+      #snav
+      [opened]="!mobileQuery.matches"
+      [mode]="mobileQuery.matches ? 'over' : 'side'"
+      [fixedInViewport]="mobileQuery.matches"
+    >
+      <app-sidebar (close)="closeSidebar()"></app-sidebar>
+    </mat-sidenav>
+    <div class="overflow-visible p-4">
+      <app-header [toggleSidebar]="toggleSidebar.bind(this)"></app-header>
+      <div class="w-full p-5 pl-10 max-[850px]:pl-5 max-sm:ml-0">
+        <router-outlet></router-outlet>
+      </div>
+      <!-- <Footer /> -->
     </div>
-    <!-- <Footer /> -->
-  </div>
+  </mat-sidenav-container>
 </main>

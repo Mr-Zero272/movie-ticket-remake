@@ -16,6 +16,7 @@ import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.RecommendMovieResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
+import com.moonmovie.movie_service.responses.ScheduleResponse;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -249,7 +250,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public ResponseTemplate schedule(int month, int year, String role) {
+    public ScheduleResponse schedule(int month, int year, String role) {
         if (!role.equalsIgnoreCase("ADMIN")) {
             throw new GlobalException(MovieErrorConstants.ERROR_DO_NOT_HAVE_PERMISSION);
         }
@@ -425,7 +426,13 @@ public class MovieServiceImpl implements MovieService {
                     .build();
             kafkaProducerService.sendMessageGenerateSeatDetail("seat-generate", message);
         });
-        return new ResponseTemplate("Schedule successfully!");
+        return ScheduleResponse.builder()
+                .totalShowingsScheduled(showingsSaved.size())
+                .totalAuditoriums(10)
+                .totalDatesScheduled(totalDaysInThisMonth)
+                .monthSchedule(month)
+                .maxScreeningPerDate(maxScreeningsPerDay)
+                .build();
     }
 
     @Override

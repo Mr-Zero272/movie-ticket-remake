@@ -72,4 +72,9 @@ public class TicketServiceImpl implements TicketService {
                 .build();
         return resp;
     }
+
+    @Override
+    public List<Ticket> getTicketsByShowingId(int showingId) {
+        return ticketDao.findAllByShowingId(showingId);
+    }
 }

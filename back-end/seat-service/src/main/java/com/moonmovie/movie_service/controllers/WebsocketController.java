@@ -15,6 +15,7 @@ public class WebsocketController {
     @MessageMapping("/choosing-seat-ws")
 //    @SendTo("/topic/seat-state")
     public void choosingSeat(ChoosingSeatRequest request) {
+        System.out.println(request);
         kafkaProducerService.sendSeatDetailInfo(request);
     }
 }

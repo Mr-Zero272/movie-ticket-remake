@@ -1,40 +1,34 @@
-<header class="sticky top-0 z-10 flex h-14 w-full items-center justify-between gap-x-5 bg-white px-5">
-  <div class="w-80">
-    <label for="default-search" class="sr-only mb-2 text-sm font-medium text-gray-900 dark:text-white">Search</label>
-    <div class="relative">
-      <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-        <svg
-          class="h-4 w-4 text-gray-500 dark:text-gray-400"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 20 20"
-        >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-          />
-        </svg>
+<header class="sticky top-0 z-50 bg-white">
+  <div class="flex h-14 w-full items-center justify-between gap-x-5 px-5">
+    <div class="flex items-center gap-x-3">
+      <div
+        class="hidden size-10 cursor-pointer items-center justify-center rounded-lg p-1.5 hover:bg-accent max-[850px]:flex"
+        (click)="toggleSidebar()"
+      >
+        <ng-icon name="heroBars3BottomLeft" size="24"></ng-icon>
       </div>
-      <input
-        type="search"
-        id="default-search"
-        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-10 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-        placeholder="Search Mockups, Logos..."
-        required
-      />
+      <div class="max-[600px]:hidden">
+        <label for="default-search" class="sr-only mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >Search</label
+        >
+        <app-search></app-search>
+      </div>
     </div>
-  </div>
-  <div class="flex items-center gap-x-2 text-gray-500">
-    <div class="flex size-10 cursor-pointer items-center justify-center rounded-lg p-1.5 hover:bg-accent">
-      <ng-icon name="heroBell" size="24"></ng-icon>
+    <div class="flex items-center gap-x-2 text-gray-500">
+      <div class="hidden max-[600px]:block">
+        <app-search-hidden-input />
+      </div>
+      <div
+        class="flex size-10 cursor-pointer items-center justify-center rounded-lg p-1.5 hover:bg-accent max-[400px]:hidden"
+      >
+        <ng-icon name="heroBell" size="24"></ng-icon>
+      </div>
+      <div
+        class="flex size-10 cursor-pointer items-center justify-center rounded-lg p-1.5 hover:bg-accent max-[400px]:hidden"
+      >
+        <ng-icon name="heroMoon" size="24"></ng-icon>
+      </div>
+      <app-user-button></app-user-button>
     </div>
-    <div class="flex size-10 cursor-pointer items-center justify-center rounded-lg p-1.5 hover:bg-accent">
-      <ng-icon name="heroMoon" size="24"></ng-icon>
-    </div>
-    <app-user-button></app-user-button>
   </div>
 </header>

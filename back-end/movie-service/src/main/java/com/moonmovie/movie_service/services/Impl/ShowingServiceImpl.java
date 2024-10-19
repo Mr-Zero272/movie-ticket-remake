@@ -4,15 +4,18 @@ import com.moonmovie.movie_service.constants.MovieErrorConstants;
 import com.moonmovie.movie_service.dao.ShowingDao;
 import com.moonmovie.movie_service.dto.ShowingDto;
 import com.moonmovie.movie_service.exceptions.GlobalException;
+import com.moonmovie.movie_service.feign.ReservationServiceInterface;
 import com.moonmovie.movie_service.helpers.DateTimeTransfer;
 import com.moonmovie.movie_service.kafka.KafkaMessage;
 import com.moonmovie.movie_service.kafka.KafkaProducerService;
 import com.moonmovie.movie_service.models.Movie;
 import com.moonmovie.movie_service.models.Showing;
+import com.moonmovie.movie_service.models.ShowingStatistical;
 import com.moonmovie.movie_service.requests.AddShowingRequest;
 import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
 import com.moonmovie.movie_service.requests.UpdateShowingTimeAndAuditoriumRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
+import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.services.MovieService;
 import com.moonmovie.movie_service.services.ShowingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ public class ShowingServiceImpl implements ShowingService {
 
     @Autowired
     private MovieService movieService;
+
+    @Autowired
+    private ReservationServiceInterface reservationServiceInterface;
 
     @Autowired
     private KafkaProducerService kafkaProducerService;
@@ -190,10 +196,21 @@ public class ShowingServiceImpl implements ShowingService {
     }
 
     @Override
-    public void deleteShowing(int showingId) {
+    public ResponseTemplate deleteShowing(int showingId) {
+        ResponseTemplate responseTemplate = new ResponseTemplate(200, "Delete successfully!");
         Showing showing = showingDao.findById(showingId).orElseThrow(()-> new GlobalException(400, "This showing does not exist int he system."));
+        if(reservationServiceInterface.getTotalTicketsByShowingId(showingId).getBody() > 0) {
+            responseTemplate.setMessage("This showing already have some sold tickets, you cannot delete it right now!");
+            responseTemplate.setHttpStatusCode(400);
+        }
         showingDao.delete(showing);
         kafkaProducerService.sendMessageDeleteSeatDetail("seat-delete", showingId);
+        return responseTemplate;
+    }
+
+    @Override
+    public List<ShowingStatistical> getShowingStatistical(Integer month, Integer year) {
+        return showingDao.getShowingStatistical(month, year);
     }
 
     private List<Showing> editShowingTime(List<Showing> showings, LocalDateTime startTime) {

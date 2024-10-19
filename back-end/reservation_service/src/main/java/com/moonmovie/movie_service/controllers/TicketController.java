@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v2/moon-movie/reservation/ticket")
 public class TicketController {
@@ -27,5 +29,10 @@ public class TicketController {
             @RequestParam(value = "size", defaultValue = "20") int size
     ) {
         return ResponseEntity.ok(ticketService.getTickets(page, size, filter, userId));
+    }
+
+    @GetMapping("/showing/total/{showingId} ")
+    public ResponseEntity<Integer> getTotalTicketsByShowingId(@PathVariable("showingId") int showingId) {
+        return ResponseEntity.ok(ticketService.getTicketsByShowingId(showingId).size());
     }
 }

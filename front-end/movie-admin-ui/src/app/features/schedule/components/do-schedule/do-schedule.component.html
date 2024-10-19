@@ -1,1 +1,158 @@
-<p>do-schedule works!</p>
+<section>
+  <article class="flex gap-x-5">
+    <div class="w-1/2">
+      <div class="mb-3 flex justify-between">
+        <div class="text-2xl font-medium">Scheduling</div>
+        <div class="cursor-pointer rounded-lg p-2 hover:bg-accent active:scale-90" matTooltip="Back">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+          </svg>
+        </div>
+      </div>
+      <div class="flex">
+        <form
+          class="flex-1 transition-all duration-300 ease-linear"
+          [formGroup]="scheduleForm"
+          (ngSubmit)="handleSubmit()"
+        >
+          <div *ngIf="globalError !== ''" class="text-sm italic text-red-500">{{ globalError }}</div>
+          <!-- <button (click)="toggleResult($event)">toggle</button> -->
+          <div class="mb-5">
+            <label for="monthToSchedule" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Select month to schedule</label
+            >
+            <select
+              id="monthToSchedule"
+              formControlName="month"
+              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500 dark:focus:ring-orange-500"
+            >
+              <option value="1">January - 01</option>
+              <option value="2">February - 02</option>
+              <option value="3">March - 03</option>
+              <option value="4">April - 04</option>
+              <option value="5">May - 05</option>
+              <option value="6">June - 06</option>
+              <option value="7">July - 07</option>
+              <option value="8">August - 08</option>
+              <option value="9">September - 09</option>
+              <option value="10">October - 10</option>
+              <option value="11">November - 11</option>
+              <option value="12">December - 12</option>
+            </select>
+          </div>
+          <div class="mb-5">
+            <label for="yearToSchedule" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Select year to schedule</label
+            >
+            <select
+              id="yearToSchedule"
+              formControlName="year"
+              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500 dark:focus:ring-orange-500"
+            >
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+              <option value="2029">2029</option>
+              <option value="2030">2030</option>
+            </select>
+          </div>
+          <div>
+            <app-button type="submit" [loading]="loading" [disabled]="loading">Schedule</app-button>
+          </div>
+        </form>
+        <div
+          class="min-h-40 w-0 pl-5 transition-all duration-300 ease-linear"
+          [ngStyle]="{ width: isFormHasResult ? '20rem' : '0' }"
+        >
+          <p class="text-2xl font-medium delay-300" [ngStyle]="{ opacity: isFormHasResult ? '100' : '0' }">Result</p>
+          <div *ngIf="!loading; else loadingResult" [ngStyle]="{ opacity: isFormHasResult ? '100' : '0' }">
+            <div class="line-clamp-1 text-sm text-gray-500">
+              Total showings scheduled:
+              <span class="font-medium text-black">{{ resultForm?.totalShowingsScheduled }}</span>
+            </div>
+            <div class="line-clamp-1 text-sm text-gray-500">
+              Total dates: <span class="font-medium text-black">{{ resultForm?.totalDatesScheduled }}</span>
+            </div>
+            <div class="line-clamp-1 text-sm text-gray-500">
+              Total auditoriums: <span class="font-medium text-black">{{ resultForm?.totalAuditoriums }}</span>
+            </div>
+            <div class="line-clamp-1 text-sm text-gray-500">
+              Max screening per date: <span class="font-medium text-black">{{ resultForm?.maxScreeningPerDate }}</span>
+            </div>
+          </div>
+
+          <ng-template #loadingResult>
+            <div class="animate-pluse delay-300" [ngStyle]="{ opacity: isFormHasResult ? '100' : '0' }">
+              <div class="mb-2 h-4 w-24 rounded-full bg-gray-200"></div>
+              <div class="mb-2 h-4 w-32 rounded-full bg-gray-200"></div>
+              <div class="mb-2 h-4 w-28 rounded-full bg-gray-200"></div>
+              <div class="mb-2 h-4 w-36 rounded-full bg-gray-200"></div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <ng-template #iconShowings>
+          <ng-icon name="heroArrowPathRoundedSquare" size="28" class="text-green-500"></ng-icon>
+        </ng-template>
+        <ng-template #iconMonth>
+          <ng-icon name="heroDocumentCheck" size="28" class="text-orange-500"></ng-icon>
+        </ng-template>
+        <app-statistical-card
+          class="w-1/3"
+          valueType="normal"
+          [value]="totalShowings"
+          describe="Total showings this month"
+          [icon]="iconShowings"
+        />
+        <app-statistical-card
+          class="w-1/3"
+          valueType="normal"
+          [value]="chartMonth"
+          describe="Month to schedule"
+          [icon]="iconMonth"
+        />
+        <app-statistical-card
+          class="w-1/3"
+          valueType="normal"
+          [value]="datesInMonth"
+          describe="Time to schedule this month"
+        />
+      </div>
+    </div>
+    <div class="flex-1 rounded-lg border p-5 shadow-md">
+      <div class="flex items-center justify-between">
+        <div class="text-2xl font-medium">Chart</div>
+        <select
+          class="block w-fit rounded-lg p-2.5 text-sm text-gray-900 dark:text-white dark:placeholder-gray-400"
+          [value]="chartMonth"
+          (change)="handleChangeChartMonth($event)"
+        >
+          <option value="1">January - 01</option>
+          <option value="2">February - 02</option>
+          <option value="3">March - 03</option>
+          <option value="4">April - 04</option>
+          <option value="5">May - 05</option>
+          <option value="6">June - 06</option>
+          <option value="7">July - 07</option>
+          <option value="8">August - 08</option>
+          <option value="9">September - 09</option>
+          <option value="10">October - 10</option>
+          <option value="11">November - 11</option>
+          <option value="12">December - 12</option>
+        </select>
+      </div>
+      <canvas id="scheduleChart" #scheduleChart>{{ scheduleChart }}</canvas>
+    </div>
+  </article>
+  <article></article>
+</section>

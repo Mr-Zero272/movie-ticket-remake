@@ -1,0 +1,8 @@
+.sidebar-wrapper {
+  width: 14rem;
+}
+
+mat-sidenav-container {
+  overflow: visible;
+  height: 100vh;
+}

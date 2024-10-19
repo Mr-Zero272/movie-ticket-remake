@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { DatePickerComponent } from '../../../../shared/components/ui/date-picker/date-picker.component';
 import { MovieHorizontalCardComponent } from '../../../../shared/components/cards/movie-horizontal-card/movie-horizontal-card.component';
 import { DatePipe, NgFor, NgIf } from '@angular/common';
@@ -12,6 +12,10 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroPlus, heroXCircle } from '@ng-icons/heroicons/outline';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteShowingDialogComponent } from '../delete-showing-dialog/delete-showing-dialog.component';
+import { Router } from '@angular/router';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-schedule',
@@ -45,7 +49,15 @@ export class ScheduleComponent implements OnInit {
   searchValue: string = '';
   page: number = 1;
 
-  constructor(private showingService: ScheduleService) {}
+  // dialog edit hall information
+  readonly dialog = inject(MatDialog);
+
+  constructor(
+    private showingService: ScheduleService,
+    private router: Router,
+    private toastService: ToastService,
+    private scheduleService: ScheduleService,
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -61,8 +73,6 @@ export class ScheduleComponent implements OnInit {
     if (this.loading) return;
     this.loading = true;
     this.showingService.fetchShowings(params).subscribe((data) => {
-      console.log(data);
-
       this.showingData = data;
     }).closed;
     this.loading = false;
@@ -87,5 +97,39 @@ export class ScheduleComponent implements OnInit {
         this.showingData = data;
       }).closed;
     this.loading = false;
+  }
+
+  getMenu(showing: Showing) {
+    return [
+      {
+        label: 'Detail',
+        action: () => this.router.navigate(['/showing/' + showing.id]),
+      },
+      {
+        label: 'Delete',
+        action: () => this.openDeleteDialog(showing.id),
+      },
+    ];
+  }
+
+  openDeleteDialog(showingId: number): void {
+    const dialogRef = this.dialog.open(DeleteShowingDialogComponent, {
+      data: { showingId: showingId },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.scheduleService.deleteShowing(+result).subscribe({
+          error: (err) => {
+            this.toastService.showToast('danger', 'Cannot delete this showing!!!');
+          },
+          next: () => {
+            this.toastService.showToast('success', 'Delete successfully!');
+            this.showingData.data = this.showingData.data.filter((s) => s.id !== showingId);
+            this.showingData.totalElements = this.showingData.totalElements - 1;
+          },
+        }).closed;
+      }
+    });
   }
 }

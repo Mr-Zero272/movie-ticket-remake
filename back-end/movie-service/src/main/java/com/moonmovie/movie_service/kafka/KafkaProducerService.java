@@ -1,7 +1,6 @@
 package com.moonmovie.movie_service.kafka;
 
 import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
-import lombok.AllArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 

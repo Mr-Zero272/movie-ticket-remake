@@ -47,6 +47,6 @@ public class UserFavoriteMovieServiceImpl implements UserFavoriteMovieService {
     public ResponseTemplate deleteUserFavoriteMovie(int movieId, String userId) {
         UserFavoriteMovie userFavoriteMovie = userFavoriteMovieDao.findByUserIdAndMovieId(userId, movieId).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXISTS));
         userFavoriteMovieDao.delete(userFavoriteMovie);
-        return new ResponseTemplate("Delete favorite movie with id: " + userFavoriteMovie.getId() + " successfully!");
+        return new ResponseTemplate(200,"Delete favorite movie with id: " + userFavoriteMovie.getId() + " successfully!");
     }
 }

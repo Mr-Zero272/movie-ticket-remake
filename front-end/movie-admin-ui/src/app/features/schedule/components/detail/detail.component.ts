@@ -125,6 +125,7 @@ export class DetailScheduleComponent implements OnInit {
     this.scheduleService.editShowingInfo(this.showingInfo.id, this.editRequest).subscribe({
       next: (showingUpdated) => {
         this.toastService.showToast('success', 'Update showing with id: ' + showingUpdated.id + ' successfully!');
+        this.location.back();
       },
       error: (err) => {
         console.log(err);

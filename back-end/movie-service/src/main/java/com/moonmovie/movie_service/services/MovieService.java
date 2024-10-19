@@ -6,6 +6,7 @@ import com.moonmovie.movie_service.models.MovieStatistical;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
+import com.moonmovie.movie_service.responses.ScheduleResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,13 +61,13 @@ public interface MovieService {
      * @param movie Movie information
      * @return Movie information after update in the database
      */
-    public Movie updateMovie(int id, MovieRequest movie);
+     Movie updateMovie(int id, MovieRequest movie);
 
-    public void deleteMovie(int id);
+     void deleteMovie(int id);
 
-    public Movie updateMovieScheduleDetail(int id, MovieRequest movie);
+     Movie updateMovieScheduleDetail(int id, MovieRequest movie);
 
-    public ResponseTemplate schedule(int month, int year, String role);
+     ScheduleResponse schedule(int month, int year, String role);
 
     PaginationResponse<Movie> getUpcomingMovies(int page, int size);
 

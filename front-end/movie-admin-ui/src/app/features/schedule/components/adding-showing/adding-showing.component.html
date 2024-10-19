@@ -1,7 +1,21 @@
 <section>
   <form class="flex gap-x-5" (ngSubmit)="handleSubmit()" [formGroup]="addShowingForm">
     <div class="flex-1">
-      <h6>Adding new showing</h6>
+      <div class="flex items-center gap-x-5">
+        <div class="cursor-pointer rounded-lg px-2.5 py-1.5 hover:bg-accent" (click)="location.back()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+          </svg>
+        </div>
+        <div class="text-2xl font-medium">Adding new showing</div>
+      </div>
       <div class="mb-3 flex gap-x-5">
         <div class="flex-1">
           <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white" for="showing-date">

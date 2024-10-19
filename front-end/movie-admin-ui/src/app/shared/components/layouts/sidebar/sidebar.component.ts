@@ -1,4 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  HostListener,
+  inject,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SignOutButtonComponent } from '../../auth/sign-out-button/sign-out-button.component';
@@ -20,6 +29,9 @@ import {
 import { routes } from '../../../constants/routes';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { SidebarService } from '../../../../core/services/sidebar.service';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MediaMatcher } from '@angular/cdk/layout';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -53,19 +65,22 @@ import { SidebarService } from '../../../../core/services/sidebar.service';
     }),
   ],
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
   navRoutes = routes;
-  isOpen: boolean = false;
+  isSmallScreen: boolean = window.innerWidth <= 850;
 
-  constructor(private sidebarService: SidebarService) {}
+  @Output() close = new EventEmitter<void>();
 
-  ngOnInit(): void {
-    this.sidebarService.sidebarState.subscribe((state) => {
-      this.isOpen = state;
-    });
+  constructor() {}
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.isSmallScreen = window.innerWidth <= 850;
   }
 
-  handleToggleSidebar() {
-    this.sidebarService.toggleSidebar();
+  onItemClick() {
+    if (this.isSmallScreen) {
+      this.close.emit();
+    }
   }
 }

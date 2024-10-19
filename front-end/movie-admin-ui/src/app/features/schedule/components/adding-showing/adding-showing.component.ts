@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { Location, NgFor, NgIf } from '@angular/common';
 import { Component, DoCheck, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { map, Observable, of, startWith } from 'rxjs';
@@ -40,10 +40,15 @@ export class AddingShowingComponent implements OnInit {
   addShowingForm!: FormGroup;
   newShowing: Showing | null = null;
   listShowingToAdd: Array<Showing> = [];
+  prevAuditorium: Hall | null = null;
+  preMovie: Movie | null = null;
+  preDate: string = '';
+  loading: boolean = false;
 
   constructor(
     private scheduleService: ScheduleService,
     private toastService: ToastService,
+    public location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -56,7 +61,20 @@ export class AddingShowingComponent implements OnInit {
     });
 
     this.addShowingForm.valueChanges.subscribe((data) => {
-      if (data.auditorium && data.movie && !this.newShowing && this.listShowingToAdd.length === 0) {
+      if (data.auditorium && data.movie) {
+        if (
+          this.preMovie &&
+          this.preMovie.id === data.movie.id &&
+          this.prevAuditorium &&
+          this.prevAuditorium.id === data.auditorium.id &&
+          this.preDate !== '' &&
+          this.preDate === data.date
+        ) {
+          return;
+        }
+        this.preDate = data.date;
+        this.prevAuditorium = data.auditorium;
+        this.preMovie = data.movie;
         const newS = new Showing(
           0,
           data.date + 'T60:00:00',
@@ -68,25 +86,51 @@ export class AddingShowingComponent implements OnInit {
         this.scheduleService
           .fetchShowings({ date: data.date + 'T00:00:00', auditoriumId: data.auditorium.id })
           .subscribe((data) => {
-            if (data.data.length > 9) {
+            if (data.data.length >= 9) {
               this.toastService.showToast(
                 'danger',
                 'The number of screenings at this theater on this day has reached its limit.',
               );
+              this.listShowingToAdd = data.data;
             } else {
               this.listShowingToAdd = [newS, ...data.data];
             }
           });
 
         this.newShowing = newS;
+        this.addShowingForm.patchValue({ position: 1 });
       }
     });
   }
 
   handleSubmit() {
-    console.log(this.addShowingForm.value);
     if (this.addShowingForm.status === 'INVALID') {
       return;
     }
+    const valuesForm = this.addShowingForm.value;
+    this.loading = true;
+    this.scheduleService
+      .addShowing({
+        date: valuesForm.date as string,
+        position: valuesForm.position,
+        type: valuesForm.type,
+        auditoriumId: valuesForm.auditorium.id,
+        movieId: valuesForm.movie.id,
+      })
+      .subscribe({
+        next: () => {
+          this.toastService.showToast('success', 'Add new showing successfully!');
+          this.newShowing = null;
+          this.listShowingToAdd = [];
+          this.addShowingForm.reset();
+        },
+        error: (e) => {
+          if (e.error) {
+            this.toastService.showToast('danger', e.error.message);
+          } else {
+            this.toastService.showToast('danger', 'Something went wrong!');
+          }
+        },
+      });
   }
 }

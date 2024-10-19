@@ -2,6 +2,7 @@ package com.moonmovie.movie_service.dao;
 
 import com.moonmovie.movie_service.dto.ShowingDto;
 import com.moonmovie.movie_service.models.Showing;
+import com.moonmovie.movie_service.models.ShowingStatistical;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +24,9 @@ public interface ShowingDao extends JpaRepository<Showing, Integer> {
             "FROM Showing s WHERE DAY(s.startTime) = ?2 AND s.startTime >= ?1 AND s.movie.id = ?3")
     List<ShowingDto> findAllByStartTimeGreaterThanEqualAndDateIsAndMovieIdIs(LocalDateTime startDate, int date, int movieId);
 
-    Page<Showing> findAllByStartTimeGreaterThanEqual(LocalDateTime startDate, Pageable pageable);
+    @Query("SELECT DAY(s.startTime) as date, COUNT(*) as totalMovies FROM Showing s WHERE " +
+            "MONTH(s.startTime) = ?1 AND YEAR(s.startTime) = ?2 GROUP BY DAY(s.startTime)")
+    List<ShowingStatistical> getShowingStatistical(int month, int year);
 
     @Query("SELECT s.id as id, s.startTime as startTime, s.type as type, s.auditoriumId as auditoriumId, s.priceEachSeat as priceEachSeat, s.movie.runtime as runtime, s.movie.title as title " +
             "FROM Showing s WHERE DATE(s.startTime) = ?1 AND s.auditoriumId = ?2 ORDER BY s.startTime ASC")

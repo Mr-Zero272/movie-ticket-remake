@@ -4,7 +4,7 @@
     <ng-container *ngFor="let hall of halls; index as i">
       <app-auditorium-badge
         [hall]="hall.name"
-        subInfo="Seat: 156"
+        subInfo="Seats: 156"
         [colorIndex]="i"
         [randomColor]="false"
         [active]="auditorium ? auditorium.id === hall.id : false"

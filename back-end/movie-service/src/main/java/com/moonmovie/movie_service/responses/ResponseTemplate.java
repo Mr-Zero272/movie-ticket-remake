@@ -8,5 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class ResponseTemplate {
+    private int httpStatusCode = 200;
     private String message;
 }

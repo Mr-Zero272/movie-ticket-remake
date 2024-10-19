@@ -7,10 +7,6 @@ type Props = {};
 function HiddenSearch({}: Props) {
     const [open, setOpen] = useState<boolean>(false);
 
-    const handleOpenSearch = () => {
-        setOpen((prev) => !prev);
-    };
-
     return (
         <div className="cursor-pointer rounded-lg p-2 hover:bg-accent" onClick={() => setOpen(true)}>
             <SearchIcon className="inline-block size-6 text-gray-500" />

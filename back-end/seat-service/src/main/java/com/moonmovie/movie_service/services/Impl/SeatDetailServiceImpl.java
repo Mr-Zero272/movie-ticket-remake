@@ -47,6 +47,7 @@ public class SeatDetailServiceImpl implements SeatDetailService {
                     .showingId(request.getShowingId())
                     .seat(seatItem)
                     .status("available")
+                    .userId("")
                     .build();
             seatDetails.add(seatDetail);
         }
@@ -68,19 +69,19 @@ public class SeatDetailServiceImpl implements SeatDetailService {
                 seatDetailDao.save(seatStatus.get());
                 sendDataToWebSocket("/topic/seat-state", request);
             } else {
-                if (seatStatus.get().getUserId().equals(request.getUserId())) {
-                    if (request.getStatus().equals("choosing")) {
-                        seatStatus.get().setStatus("available");
-                        seatStatus.get().setUserId("");
-                        request.setStatus("available");
-                        seatDetailDao.save(seatStatus.get());
-                        sendDataToWebSocket("/topic/seat-state", request);
-                    }
-                } else if (seatStatus.get().getUserId().isEmpty()) {
+               if (seatStatus.get().getUserId() == null || seatStatus.get().getUserId().isEmpty()) {
                     if (request.getStatus().equals("available")) {
                         seatStatus.get().setUserId(request.getUserId());
                         seatStatus.get().setStatus("choosing");
                         request.setStatus("choosing");
+                        seatDetailDao.save(seatStatus.get());
+                        sendDataToWebSocket("/topic/seat-state", request);
+                    }
+                } else if (seatStatus.get().getUserId().equals(request.getUserId())) {
+                    if (request.getStatus().equals("choosing")) {
+                        seatStatus.get().setStatus("available");
+                        seatStatus.get().setUserId("");
+                        request.setStatus("available");
                         seatDetailDao.save(seatStatus.get());
                         sendDataToWebSocket("/topic/seat-state", request);
                     }
