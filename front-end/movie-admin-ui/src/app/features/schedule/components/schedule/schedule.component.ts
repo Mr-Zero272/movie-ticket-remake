@@ -9,7 +9,7 @@ import { Pagination } from '../../../../shared/models/pagination-obj.model';
 import { Showing } from '../../../../shared/models/showing.model';
 import { ScheduleService } from '../../services/schedule.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroPlus, heroXCircle } from '@ng-icons/heroicons/outline';
+import { heroCalendarDays, heroPlus, heroXCircle } from '@ng-icons/heroicons/outline';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
@@ -39,6 +39,7 @@ import { ToastService } from '../../../../core/services/toast.service';
     provideIcons({
       heroXCircle,
       heroPlus,
+      heroCalendarDays,
     }),
   ],
 })

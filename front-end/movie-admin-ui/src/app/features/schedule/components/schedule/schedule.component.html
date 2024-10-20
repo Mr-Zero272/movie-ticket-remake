@@ -1,4 +1,4 @@
-<section class="flex gap-3">
+<section class="flex flex-col gap-3 2xl:flex-row">
   <article class="flex-1">
     <div
       class="mb-5 flex w-full items-end gap-x-3 rounded-lg bg-[#FBAB7E] bg-[linear-gradient(62deg,#FBAB7E_0%,#F7CE68_100%)] p-5"
@@ -28,15 +28,28 @@
       <app-schedule-search (onSearch)="handleSearchKeywordChange($event)" />
     </div>
   </article>
-  <article class="w-4/5">
+  <article class="2xl:w-4/5">
     <app-date-picker class="rounded-lg bg-white" (onChooseDate)="handleChangeDate($event)"></app-date-picker>
     <div class="rounded-lg bg-white p-5">
       <div class="flex items-center justify-between">
         <div class="mb-5 text-2xl font-bold">List showings</div>
-        <div class="flex items-center gap-x-1">
-          <app-button matTooltip="Do schedule" matTooltipPosition="above" href="/schedule/manage/do-schedule"
-            >Do schedule</app-button
+        <div class="flex flex-col items-center gap-x-1 sm:flex-row">
+          <app-button
+            class="hidden sm:block"
+            matTooltip="Do schedule"
+            matTooltipPosition="above"
+            href="/schedule/manage/do-schedule"
           >
+            Do schedule
+          </app-button>
+          <app-button
+            class="sm:hidden"
+            matTooltip="Do schedule"
+            matTooltipPosition="above"
+            href="/schedule/manage/do-schedule"
+          >
+            <ng-icon name="heroCalendarDays" size="16" class="text-white"></ng-icon>
+          </app-button>
           <app-button
             matTooltip="Add new showing"
             matTooltipPosition="above"
@@ -52,7 +65,10 @@
         <h3 className="text-3xl font-bold">Whoops!</h3>
         <p class="text-center">It seems like you do not have any showings here.</p>
       </div>
-      <div *ngIf="!loading && showingData.data.length !== 0" class="grid grid-cols-5 gap-2">
+      <div
+        *ngIf="!loading && showingData.data.length !== 0"
+        class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5"
+      >
         <ng-container *ngFor="let showing of showingData.data">
           <app-movie-vertical-card
             [showingId]="showing.id"

@@ -132,6 +132,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.loadingAfterView = true;
     this.homeService.getOrderStatistical(2024).subscribe((data) => {
       this.orderStatisticalData = data;
       this.balance = this.homeService.getBalance(2024, data);
@@ -163,6 +164,9 @@ export class HomeComponent implements AfterViewInit, OnInit {
 
       this.renderIncomeChart();
     }).closed;
+    this.loadingAfterView = false;
+
+    if (this.balanceChart) this.balanceChart.destroy();
 
     this.balanceChart = new Chart(this.balanceChartElement.nativeElement, {
       type: 'doughnut',

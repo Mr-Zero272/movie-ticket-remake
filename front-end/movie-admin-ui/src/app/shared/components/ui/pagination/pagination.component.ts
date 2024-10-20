@@ -10,6 +10,7 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
   styleUrl: './pagination.component.css',
 })
 export class PaginationComponent implements OnInit, OnChanges {
+  @Input() class: string = '';
   @Input() page: number = 1;
   @Input() totalPages: number = 10;
   @Input() size: number = 7;

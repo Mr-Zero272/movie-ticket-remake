@@ -1,7 +1,12 @@
 <section>
   <article>
-    <form *ngIf="movieForm" class="flex gap-x-10" [formGroup]="movieForm" (ngSubmit)="handleSubmit()">
-      <div class="w-2/5">
+    <form
+      *ngIf="movieForm"
+      class="flex flex-col xl:flex-row xl:gap-x-10"
+      [formGroup]="movieForm"
+      (ngSubmit)="handleSubmit()"
+    >
+      <div class="w-full xl:w-2/5">
         <div class="mb-3">
           <label for="title" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Movie title</label>
           <input
@@ -147,8 +152,8 @@
             (onChange)="handleEditTrailer($event)"
           ></app-edit-trailer>
         </div>
-        <div class="mb-3 flex gap-x-5">
-          <div class="w-1/4">
+        <div class="mb-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
             <label for="totalDateShowingsInMonth" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
               >Total date showings</label
             >
@@ -165,7 +170,7 @@
               [isFormSubmitted]="isFormSubmitted"
             />
           </div>
-          <div class="w-1/4">
+          <div>
             <label for="priceEachSeat" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
               >Price for each seat</label
             >
@@ -179,7 +184,7 @@
             />
             <app-error-display [control]="movieForm.controls['priceEachSeat']" [isFormSubmitted]="isFormSubmitted" />
           </div>
-          <div class="w-1/4">
+          <div>
             <label for="monthToSchedule" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
               Month to schedule
             </label>
@@ -201,7 +206,7 @@
               <option value="12">12</option>
             </select>
           </div>
-          <div class="w-1/4">
+          <div>
             <label for="yearToSchedule" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
               Year to schedule
             </label>
@@ -220,7 +225,7 @@
           <label for="" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
             Detail showing types
           </label>
-          <div class="flex gap-3">
+          <div class="mb-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label for="_2d" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">2D</label>
               <input

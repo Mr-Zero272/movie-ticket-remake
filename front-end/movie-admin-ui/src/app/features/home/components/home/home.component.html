@@ -1,5 +1,5 @@
 <section>
-  <div class="mb-10 flex gap-x-7">
+  <div class="mb-10 flex flex-col gap-x-0 gap-y-5 xl:flex-row xl:gap-x-7 xl:gap-y-0">
     <article class="flex-1">
       <div class="mb-3 flex items-center justify-between">
         <div class="text-2xl font-semibold">Earnings {{ loading }}</div>
@@ -8,12 +8,12 @@
           <ng-icon name="heroSquares2x2" size="20"></ng-icon>
         </button>
       </div>
-      <div class="relative mb-5 h-56 w-full rounded-2xl bg-black p-5 text-white">
+      <div class="relative mb-5 w-full rounded-2xl bg-black p-5 text-white md:h-56">
         <div class="absolute right-5 top-5 flex items-center justify-center gap-x-2">
           <ng-icon name="heroCubeTransparent" size="50" class="text-white"></ng-icon>
-          <div class="text-2xl font-medium">MM</div>
+          <div class="hidden text-2xl font-medium md:block">MM</div>
         </div>
-        <div class="flex items-center gap-x-10">
+        <div class="flex flex-col items-center gap-x-10 md:flex-row">
           <div class="relative size-44">
             <canvas id="balanceChart" #balanceChart>{{ balanceChart }}</canvas>
             <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -23,11 +23,11 @@
           </div>
           <div>
             <p class="text-sm">My Balance</p>
-            <p class="text-5xl font-semibold">{{ balance | currency: 'VND' }}</p>
+            <p class="text-lg font-semibold md:text-xl lg:text-3xl xl:text-5xl">{{ balance | currency: 'VND' }}</p>
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-4 gap-7">
+      <div class="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
         <ng-template #iconBalance>
           <ng-icon name="heroChartBarSquare" size="28" class="text-green-500"></ng-icon>
         </ng-template>
@@ -70,8 +70,11 @@
         />
       </div>
     </article>
-    <article class="flex w-1/5 flex-col gap-y-5">
-      <div *ngIf="user; else userLoading" class="flex flex-col items-center gap-y-5 rounded-2xl p-5">
+    <article class="flex w-full flex-none gap-y-5 xl:w-1/5 xl:flex-col">
+      <div
+        *ngIf="user; else userLoading"
+        class="hidden w-1/3 flex-col items-center gap-y-5 rounded-2xl p-5 sm:flex xl:w-full"
+      >
         <img class="size-24 rounded-full border border-gray-200" [src]="user.avatar" alt="avatar" />
 
         <div>
@@ -80,7 +83,7 @@
         </div>
       </div>
       <ng-template #userLoading>
-        <div class="flex animate-pulse flex-col items-center gap-y-5 rounded-2xl p-5">
+        <div class="hidden w-1/3 animate-pulse flex-col items-center gap-y-5 rounded-2xl p-5 sm:flex xl:w-full">
           <div class="size-24 rounded-full border border-gray-200 bg-gray-200"></div>
           <div>
             <div class="mb-2 h-3 w-16 rounded-full bg-gray-200"></div>
@@ -91,30 +94,50 @@
       <div class="flex flex-1 flex-col items-center justify-center rounded-2xl p-5 shadow-md">
         <p class="text-lg font-medium">{{ digitalClock | date: 'MMM dd, yyyy' }}</p>
         <div class="flex items-center justify-center bg-primary p-1 text-white">
-          <div class="fonte-semibold text-3xl">{{ digitalClock | date: 'HH:mm:ss a' }}</div>
+          <div class="fonte-semibold text-xl xl:text-2xl 2xl:text-3xl">{{ digitalClock | date: 'HH:mm:ss a' }}</div>
         </div>
       </div>
     </article>
   </div>
   <div class="flex gap-x-10">
     <article class="flex-1">
-      <div class="flex items-center justify-between">
+      <div class="mb-3 flex items-center justify-between">
         <div class="text-2xl font-semibold">Incomes Overview</div>
         <button class="flex items-center rounded-md px-3 py-1.5 hover:bg-accent">
           <ng-icon name="heroArrowLongRight" size="20"></ng-icon>
         </button>
       </div>
-      <div>
+      <ng-template #loadingChart>
+        <div class="flex w-full animate-pulse items-end justify-evenly overflow-x-auto rounded-lg border-2 p-8">
+          <div class="h-32 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-28 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-56 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-56 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-64 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-56 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-28 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-64 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-56 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-64 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-56 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-40 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-56 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-64 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-72 w-4 rounded-full bg-gray-200"></div>
+          <div class="h-80 w-4 rounded-full bg-gray-200"></div>
+        </div>
+      </ng-template>
+      <div *ngIf="!loadingAfterView; else loadingChart">
         <canvas id="incomesChart" #incomesChart>{{ incomesChart }}</canvas>
       </div>
     </article>
-    <article class="flex w-1/4 flex-col justify-between">
+    <article class="hidden w-1/4 flex-col justify-between md:flex">
       <div>
         <p class="text-lg font-medium">Recent orders</p>
         <div class="text-xs text-gray-500">This list order by date</div>
       </div>
       <div class="my-3 flex-1">
-        <ul class="flex flex-col gap-y-2" *ngIf="recentOrders.length !== 0">
+        <ul class="flex flex-col gap-y-2" *ngIf="loading ? true : recentOrders.length !== 0">
           <li *ngFor="let order of recentOrders">
             <app-order-item
               [loading]="loading"
@@ -124,6 +147,15 @@
               [value]="order.amount"
             ></app-order-item>
           </li>
+          <ng-container *ngIf="loading">
+            <app-order-item [loading]="true"></app-order-item>
+            <app-order-item [loading]="true"></app-order-item>
+            <app-order-item [loading]="true"></app-order-item>
+            <app-order-item [loading]="true"></app-order-item>
+            <app-order-item [loading]="true"></app-order-item>
+            <app-order-item [loading]="true"></app-order-item>
+            <app-order-item [loading]="true"></app-order-item>
+          </ng-container>
         </ul>
       </div>
       <button class="w-full rounded-md py-1.5 font-medium hover:bg-accent">See more</button>

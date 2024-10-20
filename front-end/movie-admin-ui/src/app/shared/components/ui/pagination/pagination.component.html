@@ -1,5 +1,10 @@
-<nav *ngIf="!loading; else loadingState" class="flex items-center justify-between bg-white p-3" aria-label="Pagination">
-  <div class="">
+<nav
+  *ngIf="!loading; else loadingState"
+  class="flex w-full items-center justify-between bg-white p-3"
+  [ngClass]="class"
+  aria-label="Pagination"
+>
+  <div class="hidden sm:block">
     <span class="mb-4 block w-full text-sm font-normal text-gray-500 md:mb-0 md:inline md:w-auto dark:text-gray-400"
       >Showing
       <span class="font-semibold text-gray-900 dark:text-white"
@@ -8,7 +13,7 @@
       of <span class="font-semibold text-gray-900 dark:text-white">{{ totalElements }}</span></span
     >
   </div>
-  <div class="flex items-center gap-x-1">
+  <div class="flex flex-wrap items-center justify-center gap-x-1">
     <button
       type="button"
       class="inline-flex min-h-[38px] min-w-[38px] items-center justify-center gap-x-1.5 rounded-lg px-2.5 py-2 text-sm text-gray-800 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"

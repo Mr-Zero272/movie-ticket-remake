@@ -1,5 +1,5 @@
-<div class="mb-3 flex gap-x-3">
-  <div class="grid w-1/2 grid-cols-2 gap-3">
+<div class="mb-3 flex flex-col gap-3 sm:flex-row">
+  <div class="grid flex-1 grid-cols-2 gap-3">
     <app-select-image-item
       class="h-52"
       [loading]="loading"
@@ -15,7 +15,7 @@
       (onDeleteImage)="handleDeleteImage(1)"
     />
   </div>
-  <div class="grid w-1/2 grid-cols-2 gap-3">
+  <div class="grid flex-1 grid-cols-2 gap-3">
     <app-select-image-item
       class="h-24"
       [loading]="loading"
