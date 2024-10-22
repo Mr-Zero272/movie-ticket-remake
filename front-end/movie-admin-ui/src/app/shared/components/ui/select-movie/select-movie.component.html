@@ -30,7 +30,7 @@
   </div>
   <ng-template #result>
     <div *ngIf="movies.length !== 0; else noResult">
-      <div class="mt-4 grid grid-cols-3 gap-x-5 gap-y-2">
+      <div class="mt-4 grid grid-cols-1 gap-x-5 gap-y-2 md:grid-cols-2 xl:grid-cols-3">
         <ng-container *ngFor="let movie of movies">
           <app-movie-horizontal-card
             [movieId]="movie.id"

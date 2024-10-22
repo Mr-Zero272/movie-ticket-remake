@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroClock, heroMagnifyingGlass, heroXCircle } from '@ng-icons/heroicons/outline';
@@ -21,7 +21,7 @@ import { FormsModule } from '@angular/forms';
     }),
   ],
 })
-export class ScheduleSearchComponent implements OnInit {
+export class ScheduleSearchComponent implements OnInit, OnDestroy {
   @Output() onSearch = new EventEmitter<string>();
   historyKeywords: Array<string> = [];
   keywords: Array<string> = [];
@@ -48,6 +48,10 @@ export class ScheduleSearchComponent implements OnInit {
       this.historyKeywords = data;
       this.recommendKeywords = data;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.searchInput.complete();
   }
 
   onSearchInputChange(event: Event) {

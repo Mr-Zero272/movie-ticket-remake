@@ -5,39 +5,40 @@ import { OutsideClickDirective } from '../../../directives/outside-click.directi
 import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../models/auth.model';
 import { SignOutButtonComponent } from '../sign-out-button/sign-out-button.component';
+import { DropdownMenuItemComponent } from '../../ui/dropdown-menu-item/dropdown-menu-item.component';
 
 @Component({
-    selector: 'app-user-button',
-    standalone: true,
-    imports: [RouterLink, NgIf, OutsideClickDirective, SignOutButtonComponent],
-    templateUrl: './user-button.component.html',
-    styleUrl: './user-button.component.css',
+  selector: 'app-user-button',
+  standalone: true,
+  imports: [RouterLink, NgIf, OutsideClickDirective, SignOutButtonComponent, DropdownMenuItemComponent],
+  templateUrl: './user-button.component.html',
+  styleUrl: './user-button.component.css',
 })
 export class UserButtonComponent {
-    isMenuOpen: boolean = false;
-    user: User | null = null;
-    profileImg: string = '';
+  isMenuOpen: boolean = false;
+  user: User | null = null;
+  profileImg: string = '';
 
-    constructor(
-        authService: AuthService,
-        private renderer: Renderer2,
-    ) {
-        authService.getUser().subscribe((userInfo) => {
-            this.user = userInfo;
-            this.profileImg = userInfo?.avatar || '';
-        });
-    }
+  constructor(
+    private authService: AuthService,
+    private renderer: Renderer2,
+  ) {
+    this.authService.getUser().subscribe((userInfo) => {
+      this.user = userInfo;
+      this.profileImg = userInfo?.avatar || '';
+    });
+  }
 
-    toggleUserMenu() {
-        this.isMenuOpen = !this.isMenuOpen;
-        if (this.isMenuOpen) {
-            this.renderer.setStyle(document.body, 'overflow', 'hidden');
-        } else {
-            this.renderer.removeStyle(document.body, 'overflow');
-        }
+  toggleUserMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+    if (this.isMenuOpen) {
+      this.renderer.setStyle(document.body, 'overflow', 'hidden');
+    } else {
+      this.renderer.removeStyle(document.body, 'overflow');
     }
+  }
 
-    onErrorProfileImage() {
-        this.profileImg = 'http://localhost:8272/api/v2/moon-movie/media/images/user-avatar.png';
-    }
+  onErrorProfileImage() {
+    this.profileImg = 'http://localhost:8272/api/v2/moon-movie/media/images/user-avatar.png';
+  }
 }

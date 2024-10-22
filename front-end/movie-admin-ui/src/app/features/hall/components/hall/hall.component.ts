@@ -34,7 +34,7 @@ import { AuditoriumBadgeComponent } from '../../../../shared/components/ui/audit
   templateUrl: './hall.component.html',
   styleUrl: './hall.component.scss',
 })
-export class HallComponent implements OnInit, AfterContentInit, AfterViewInit {
+export class HallComponent implements OnInit, AfterViewInit, AfterContentInit {
   columns: Array<Column> = [];
   hallsData!: Pagination<Hall>;
   currentSearchValue: string = '';

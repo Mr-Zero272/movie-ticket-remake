@@ -23,6 +23,7 @@ import { EditShowingDragDropComponent } from '../edit-showing-drag-drop/edit-sho
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { EditShowingRequest } from '../../../../shared/models/edit-showing-request.model';
 import { ToastService } from '../../../../core/services/toast.service';
+import { MovieHorizontalCardComponent } from '../../../../shared/components/cards/movie-horizontal-card/movie-horizontal-card.component';
 
 @Component({
   selector: 'app-detail',
@@ -41,6 +42,7 @@ import { ToastService } from '../../../../core/services/toast.service';
     CdkDrag,
     EditShowingDragDropComponent,
     ButtonComponent,
+    MovieHorizontalCardComponent,
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.css',

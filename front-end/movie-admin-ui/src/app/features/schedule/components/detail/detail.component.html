@@ -1,5 +1,5 @@
-<section class="flex w-full gap-5">
-  <article class="w-1/4 rounded-lg bg-white p-5 shadow-lg">
+<section class="flex w-full flex-col gap-5 xl:flex-row">
+  <article class="hidden rounded-lg bg-white p-5 shadow-lg 2xl:block 2xl:w-1/4">
     <ng-container *ngIf="showingInfo; else loadingCard">
       <app-movie-schedule-vertical-card
         [title]="showingInfo.movie.title"
@@ -16,6 +16,15 @@
     </ng-template>
   </article>
   <article class="flex-1 rounded-lg bg-white p-5 shadow-lg">
+    <div class="mb-2 2xl:hidden" *ngIf="showingInfo">
+      <app-movie-horizontal-card
+        [title]="showingInfo.movie.title"
+        [poster]="showingInfo.movie.posterPath"
+        [firstGenre]="showingInfo.startTime"
+        [runtime]="showingInfo.movie.runtime"
+        [firstGenre]="showingInfo.movie.genres.length === 0 ? 'unknown' : showingInfo.movie.genres[0].name"
+      />
+    </div>
     <div class="mb-5">
       <p class="text-xl font-semibold">Edit showing information</p>
       <form class="flex gap-x-5" [formGroup]="editShowingInfoForm" (ngSubmit)="handleSubmit()">
@@ -91,7 +100,7 @@
       <app-button variant="outline" (click)="back()">Back</app-button>
     </div>
   </article>
-  <article class="w-2/5 rounded-lg bg-white p-5 shadow-lg">
+  <article class="flex-1 rounded-lg bg-white p-5 shadow-lg">
     <app-edit-showing-drag-drop
       [editHall]="activeHall"
       [editDate]="editShowingInfoForm ? editShowingInfoForm.value.date : ''"

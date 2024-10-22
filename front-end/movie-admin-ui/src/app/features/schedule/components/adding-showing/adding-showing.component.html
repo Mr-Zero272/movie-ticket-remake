@@ -1,6 +1,6 @@
 <section>
-  <form class="flex gap-x-5" (ngSubmit)="handleSubmit()" [formGroup]="addShowingForm">
-    <div class="flex-1">
+  <form class="flex flex-col gap-x-5 md:flex-row" (ngSubmit)="handleSubmit()" [formGroup]="addShowingForm">
+    <div class="mb-5 flex-1 md:mb-0">
       <div class="flex items-center gap-x-5">
         <div class="cursor-pointer rounded-lg px-2.5 py-1.5 hover:bg-accent" (click)="location.back()">
           <svg
@@ -16,7 +16,7 @@
         </div>
         <div class="text-2xl font-medium">Adding new showing</div>
       </div>
-      <div class="mb-3 flex gap-x-5">
+      <div class="mb-3 flex flex-col gap-5 sm:flex-row">
         <div class="flex-1">
           <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white" for="showing-date">
             Choose date
@@ -30,7 +30,7 @@
             placeholder="Select date"
           />
         </div>
-        <div class="w-1/2">
+        <div class="flex-1">
           <label for="type" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Cinema type </label>
           <select
             id="type"
@@ -50,7 +50,7 @@
         <app-button type="submit">Submit</app-button>
       </div>
     </div>
-    <div class="w-1/4">
+    <div class="w-full flex-none md:w-1/4">
       <app-add-showing-drag-drop
         formControlName="position"
         [listShowings]="listShowingToAdd"

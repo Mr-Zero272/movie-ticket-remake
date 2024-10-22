@@ -1,6 +1,7 @@
 package com.moonmovie.auth_service.controllers;
 
 import com.moonmovie.auth_service.dto.UserDto;
+import com.moonmovie.auth_service.exception.GlobalException;
 import com.moonmovie.auth_service.models.UserStatistical;
 import com.moonmovie.auth_service.request.UpdateUserRequest;
 import com.moonmovie.auth_service.response.PaginationResponse;
@@ -22,6 +23,16 @@ public class UserController {
 
     @GetMapping("/user")
     public ResponseEntity<UserDto> getUser(@RequestHeader("user-id") String userId) {
+        return ResponseEntity.ok(userService.getUser(userId));
+    }
+
+    @GetMapping("/user/profile/{userId}")
+    public ResponseEntity<UserDto> getUserProfile(
+            @RequestHeader("role") String role,
+            @PathVariable("userId") String userId) {
+        if (!role.equalsIgnoreCase("admin")) {
+            throw new GlobalException(403, "Do not have permission!");
+        }
         return ResponseEntity.ok(userService.getUser(userId));
     }
 
