@@ -1,10 +1,14 @@
 import InfiniteScrollSchedule from '@/components/shared/InfiniteScrollSchedule';
 import { currentUser } from '@/services/authServices';
+import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
-type Props = {};
+export const metadata: Metadata = {
+    title: 'Schedule - Moon Movie',
+    description: 'Schedule of movies every day',
+};
 
-async function Page({}: Props) {
+const SchedulePage = async () => {
     const userInfo = await currentUser();
 
     if (userInfo === undefined) {
@@ -18,6 +22,6 @@ async function Page({}: Props) {
             <InfiniteScrollSchedule />
         </section>
     );
-}
+};
 
-export default Page;
+export default SchedulePage;

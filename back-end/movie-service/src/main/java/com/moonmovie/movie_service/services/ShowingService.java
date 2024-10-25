@@ -20,7 +20,7 @@ public interface ShowingService {
 
     Showing getShowing(int showingId);
 
-    PaginationResponse<Showing> getPaginationShowings(String query, LocalDateTime date, String auditoriumId, Integer genreId, String type, int page, int size);
+    PaginationResponse<Showing> getPaginationShowings(String query, LocalDateTime date, String auditoriumId, int page, int size);
 
     List<ShowingDto> getShowingsByDateAndAuditorium(LocalDate date, String auditoriumId);
 

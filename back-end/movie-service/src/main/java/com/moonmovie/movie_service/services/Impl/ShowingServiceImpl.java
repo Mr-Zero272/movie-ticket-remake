@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,22 +66,24 @@ public class ShowingServiceImpl implements ShowingService {
     }
 
     @Override
-    public PaginationResponse<Showing> getPaginationShowings(String query, LocalDateTime date, String auditoriumId, Integer genreId, String type, int page, int size) {
+    public PaginationResponse<Showing> getPaginationShowings(String query, LocalDateTime date, String auditoriumId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Showing> pageShowing;
-        query = "%" + query + "%";
-        if (auditoriumId.equalsIgnoreCase("")) {
-            auditoriumId = "%";
-        }
 
-        if (genreId == 0 && type.equalsIgnoreCase("")) {
-            pageShowing = showingDao.findAllByTitleLikeAndDateEqual(query, date, auditoriumId, pageable);
-        } else if (genreId == 0 && !type.equalsIgnoreCase("")) {
-            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndTypeEqualIgnoreCase(query, date, type, auditoriumId, pageable);
-        } else if (genreId != 0 && type.equalsIgnoreCase("")) {
-            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndGenreEqual(query, date, genreId, auditoriumId, pageable);
-        } else if (genreId != 0 && !type.equalsIgnoreCase("")) {
-            pageShowing = showingDao.findAllByTitleLikeAndDateEqualAndGenreEqualAndTypeEqualIgnoreCase(query, date, genreId, type, auditoriumId, pageable);
+        if (query.equalsIgnoreCase("") && auditoriumId.equalsIgnoreCase("")) {
+            System.out.println("do not have any");
+            pageShowing = showingDao.findAllByDate(date, pageable);
+        } else if (!query.equalsIgnoreCase("") && auditoriumId.equalsIgnoreCase("")) {
+            query = "%" + query + "%";
+            pageShowing = showingDao.findAllByTitleLikeAndDate(query, date, pageable);
+            System.out.println("Only like title");
+        } else if (query.equalsIgnoreCase("") && !auditoriumId.equalsIgnoreCase("")) {
+            pageShowing = showingDao.findAllByAuditoriumIdAndDate(auditoriumId, date, pageable);
+            System.out.println("Only has auditorium");
+        } else if (!query.equalsIgnoreCase("") && !auditoriumId.equalsIgnoreCase("")) {
+            System.out.println("have both");
+            query = "%" + query + "%";
+            pageShowing = showingDao.findAllByTitleLikeAndAuditoriumIdAndDate(query, auditoriumId, date, pageable);
         } else {
             pageShowing = showingDao.findAll(pageable);
         }

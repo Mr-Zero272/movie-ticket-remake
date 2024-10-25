@@ -9,10 +9,34 @@ import Trailer from './trailer';
 import { redirect } from 'next/navigation';
 import { currentUser } from '@/services/authServices';
 import RecommendMovies from '@/components/shared/RecommendMovies';
+import { Metadata, ResolvingMetadata } from 'next';
 
 type Props = {
-    params: { movieId: number };
+    params: Promise<{ movieId: number }>;
 };
+
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+    // read route params
+    const movieId = (await params).movieId;
+
+    // fetch data
+    const movieInfo = await fetchMovie(movieId);
+
+    // optionally access and extend (rather than replace) parent metadata
+    const previousImages = (await parent).openGraph?.images || [];
+
+    const poster = movieInfo.posterPath
+        ? movieInfo.posterPath
+        : 'http://localhost:8272/api/v2/moon-movie/media/images/defaultBackdrop.jpg';
+
+    return {
+        title: movieInfo.title + ' - Moon Movie',
+        description: 'More information about the movie',
+        openGraph: {
+            images: [poster, ...previousImages],
+        },
+    };
+}
 
 const Page = async ({ params }: Props) => {
     const userInfo = await currentUser();
@@ -23,7 +47,9 @@ const Page = async ({ params }: Props) => {
 
     if (!userInfo?.onboarded) redirect('/onboarding');
 
-    const movieInfo = await fetchMovie(params.movieId);
+    const movieId = (await params).movieId;
+
+    const movieInfo = await fetchMovie(movieId);
     return (
         <div>
             <Trailer
@@ -56,7 +82,7 @@ const Page = async ({ params }: Props) => {
                     </div>
                 </article>
                 <article>
-                    <ShowingDetail movieId={params.movieId} />
+                    <ShowingDetail movieId={movieId} />
                 </article>
                 <div className="mb-10 flex justify-between gap-x-36 max-lg:flex-col">
                     <article className="w-1/2 max-lg:mb-10 max-lg:w-full">
@@ -102,7 +128,7 @@ const Page = async ({ params }: Props) => {
                         ))}
                     </div>
                 </div>
-                <RecommendMovies movieId={params.movieId} userId={userInfo.id} />
+                <RecommendMovies movieId={movieId} userId={userInfo.id} />
                 <div>
                     <h3 className="mb-3 text-xl">Shared</h3>
                     <div className="flex gap-x-5">

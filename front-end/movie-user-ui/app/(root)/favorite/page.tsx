@@ -5,10 +5,14 @@ import 'slick-carousel/slick/slick-theme.css';
 import 'slick-carousel/slick/slick.css';
 import FavoriteMain from './favorite-main';
 import { currentUser } from '@/services/authServices';
+import { Metadata } from 'next';
 
-type Props = {};
+export const metadata: Metadata = {
+    title: 'Favorite movies - Moon Movie',
+    description: 'Your favorite movies',
+};
 
-const FavoritePage = async (props: Props) => {
+const FavoritePage = async () => {
     const userInfo = await currentUser();
 
     if (userInfo === undefined) {

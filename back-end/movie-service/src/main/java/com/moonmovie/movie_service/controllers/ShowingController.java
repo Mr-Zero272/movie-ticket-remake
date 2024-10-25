@@ -37,13 +37,11 @@ public class ShowingController {
     @GetMapping("/schedule")
     public ResponseEntity<PaginationResponse<Showing>> getScheduledShowings(
             @RequestParam(value = "query", defaultValue = "") String query,
-            @RequestParam(value = "genreId", defaultValue = "0") Integer genreId,
             @RequestParam(value = "auditoriumId", defaultValue = "") String auditoriumId,
-            @RequestParam(value = "type", defaultValue = "") String type,
-            @RequestParam(value = "date", defaultValue = "2024-11-01") LocalDateTime date,
+            @RequestParam(value = "date", defaultValue = "2024-11-01T00:00:00") LocalDateTime date,
             @RequestParam(value = "page", defaultValue = "1", required = false) int page,
             @RequestParam(value = "size", defaultValue = "20", required = false) int size) {
-        return ResponseEntity.ok(showingService.getPaginationShowings(query, date, auditoriumId, genreId, type, page, size));
+        return ResponseEntity.ok(showingService.getPaginationShowings(query, date, auditoriumId, page, size));
     }
 
     @GetMapping("/{showingId}")

@@ -9,10 +9,14 @@ import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import ListTicket from './list-ticket';
 import { Fragment } from 'react';
+import { Metadata } from 'next';
 
-type Props = {};
+export const metadata: Metadata = {
+    title: 'Your tickets - Moon Movie',
+    description: 'Your tickets',
+};
 
-const Tickets = async ({}: Props) => {
+const Tickets = async () => {
     const userInfo = await currentUser();
 
     if (userInfo === undefined) {

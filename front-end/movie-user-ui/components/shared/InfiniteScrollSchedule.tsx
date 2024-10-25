@@ -1,7 +1,7 @@
 'use client';
 import { Showing } from '@/types/showing';
 import { LoaderCircle, SearchX } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { format } from 'date-fns';
 import Image from 'next/image';
@@ -15,38 +15,56 @@ const InfiniteScrollSchedule = () => {
     const [data, setData] = useState<Showing[]>([]);
     const [hasMore, setHasMore] = useState(true);
     const [index, setIndex] = useState(2);
-    const [loading, setLoading] = useState(false);
+    const [loadingState, setLoadingState] = useState(false);
+    const loading = useRef(false);
     const [activeDate, setActiveDate] = useState(() => new Date().toISOString().split('T')[0] + 'T00:00:00');
 
     const fetchMoreData = useCallback(async () => {
-        if (loading || !hasMore) return;
-        setLoading(true);
+        if (loading.current || !hasMore) return;
+        setLoadingState(true);
+        loading.current = true;
         const res = await fetchScheduleShowings(activeDate, index);
         if (res.page > res.totalPages) {
             setHasMore(false);
         }
         setData((prevData) => [...prevData, ...res.data]);
         setIndex((prevIndex) => prevIndex + 1);
-        setLoading(false);
-    }, [index, loading, hasMore, activeDate]);
+        setLoadingState(false);
+        loading.current = false;
+    }, [index, loading, activeDate, hasMore]);
 
-    const handleChooseDate = async (date: string) => {
-        const res = await fetchScheduleShowings(date);
-        setActiveDate(date);
-        setIndex(2);
-        setData(res.data);
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
+    const handleChooseDate = (date: string) => {
+        const fetchData = async () => {
+            setLoadingState(true);
+
+            if (loading.current) return;
+            loading.current = true;
+            const res = await fetchScheduleShowings(date);
+            setActiveDate(date);
+            setIndex(2);
+            setData(res.data);
+            window.scrollTo(0, 0);
+            loading.current = false;
+            setLoadingState(false);
+        };
+
+        fetchData();
     };
 
     useEffect(() => {
         const fetchApi = async () => {
-            setLoading(true);
+            setLoadingState(true);
+            if (loading.current) return;
+            loading.current = true;
             const res = await fetchScheduleShowings(activeDate);
+            if (res.page > res.totalPages) {
+                setHasMore(false);
+            }
             setData(res.data);
-            setLoading(false);
+
+            setLoadingState(false);
+
+            loading.current = false;
         };
         fetchApi();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,6 +83,7 @@ const InfiniteScrollSchedule = () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [fetchMoreData]);
+
     return (
         <div className="container mx-auto px-5 pt-4">
             <ScrollTopButton />
@@ -123,7 +142,7 @@ const InfiniteScrollSchedule = () => {
                     </div>
                 ))}
 
-            {data && data.length === 0 && (
+            {data && data.length === 0 && !loadingState && (
                 <div className="flex flex-col items-center gap-y-3 text-center text-gray-500">
                     <SearchX strokeWidth={1} className="size-20 text-primary" />
                     <h2 className="text-3xl font-bold">Whoops!</h2>
@@ -131,7 +150,7 @@ const InfiniteScrollSchedule = () => {
                     <p>Please try another one.</p>
                 </div>
             )}
-            {loading && (
+            {loadingState && (
                 <div className="flex justify-center py-3">
                     <LoaderCircle className="size-7 animate-spin text-primary" />
                 </div>
