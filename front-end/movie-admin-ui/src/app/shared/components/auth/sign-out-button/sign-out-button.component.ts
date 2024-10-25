@@ -15,7 +15,9 @@ export class SignOutButtonComponent {
   loading: boolean = false;
   user: User | null = null;
   constructor(private authService: AuthService) {
-    this.loading = authService.getLoading();
+    authService.getLoading().subscribe((isLoading) => {
+      this.loading = isLoading;
+    });
     authService.getUser().subscribe((userData) => {
       this.user = userData;
     });

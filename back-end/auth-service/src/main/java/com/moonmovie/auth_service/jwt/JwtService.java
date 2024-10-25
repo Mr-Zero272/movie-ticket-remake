@@ -1,20 +1,20 @@
-package com.moonmovie.gateway_service.utils;
+package com.moonmovie.auth_service.jwt;
 
+import com.moonmovie.auth_service.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@Slf4j
 public class JwtService {
-
     private static final String SECRET_KEY = "f6d3d7289d940ce9dbfacaf37d282a3eae68ab562e659674efa900d627889697";
 
     public String extractUserId(String token) {
@@ -26,18 +26,25 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public boolean isTokenValid(String token) {
-        try {
-            Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token);
-        } catch (Exception e) {
-            log.info("Token is not valid");
-            return false;
-        }
-        boolean isTokenExpired = isTokenExpired(token);
-        if (isTokenExpired) {
-            log.info("Token is expired!");
-        }
-        return !isTokenExpired;
+    public String generateToken(User user, int dateExpiration) {
+        return generateToken(new HashMap<>(), user, dateExpiration);
+    }
+
+    public String generateToken(Map<String, Object> extractClaims, User user, int dateExpiration) {
+        extractClaims.put("role", user.getRole());
+        return Jwts
+                .builder()
+                .claims(extractClaims)
+                .claim("sub", user.getId())
+                .claim("iat", new Date(System.currentTimeMillis()))
+                .claim("exp", new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * dateExpiration))
+                .signWith(getSignInKey())
+                .compact();
+    }
+
+    public boolean isTokenValid(String token, User user) {
+        final String userId = extractUserId(token);
+        return (userId.equals(user.getId())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
@@ -45,10 +52,11 @@ public class JwtService {
     }
 
     private Date extractExpiration(String token) {
+        // TODO Auto-generated method stub
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
                 .verifyWith(getSignInKey())

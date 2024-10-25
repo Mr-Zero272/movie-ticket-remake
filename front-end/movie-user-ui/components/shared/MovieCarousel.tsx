@@ -2,13 +2,10 @@
 
 import { cn } from '@/lib/utils';
 import { Movie } from '@/types/movie';
-import { format } from 'date-fns';
-import Autoplay from 'embla-carousel-autoplay';
 import { MoveRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { CarouselApi } from '../ui/carousel';
+import { useMemo, useRef, useState } from 'react';
 
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick-theme.css';

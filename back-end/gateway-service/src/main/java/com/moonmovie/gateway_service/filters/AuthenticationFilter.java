@@ -34,8 +34,9 @@ public class AuthenticationFilter implements GatewayFilter {
             final String token = this.getAuthHeader(request);
 
             // call user service de lay thong tin user roi sau do truyen no vao header request de tiep tuc chuyen den
-            if(!jwtService.isTokenValid(token))
+            if(!jwtService.isTokenValid(token)) {
                 return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
+            }
 
             this.populateRequestWithHeaders(exchange, token);
         }

@@ -1,11 +1,9 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Flag } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import React from 'react';
+import { useRouter } from 'next/navigation';
 
 function Error() {
-    const pathname = usePathname();
     const route = useRouter();
 
     return (

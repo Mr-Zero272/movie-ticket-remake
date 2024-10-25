@@ -19,6 +19,7 @@ import com.moonmovie.auth_service.services.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -62,11 +63,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    @Value("${app.local.variable.client_id}")
-    private String clientGoogleId;
-
-    @Value("${app.local.variable.client_secret}")
-    private String clientGoogleSecret;
+    @Autowired
+    private Environment environment;
 
     private static final String OTP_CHARACTERS = "0123456789";
 
@@ -243,8 +241,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
         params.add("redirect_uri", redirectUri);
-        params.add("client_id", clientGoogleId);
-        params.add("client_secret", clientGoogleSecret);
+        params.add("client_id", environment.getProperty("app.local.variable.client_id"));
+        params.add("client_secret", environment.getProperty("app.local.variable.client_secret"));
         params.add("scope", "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile");
         params.add("scope", "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email");
         params.add("scope", "openid");

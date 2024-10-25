@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, Observable, tap, throwError } from 'rxjs';
 import { ResponseApiTemplate, ResponseAuthType, User } from '../../shared/models/auth.model';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { ToastService } from './toast.service';
 })
 export class AuthService {
   private user$ = new BehaviorSubject<User | null>(null);
-  private loading: boolean = false;
+  private loading$ = new BehaviorSubject<boolean>(false);
   constructor(
     private http: HttpClient,
     private cookieService: CookieService,
@@ -88,7 +88,7 @@ export class AuthService {
   }
 
   checkAuthOnAppStart() {
-    this.loading = true;
+    this.loading$.next(true);
     const token = this.getToken(); // Get token from cookie
     if (token) {
       if (!this.isAdmin(token)) {
@@ -103,24 +103,26 @@ export class AuthService {
             Authorization: `Bearer ${token}`,
           },
         })
+        .pipe(
+          finalize(() => {
+            this.loading$.next(false);
+          }),
+        )
         .subscribe({
           next: (userData: any) => {
             this.user$.next(userData); // Set the user information in the BehaviorSubject
-            this.loading = false;
           },
           error: (error) => {
             console.error('Error fetching user info', error);
             this.user$.next(null); // Clear user info on error
-            this.loading = false;
           },
         });
     }
-    this.loading = false;
   }
 
   updateUser(user: { username: string; email: string; name: string; bio: string; avatar: string }) {
-    this.loading = true;
-    const token = this.cookieService.get(this.getToken());
+    this.loading$.next(true);
+    const token = this.getToken();
     if (token) {
       // Call your API to get user info using the token
       this.http
@@ -133,21 +135,26 @@ export class AuthService {
             },
           },
         )
+        .pipe(
+          finalize(() => {
+            this.loading$.next(false);
+          }),
+        )
         .subscribe({
           next: (userData: any) => {
+            this.toast.showToast('success', 'Update user info successfully!');
             this.user$.next(userData); // Set the user information in the BehaviorSubject
           },
           error: (error) => {
             console.error('Error update user info', error);
-            this.user$.next(null); // Clear user info on error
+            this.toast.showToast('danger', 'Cannot update user information!');
           },
-        }).closed;
+        });
     }
-    this.loading = false;
   }
 
   getLoading() {
-    return this.loading;
+    return this.loading$.asObservable();
   }
 
   // To access the current user outside the service

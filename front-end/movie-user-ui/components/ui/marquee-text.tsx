@@ -10,27 +10,25 @@ interface MarqueeTextProps {
 const MarqueeText: React.FC<MarqueeTextProps> = ({ text, duration, className = '' }) => {
     const textRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [isOverflowing, setIsOverflowing] = useState(false);
     const [scrollPosition, setScrollPosition] = useState(0);
+    const [totalScroll, setTotalScroll] = useState(0);
 
     useEffect(() => {
         if (textRef.current && containerRef.current) {
             const textWidth = textRef.current.scrollWidth;
             const containerWidth = containerRef.current.offsetWidth;
-            setIsOverflowing(textWidth > containerWidth);
+            setTotalScroll(textWidth - containerWidth);
         }
     }, [text]);
 
     const handleMouseEnter = () => {
-        if (isOverflowing) {
-            const textWidth = textRef.current?.scrollWidth ?? 0;
-            const containerWidth = containerRef.current?.offsetWidth ?? 0;
-            setScrollPosition(textWidth - containerWidth);
+        if (totalScroll > 0) {
+            setScrollPosition(totalScroll);
             setTimeout(
                 () => {
                     setScrollPosition(0);
                 },
-                duration ? duration * 1000 + 2000 : 2000,
+                duration ? duration * 1000 + 3000 : 2000,
             );
         }
     };
@@ -41,7 +39,7 @@ const MarqueeText: React.FC<MarqueeTextProps> = ({ text, duration, className = '
                 ref={textRef}
                 className={`inline-block transition-transform ease-linear ${className}`}
                 style={{
-                    transform: isOverflowing ? `translateX(-${scrollPosition}px)` : 'translateX(0)',
+                    transform: totalScroll > 0 ? `translateX(-${scrollPosition}px)` : 'translateX(0)',
                     animationDuration: duration ? duration + 's' : '1s',
                     transitionDuration: duration ? duration + 's' : '1s',
                 }}

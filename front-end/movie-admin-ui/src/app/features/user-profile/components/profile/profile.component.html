@@ -1,99 +1,85 @@
-<section class="flex gap-10">
-  <div class="w-1/5">
-    <ul>
-      <li
-        class="flex cursor-pointer gap-x-3 bg-orange-100 p-4 text-gray-400"
-        [ngClass]="{ 'border-e-4 border-primary bg-orange-100 text-primary': true }"
-      >
-        <ng-icon name="heroUser" size="24" />
-        <div>Profile settings</div>
-      </li>
-      <li
-        class="flex cursor-pointer gap-x-3 bg-orange-100 p-4 text-gray-400"
-        [ngClass]="{ 'border-e-4 border-primary bg-orange-100 text-primary': false }"
-      >
-        <ng-icon name="heroLockClosed" size="24" />
-        <div>Password</div>
-      </li>
-    </ul>
+<article class="mb-10 flex items-center gap-x-3 xl:gap-x-10">
+  <div class="relative w-fit p-3">
+    <input type="file" class="hidden" accept="image/*" (change)="handleFileInput($event)" #avatarInput />
+    <img
+      class="size-32 cursor-pointer rounded-full border object-cover"
+      [src]="
+        userInfo
+          ? profileForm.value.avatar
+          : 'https://i.pinimg.com/enabled/564x/cf/71/a0/cf71a0ad133978344b640dbdd6f12b12.jpg'
+      "
+      alt="profile_img"
+      (click)="avatarInput.click()"
+    />
+    <div
+      class="border-1 absolute bottom-5 right-2 flex cursor-pointer items-center justify-center rounded-full border-white bg-primary p-1.5 text-white"
+      (click)="avatarInput.click()"
+    >
+      <ng-icon name="heroCamera" size="16" />
+    </div>
   </div>
-  <div class="flex-1">
-    <article class="gapx-3 mb-10 flex items-center xl:gap-x-10">
-      <div class="relative w-fit p-3">
-        <img
-          class="size-32 cursor-pointer rounded-full border object-contain"
-          [src]="
-            userInfo
-              ? userInfo.avatar
-              : 'https://i.pinimg.com/enabled/564x/cf/71/a0/cf71a0ad133978344b640dbdd6f12b12.jpg'
-          "
-          alt="profile_img"
+  <div class="hidden flex-1 items-center lg:flex">
+    <app-button
+      [disabled]="!canUpdate || loadingUpdateAvatar"
+      [loading]="loadingUpdateAvatar"
+      (click)="handleSubmitChangeAvatar()"
+    >
+      Upload new
+    </app-button>
+    <app-button variant="outline" [disabled]="!canUpdate">Delete avatar</app-button>
+  </div>
+</article>
+<article>
+  <form [formGroup]="profileForm" (ngSubmit)="handleSubmit()">
+    <div class="mb-5 flex flex-col gap-5 sm:flex-row">
+      <div class="flex-1">
+        <label for="username" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Username</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+          placeholder="username"
+          required
         />
-        <div
-          class="border-1 absolute bottom-5 right-2 flex cursor-pointer items-center justify-center rounded-full border-white bg-primary p-1.5 text-white"
-        >
-          <ng-icon name="heroCamera" size="16" />
-        </div>
       </div>
-      <div class="flex items-center">
-        <app-button [disabled]="!canUpdate">Upload new</app-button>
-        <app-button variant="outline" [disabled]="!canUpdate">Delete avatar</app-button>
+      <div class="flex-1">
+        <label for="name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Name</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+          placeholder="name"
+        />
       </div>
-    </article>
-    <article>
-      <form [formGroup]="profileForm" (ngSubmit)="handleSubmit()">
-        <div class="mb-5 flex gap-5">
-          <div class="flex-1">
-            <label for="username" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Username</label>
-            <input
-              type="text"
-              id="username"
-              formControlName="username"
-              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-              placeholder="username"
-              required
-            />
-          </div>
-          <div class="flex-1">
-            <label for="name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Name</label>
-            <input
-              type="text"
-              id="name"
-              formControlName="name"
-              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-              placeholder="name"
-            />
-          </div>
-        </div>
+    </div>
 
-        <div class="mb-5">
-          <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Email</label>
-          <input
-            type="email"
-            id="email"
-            formControlName="email"
-            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-            placeholder="abc@gmail.com"
-            required
-          />
-        </div>
-        <div class="mb-5">
-          <label for="bio" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Bio</label>
-          <textarea
-            id="bio"
-            rows="5"
-            formControlName="bio"
-            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-            placeholder="Your bio"
-            value=""
-          >
-          </textarea>
-        </div>
+    <div class="mb-5">
+      <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Email</label>
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+        placeholder="abc@gmail.com"
+        required
+      />
+    </div>
+    <div class="mb-5">
+      <label for="bio" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Bio</label>
+      <textarea
+        id="bio"
+        rows="5"
+        formControlName="bio"
+        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+        placeholder="Your bio"
+      >
+      </textarea>
+    </div>
 
-        <div *ngIf="canUpdate">
-          <app-button type="submit">Save changes</app-button>
-        </div>
-      </form>
-    </article>
-  </div>
-</section>
+    <div *ngIf="canUpdate">
+      <app-button type="submit" [disabled]="loading" [loading]="loading">Save changes</app-button>
+    </div>
+  </form>
+</article>
