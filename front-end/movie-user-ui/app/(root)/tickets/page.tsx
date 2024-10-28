@@ -20,7 +20,7 @@ const Tickets = async () => {
     const userInfo = await currentUser();
 
     if (userInfo === undefined) {
-        throw new Error('Error form user server!');
+        redirect('/sign-in');
     }
 
     if (!userInfo?.onboarded) redirect('/onboarding');
@@ -35,7 +35,7 @@ const Tickets = async () => {
 
     return (
         <Fragment>
-            <div className="flex max-h-[35rem] gap-3 rounded-lg bg-black p-4 dark:bg-white max-md:max-h-[100rem]">
+            <div className="flex gap-3 rounded-lg bg-black p-4 dark:bg-white md:max-h-[35rem]">
                 <ListTicket userId={userInfo.id} listTickets={listTickets} listPopularMovies={popularMovies} />
                 <div className="max-h-[35rem] w-1/6 max-[1490px]:w-1/3 max-md:hidden">
                     <div className="flex flex-col items-center gap-y-5">

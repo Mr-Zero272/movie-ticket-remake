@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Document(collection = "ticket")
-public class Ticket {
+public class Ticket implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -33,7 +34,7 @@ public class Ticket {
     private String hall;
     private String address;
     private int showingId;
-    private ObjectId orderId;
+    private String orderId;
     private LocalDateTime createdAt;
 
     @Override

@@ -23,7 +23,7 @@ function Footerbar({}: Props) {
                     // if (link.route === '/profile') link.route = `${link.route}/${userId}`;
                     return (
                         <Fragment key={link.label}>
-                            <TooltipProvider>
+                            <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Link

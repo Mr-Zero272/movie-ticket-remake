@@ -42,7 +42,7 @@ const UserButton = (props: Props) => {
                         />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 dark:border-none">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuLabel>{user?.username}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <Link href="/profile">

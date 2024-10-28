@@ -30,6 +30,7 @@ type PropsWithBackBtn = {
     startTime: string;
     customerId: string;
     showingId: number;
+    isPayAgain?: string;
     backBtn: boolean;
     onBack: () => void;
 };
@@ -41,11 +42,12 @@ type Props = {
     startTime: string;
     customerId: string;
     showingId: number;
+    isPayAgain?: string;
 };
 
 const PaymentForm = (props: Props | PropsWithBackBtn) => {
     const router = useRouter();
-    const { invoiceId, total, currentEmail, startTime, customerId, showingId } = props;
+    const { invoiceId, total, currentEmail, startTime, customerId, showingId, isPayAgain } = props;
     let haveBackBtn = false;
     let backFun: () => void;
     if ('backBtn' in props) {
@@ -61,13 +63,19 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
         const addNewOrder = async () => {
-            const order = await reservationServices.addNewOrder({ startTime, customerId, showingId });
+            let orderId = '';
+            if (!isPayAgain) {
+                const order = await reservationServices.addNewOrder({ startTime, customerId, showingId });
+                orderId = order.id;
+            } else {
+                orderId = isPayAgain;
+            }
 
             const paymentMethod = await reservationServices.createPaymentToCheckout({
                 method: data.type,
                 amount: total,
                 description: 'Pay for Moon Movie tickets',
-                returnUrl: `http://localhost:3000/payment?mm_method=${data.type}&mm_cemail=${data.email}&mm_amount=${total}&mm_orderId=${order.id}&mm_invoiceId=${invoiceId}`,
+                returnUrl: `http://localhost:3000/payment?mm_method=${data.type}&mm_cemail=${data.email}&mm_amount=${total}&mm_orderId=${orderId}&mm_invoiceId=${invoiceId}`,
                 transactionId: invoiceId,
             });
             router.replace(paymentMethod.urlPayment);
@@ -85,7 +93,7 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
                             <FormLabel className="text-right text-gray-400">Email: </FormLabel>
                             <div className="flex flex-1 flex-col">
                                 <FormControl>
-                                    <Input type="text" className="no-focus ml-7" {...field} />
+                                    <Input type="text" className="no-focus ml-7 w-64" {...field} />
                                 </FormControl>
                                 <FormMessage className="ml-7 mt-1 text-sm" />
                             </div>
@@ -140,7 +148,7 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
                 />
                 <div className="flex items-center gap-x-5">
                     <Button type="submit" loading={form.formState.isSubmitting} disabled={form.formState.isSubmitting}>
-                        Submit
+                        Pay
                     </Button>
                     {haveBackBtn && (
                         <Button

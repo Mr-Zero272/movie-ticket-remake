@@ -185,3 +185,51 @@ export const getTickets = async ({
         throw new Error('Cannot get list tickets');
     }
 };
+
+export const getTicketsByOrderId = async (orderId: string) => {
+    const mmtk = getToken();
+    if (!mmtk) {
+        throw new Error('User not sign in yet, cannot get session token');
+    }
+
+    try {
+        const res = await axios.get(`${API_URL}/ticket/order/${orderId}`, {
+            headers: { Authorization: 'Bearer ' + mmtk },
+            withCredentials: true,
+        });
+
+        const result = z.array(TicketSchema).safeParse(res.data);
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid ticket data return from the request get ticket by order id');
+        }
+    } catch (error: any) {
+        console.log('Error getting list tickets by orderId', error.message);
+        throw new Error('Cannot get list tickets by orderId');
+    }
+};
+
+export const getOrderById = async (orderId: string) => {
+    const mmtk = getToken();
+    if (!mmtk) {
+        throw new Error('User not sign in yet, cannot get session token');
+    }
+
+    try {
+        const res = await axios.get(`${API_URL}/order/${orderId}`, {
+            headers: { Authorization: 'Bearer ' + mmtk },
+            withCredentials: true,
+        });
+
+        const result = OrderSchema.safeParse(res.data);
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid order info');
+        }
+    } catch (error: any) {
+        console.log('Error getting order info by id', error.message);
+        throw new Error('Cannot get order info by id');
+    }
+};

@@ -21,6 +21,11 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getTicketById(ticketId));
     }
 
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<List<Ticket>> fetchTicketByOrderId(@PathVariable("orderId") String orderId) {
+        return ResponseEntity.ok(ticketService.getTicketsByOrderId(orderId));
+    }
+
     @GetMapping
     public ResponseEntity<PaginationResponse<Ticket>> fetchTickets(
             @RequestHeader("user-id")  String userId,

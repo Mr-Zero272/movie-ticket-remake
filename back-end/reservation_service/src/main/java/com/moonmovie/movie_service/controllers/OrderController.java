@@ -34,16 +34,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrders(orderStatus, sort, sortOrder, page, size));
     }
 
-    @GetMapping("/{customerId}")
-    public ResponseEntity<PaginationResponse<Order>> fetchOrdersByCustomer(
-            @PathVariable("customerId") String customerId,
-            @RequestParam(value = "orderStatus", defaultValue = "complete") String orderStatus,
-            @RequestParam(value = "sort", defaultValue = "none", required = false) String sort,
-            @RequestParam(value = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "20") int size
+    @GetMapping("/{orderId}")
+    public ResponseEntity<Order> fetchOrdersById(
+            @PathVariable("orderId") String orderId
     ) {
-        return ResponseEntity.ok(orderService.getOrders(orderStatus, sort, sortOrder, page, size));
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
 
     @GetMapping("/statistical")

@@ -41,11 +41,12 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 const Page = async ({ params }: Props) => {
     const userInfo = await currentUser();
 
-    if (userInfo === undefined) {
-        throw new Error('Error form user server!');
-    }
+    let userId = '@';
 
-    if (!userInfo?.onboarded) redirect('/onboarding');
+    if (userInfo !== undefined) {
+        userId = userInfo.id;
+        if (!userInfo?.onboarded) redirect('/onboarding');
+    }
 
     const movieId = (await params).movieId;
 
@@ -54,7 +55,7 @@ const Page = async ({ params }: Props) => {
         <div>
             <Trailer
                 movieId={movieInfo.id}
-                userId={userInfo.id}
+                userId={userId}
                 userFavoriteMovies={movieInfo.userFavoriteMovies}
                 title={movieInfo.title}
                 video={movieInfo.video}
@@ -82,7 +83,7 @@ const Page = async ({ params }: Props) => {
                     </div>
                 </article>
                 <article>
-                    <ShowingDetail movieId={movieId} />
+                    <ShowingDetail movieId={movieId} isUserSignIn={userId !== '@'} />
                 </article>
                 <div className="mb-10 flex justify-between gap-x-36 max-lg:flex-col">
                     <article className="w-1/2 max-lg:mb-10 max-lg:w-full">
@@ -128,7 +129,7 @@ const Page = async ({ params }: Props) => {
                         ))}
                     </div>
                 </div>
-                <RecommendMovies movieId={movieId} userId={userInfo.id} />
+                <RecommendMovies movieId={movieId} userId={userId} />
                 <div>
                     <h3 className="mb-3 text-xl">Shared</h3>
                     <div className="flex gap-x-5">

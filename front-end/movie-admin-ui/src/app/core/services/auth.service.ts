@@ -30,7 +30,7 @@ export class AuthService {
               this.toast.showToast('danger', 'Do not have permission!');
               return;
             }
-
+            this.deleteToken();
             if (loginInfo.keepLogin) {
               this.cookieService.set('mmtk', response.token, 7, '/', 'localhost', false, 'Lax');
               this.cookieService.set('mmrtk', response.refreshToken, 9, '/', 'localhost', false, 'Lax');
@@ -80,6 +80,11 @@ export class AuthService {
     this.cookieService.delete('mmrtk');
     this.user$.next(null);
     this.router.navigate(['/sign-in']);
+  }
+
+  deleteToken(): void {
+    this.cookieService.delete('mmtk');
+    this.cookieService.delete('mmrtk');
   }
 
   // Check if the user is authenticated (token exists)

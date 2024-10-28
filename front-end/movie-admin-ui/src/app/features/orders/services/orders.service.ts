@@ -4,8 +4,9 @@ import { throwError } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { Pagination } from '../../../shared/models/pagination-obj.model';
 import { Order } from '../../../shared/models/order.model';
+import { Ticket } from '../../../shared/models/ticket.model';
 
-const API_URL = 'http://localhost:8272/api/v2/moon-movie/reservation/order';
+const API_URL = 'http://localhost:8272/api/v2/moon-movie/reservation';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +35,7 @@ export class OrdersService {
       return throwError(() => new Error('Token is missing'));
     }
 
-    return this.http.get<Pagination<Order>>(API_URL, {
+    return this.http.get<Pagination<Order>>(`${API_URL}/order`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -44,6 +45,32 @@ export class OrdersService {
         sort,
         sortOrder,
         orderStatus,
+      },
+    });
+  }
+
+  fetchTicketsByOrderId(orderId: string) {
+    const token = this.authService.getToken();
+    if (!token) {
+      return throwError(() => new Error('Token is missing'));
+    }
+
+    return this.http.get<Array<Ticket>>(`${API_URL}/ticket/order/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  fetchOrderInfo(orderId: string) {
+    const token = this.authService.getToken();
+    if (!token) {
+      return throwError(() => new Error('Token is missing'));
+    }
+
+    return this.http.get<Order>(`${API_URL}/order/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     });
   }

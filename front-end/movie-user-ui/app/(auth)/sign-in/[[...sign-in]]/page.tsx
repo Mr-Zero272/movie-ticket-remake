@@ -1,7 +1,10 @@
 import SignInForm from '@/components/forms/SignInForm';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Sign in - Moon Movie',
+    description: 'Sign in to explore our website with more features',
+};
 
 export default function Page() {
     return (

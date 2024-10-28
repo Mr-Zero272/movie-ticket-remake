@@ -163,9 +163,16 @@ const PaymentPage = (props: Props) => {
                                 <p className="mb-10 text-sm text-gray-500">
                                     Whoops, there may have been a problem with the payment. Would you like to try again?
                                 </p>
-                                <div>
+                                <div className="flex justify-center gap-x-2">
                                     <Button className="bg-red-500 hover:bg-red-500" onClick={handleTryAgain}>
                                         Try again
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="border-red-500 text-red-500 hover:text-red-600"
+                                        onClick={handleContinue}
+                                    >
+                                        Cancel
                                     </Button>
                                 </div>
                             </div>

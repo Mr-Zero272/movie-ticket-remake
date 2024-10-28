@@ -6,11 +6,12 @@ import { OrdersService } from '../../services/orders.service';
 import { TableComponent } from '../../../../shared/components/ui/table/table.component';
 import { LabelAndValue } from '../../../../shared/models/labelAndValue';
 import { TabsComponent } from '../../../../shared/components/ui/tabs/tabs.component';
+import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [TableComponent, TabsComponent],
+  imports: [TableComponent, TabsComponent, ButtonComponent],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.scss',
 })

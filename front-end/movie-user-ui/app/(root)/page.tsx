@@ -11,11 +11,12 @@ import { redirect } from 'next/navigation';
 export default async function Home() {
     const userInfo = await currentUser();
 
-    if (userInfo === undefined) {
-        throw new Error('Error form user server!');
-    }
+    let userId = '@';
 
-    if (!userInfo?.onboarded) redirect('/onboarding');
+    if (userInfo !== undefined) {
+        userId = userInfo.id;
+        if (!userInfo?.onboarded) redirect('/onboarding');
+    }
 
     const popularMovies = await fetchPopularMovies({ page: 1, size: 20, sort: 'releaseDate', genreId: 0 });
     const upcomingMovies = await fetchUpcomingMovies({ page: 1, size: 5 });
@@ -26,7 +27,7 @@ export default async function Home() {
             <MovieCarousel data={popularMovies.data.slice(1, 6)} />
             <ScrollList title="Opening this week">
                 <FilterMovie
-                    userId={userInfo.id}
+                    userId={userId}
                     initialData={popularMovies}
                     type="popular"
                     sortData={[
@@ -42,13 +43,13 @@ export default async function Home() {
                     {upcomingMovies.data.map((movie) => (
                         <MovieCardItemVertical
                             key={movie.id}
-                            userId={userInfo.id}
+                            userId={userId}
                             movieId={movie.id}
                             poster={movie.posterPath}
                             title={movie.title}
                             runtime={movie.runtime}
                             firstGenre={movie.genres.length === 0 ? 'unknown' : movie.genres[0].name}
-                            love={movie.userFavoriteMovies.some((m) => m.userId === userInfo.id)}
+                            love={movie.userFavoriteMovies.some((m) => m.userId === userId)}
                         />
                     ))}
                 </div>

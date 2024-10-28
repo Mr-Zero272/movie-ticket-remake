@@ -1,6 +1,11 @@
 import ProfileForm from '@/components/forms/ProfileForm';
 import { currentUser } from '@/services/authServices';
-import { User } from '@/types/auth';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Onboard - Moon Movie',
+    description: 'Complete your information before explore our web page',
+};
 
 async function Page() {
     const user = await currentUser();

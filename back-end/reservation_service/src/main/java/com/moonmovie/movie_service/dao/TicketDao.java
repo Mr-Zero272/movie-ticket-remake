@@ -13,14 +13,16 @@ import java.util.List;
 @Repository
 public interface TicketDao extends MongoRepository<Ticket, String> {
     @Aggregation(pipeline = {
-            "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
+            "{ '$addFields': { orderIdAsObjectId: { $toObjectId: \"$orderId\" }} }",
+            "{ '$lookup': { 'from': 'order', 'localField': 'orderIdAsObjectId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { $or: [{ 'order.customerId': ?0, 'order.orderStatus': 'complete' }, { 'order.customerId': ?0, 'order.orderStatus': 'pending' } ] } }"
     })
     List<Ticket> findAllTicketsFilterAll(String userId, Pageable pageable);
 
     @Aggregation(pipeline = {
-            "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
+            "{ '$addFields': { orderIdAsObjectId: { $toObjectId: \"$orderId\" }} }",
+            "{ '$lookup': { 'from': 'order', 'localField': 'orderIdAsObjectId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { $or: [{ 'order.customerId': ?0, 'order.orderStatus': 'complete' }, { 'order.customerId': ?0, 'order.orderStatus': 'pending' } ] } }",
             "{ '$count': \"totalTicket\"}"
@@ -29,7 +31,8 @@ public interface TicketDao extends MongoRepository<Ticket, String> {
 
     @Aggregation(pipeline = {
             "{ '$match': { 'date': { $gte: ?1 }} }",
-            "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
+            "{ '$addFields': { orderIdAsObjectId: { $toObjectId: \"$orderId\" }} }",
+            "{ '$lookup': { 'from': 'order', 'localField': 'orderIdAsObjectId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { 'order.customerId': ?0, 'order.orderStatus': 'complete' } }"
     })
@@ -37,7 +40,8 @@ public interface TicketDao extends MongoRepository<Ticket, String> {
 
     @Aggregation(pipeline = {
             "{ '$match': { 'date': { $gte: ?1 }} }",
-            "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
+            "{ '$addFields': { orderIdAsObjectId: { $toObjectId: \"$orderId\" }} }",
+            "{ '$lookup': { 'from': 'order', 'localField': 'orderIdAsObjectId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { 'order.customerId': ?0, 'order.orderStatus': 'complete' } }",
             "{ '$count': \"totalTicket\"}"
@@ -45,14 +49,16 @@ public interface TicketDao extends MongoRepository<Ticket, String> {
     Integer countTicketsFilterActiveOrExpired(String userId, LocalDateTime currentDate);
 
     @Aggregation(pipeline = {
-            "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
+            "{ '$addFields': { orderIdAsObjectId: { $toObjectId: \"$orderId\" }} }",
+            "{ '$lookup': { 'from': 'order', 'localField': 'orderIdAsObjectId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { 'order.customerId': ?0, 'order.orderStatus': 'pending' } }"
     })
     List<Ticket> findAllTicketsFilterUnpaid(String userId, Pageable pageable);
 
     @Aggregation(pipeline = {
-            "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
+            "{ '$addFields': { orderIdAsObjectId: { $toObjectId: \"$orderId\" }} }",
+            "{ '$lookup': { 'from': 'order', 'localField': 'orderIdAsObjectId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { 'order.customerId': ?0, 'order.orderStatus': 'pending' } }",
             "{ '$count': \"totalTicket\"}"
@@ -61,7 +67,8 @@ public interface TicketDao extends MongoRepository<Ticket, String> {
 
     @Aggregation(pipeline = {
             "{ '$match': { 'date': { $gte: ?2 }}}",
-            "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
+            "{ '$addFields': { orderIdAsObjectId: { $toObjectId: \"$orderId\" }} }",
+            "{ '$lookup': { 'from': 'order', 'localField': 'orderIdAsObjectId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { 'order.customerId': ?0, 'order.orderStatus':  ?1 } }"
     })
@@ -69,14 +76,15 @@ public interface TicketDao extends MongoRepository<Ticket, String> {
 
     @Aggregation(pipeline = {
             "{ '$match': { 'date': { $gte: ?2 }}}",
-            "{ '$lookup': { 'from': 'order', 'localField': 'orderId', 'foreignField': '_id', 'as': 'order' } }",
+            "{ '$addFields': { orderIdAsObjectId: { $toObjectId: \"$orderId\" }} }",
+            "{ '$lookup': { 'from': 'order', 'localField': 'orderIdAsObjectId', 'foreignField': '_id', 'as': 'order' } }",
             "{ '$unwind': '$order' }",
             "{ '$match': { 'order.customerId': ?0, 'order.orderStatus': ?1 } }",
             "{ '$count': \"totalTicket\"}"
     })
     Integer countPaidTicketsByUserId(String userId, String orderStatus, LocalDateTime date);
 
-    List<Ticket> findAllByOrderId(ObjectId orderId);
+    List<Ticket> findAllByOrderId(String orderId);
 
     List<Ticket> findAllByShowingId(int showingId);
 }

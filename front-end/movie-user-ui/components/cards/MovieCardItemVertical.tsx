@@ -54,6 +54,7 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
 
     const { userId, movieId, poster, title, runtime, firstGenre, className, love } = props;
     const handleLoveClick = async () => {
+        if (userId === '' || userId === '@') return;
         if (isApiCall.current) return;
         isApiCall.current = true;
         if (isFavorite) {

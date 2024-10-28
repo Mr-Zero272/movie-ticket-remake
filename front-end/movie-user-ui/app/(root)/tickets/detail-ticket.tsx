@@ -6,8 +6,8 @@ import { Movie } from '@/types/movie';
 import { Ticket } from '@/types/ticket';
 import { format } from 'date-fns';
 import { TicketIcon } from 'lucide-react';
-import Image from 'next/image';
-import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import QRCode from 'react-qr-code';
 
 type Props = {
     userId: string;
@@ -16,6 +16,7 @@ type Props = {
 };
 
 const DetailTicket = ({ activeTicket, userId, listPopularMovies }: Props) => {
+    const router = useRouter();
     return (
         <>
             {activeTicket ? (
@@ -71,11 +72,11 @@ const DetailTicket = ({ activeTicket, userId, listPopularMovies }: Props) => {
                             <p className="line-clamp-2 font-bold">{activeTicket.address}</p>
                         </div>
                         <div className="flex items-center justify-between gap-x-5">
-                            <Image src="/assets/qr-code.svg" alt="qr-code" width={70} height={70} />
+                            <QRCode value={activeTicket.id} size={70} />
                             <p className="text-gray-500">Scan this code in front of the cinema hall to enter.</p>
                         </div>
                         <div className="mt-2 flex justify-end">
-                            <Button>Save</Button>
+                            <Button onClick={() => router.push(`/order/${activeTicket.orderId}`)}>Order detail</Button>
                         </div>
                     </div>
                 </div>

@@ -23,18 +23,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const SearchPage = async ({ params }: Props) => {
     const userInfo = await currentUser();
 
-    if (userInfo === undefined) {
-        throw new Error('Error form user server!');
-    }
+    let userId = '@';
 
-    if (!userInfo?.onboarded) redirect('/onboarding');
+    if (userInfo !== undefined) {
+        userId = userInfo.id;
+        if (!userInfo?.onboarded) redirect('/onboarding');
+    }
 
     let genreData = await fetchAllGenres();
     genreData = [{ id: 0, name: 'None' }, ...genreData];
     return (
         <div className="p-4">
             <SearchBaseOnUrl
-                userId={userInfo.id}
+                userId={userId}
                 sortData={[
                     { label: 'None', value: 'none' },
                     { label: 'Title', value: 'title' },

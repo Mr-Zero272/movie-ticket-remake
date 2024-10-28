@@ -11,11 +11,12 @@ export const metadata: Metadata = {
 const SchedulePage = async () => {
     const userInfo = await currentUser();
 
-    if (userInfo === undefined) {
-        throw new Error('Error form user server!');
-    }
+    let userId = '@';
 
-    if (!userInfo?.onboarded) redirect('/onboarding');
+    if (userInfo !== undefined) {
+        userId = userInfo.id;
+        if (!userInfo?.onboarded) redirect('/onboarding');
+    }
 
     return (
         <section className="p-2 text-gray-600">

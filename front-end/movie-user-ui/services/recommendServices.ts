@@ -7,6 +7,7 @@ const API_URL = 'http://localhost:8272/api/v2/moon-movie/recommend/keywords';
 export const fetchRecommendKeywords = async (query: string) => {
     const cookieStore = cookies();
     const token = cookieStore.get('mmtk');
+    if (!token) return [];
     try {
         const response = await axios.get<string[]>(`${API_URL}`, {
             params: {
@@ -29,6 +30,7 @@ export const fetchRecommendKeywords = async (query: string) => {
 export const fetchHistoryKeywords = async () => {
     const cookieStore = cookies();
     const token = cookieStore.get('mmtk');
+    if (!token) return [];
     try {
         const response = await axios.get<string[]>(`${API_URL}/history`, {
             headers: {

@@ -11,25 +11,27 @@ export async function POST(req: Request) {
         const response = await authenticateWithGoogle({ code, redirectUri, keepLogin });
 
         if (response && 'token' in response) {
+            cookieStore.delete('mmtk');
+            cookieStore.delete('mmrtk');
             const { token, refreshToken } = response;
             if (keepLogin) {
                 cookieStore.set('mmtk', token, {
-                    httpOnly: true,
+                    httpOnly: false,
                     secure: false,
                     sameSite: 'lax',
                     path: '/',
                     maxAge: 60 * 60 * 24 * 7,
                 });
                 cookieStore.set('mmrtk', refreshToken, {
-                    httpOnly: true,
+                    httpOnly: false,
                     secure: false,
                     sameSite: 'lax',
                     path: '/',
                     maxAge: 60 * 60 * 24 * 7,
                 });
             } else {
-                cookieStore.set('mmtk', token, { httpOnly: true, secure: false, sameSite: 'lax', path: '/' });
-                cookieStore.set('mmrtk', refreshToken, { httpOnly: true, secure: false, sameSite: 'lax', path: '/' });
+                cookieStore.set('mmtk', token, { httpOnly: false, secure: false, sameSite: 'lax', path: '/' });
+                cookieStore.set('mmrtk', refreshToken, { httpOnly: false, secure: false, sameSite: 'lax', path: '/' });
             }
             return new Response(JSON.stringify({ status: 200, message: 'Authenticated successfully' }), {
                 headers: {

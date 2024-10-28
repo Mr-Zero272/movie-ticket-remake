@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../globals.css';
 
-import Header from '@/components/shared/Header';
-import { ThemeProvider } from '@/components/theme-provider';
-import Sidebar from '@/components/shared/Sidebar';
-import Footerbar from '@/components/shared/Footerbar';
-import Footer from '@/components/shared/Footer';
-import { Toaster } from '@/components/ui/toaster';
 import AuthProvider from '@/components/auth/AuthProvider';
+import Footer from '@/components/shared/Footer';
+import Footerbar from '@/components/shared/Footerbar';
+import Header from '@/components/shared/Header';
+import Sidebar from '@/components/shared/Sidebar';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 

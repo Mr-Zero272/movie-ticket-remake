@@ -37,7 +37,7 @@ const ShowingPage = async ({ params }: Props) => {
     const userInfo = await currentUser();
 
     if (userInfo === undefined) {
-        throw new Error('Error form user server!');
+        redirect('/sign-in');
     }
 
     if (!userInfo?.onboarded) redirect('/onboarding');

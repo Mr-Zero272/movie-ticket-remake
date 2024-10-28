@@ -145,7 +145,7 @@ from flask import Flask, request, jsonify
 import py_eureka_client.eureka_client as eureka_client
 from datetime import datetime
 
-rest_port = 5000
+rest_port = 8086
 eureka_client.init(eureka_server="http://localhost:8761/eureka",
                    app_name="recommend-service",
                    instance_host="LAPTOP-AL04L3BE",

@@ -19,6 +19,7 @@ import { UserDetailComponent } from './features/user-profile/components/user-det
 import { UsersComponent } from './features/users/components/users/users.component';
 import { BlankLayoutComponent } from './shared/components/layouts/blank-layout/blank-layout.component';
 import { MainLayoutComponent } from './shared/components/layouts/main-layout/main-layout.component';
+import { DetailComponent } from './features/orders/componets/detail/detail.component';
 
 export const routes: Routes = [
   {
@@ -101,6 +102,12 @@ export const routes: Routes = [
         path: 'orders',
         title: 'Manage orders',
         component: OrdersComponent,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'order/:id',
+        title: 'Order detail',
+        component: DetailComponent,
         canActivate: [authGuard],
       },
       {

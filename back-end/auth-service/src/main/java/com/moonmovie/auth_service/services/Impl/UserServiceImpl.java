@@ -3,6 +3,7 @@ package com.moonmovie.auth_service.services.Impl;
 import com.moonmovie.auth_service.dao.UserDao;
 import com.moonmovie.auth_service.dto.UserDto;
 import com.moonmovie.auth_service.exception.GlobalException;
+import com.moonmovie.auth_service.feign.MediaServiceInterface;
 import com.moonmovie.auth_service.helpers.Helpers;
 import com.moonmovie.auth_service.models.User;
 import com.moonmovie.auth_service.models.UserStatistical;
@@ -19,12 +20,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private MediaServiceInterface mediaServiceInterface;
 
     @Override
     public UserDto updateUser(UpdateUserRequest request, String userId) throws MethodArgumentNotValidException {
@@ -37,7 +43,7 @@ public class UserServiceImpl implements UserService {
             throw Helpers.createMethodArgumentNotValidException("email", "This email is already in use.");
         }
 
-        List<String> fieldsSkip = List.of("onboarded", "createdAt", "modifiedAt", "authentications");
+        List<String> fieldsSkip = List.of("avatar", "onboarded", "createdAt", "modifiedAt", "authentications");
         for (Field updateField : request.getClass().getDeclaredFields()) {
             updateField.setAccessible(true);
             try {
@@ -60,6 +66,12 @@ public class UserServiceImpl implements UserService {
 
         user.setModifiedAt(LocalDateTime.now());
         user.setOnboarded(true);
+        if (!request.getAvatar().equalsIgnoreCase(user.getAvatar())) {
+            Map<String, List<String>> req = new IdentityHashMap<>();
+            req.put("filenames", List.of(user.getAvatar().substring(53)));
+            mediaServiceInterface.deleteImages(req);
+            user.setAvatar(request.getAvatar());
+        }
         return convertUserToDto(userDao.save(user));
     }
 

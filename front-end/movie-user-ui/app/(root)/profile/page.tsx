@@ -17,7 +17,7 @@ const ProfilePage = async () => {
     const user = await currentUser();
 
     if (!user) {
-        return null;
+        redirect('/sign-in');
     }
 
     if (!user?.onboarded) redirect('/onboarding');

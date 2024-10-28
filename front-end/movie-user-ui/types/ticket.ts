@@ -1,10 +1,5 @@
 import { z } from 'zod';
 
-export const OrderIdSchema = z.object({
-    timestamp: z.number(),
-    date: z.string(),
-});
-
 export const TicketSchema = z.object({
     id: z.string(),
     seatId: z.string(),
@@ -19,9 +14,7 @@ export const TicketSchema = z.object({
     address: z.string(),
     showingId: z.number(),
     createdAt: z.string(),
-    orderId: OrderIdSchema,
+    orderId: z.string(),
 });
-
-export type OrderId = z.infer<typeof OrderIdSchema>;
 
 export type Ticket = z.infer<typeof TicketSchema>;

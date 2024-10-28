@@ -66,7 +66,14 @@ function Trailer({ backdropPath, video, title, genres, userFavoriteMovies, userI
 
     return (
         <div className="relative mb-5 h-96 w-full">
-            <div className="h-full w-full" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <div
+                className="h-full w-full"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                    borderImage: 'fill 0 linear-gradient(#0001, #000)',
+                }}
+            >
                 <video
                     ref={videoRef}
                     className="h-full w-full object-cover"
@@ -96,10 +103,16 @@ function Trailer({ backdropPath, video, title, genres, userFavoriteMovies, userI
                 </div>
             </div>
             <div className="absolute top-5 flex w-full justify-between px-5 text-3xl text-gray-500">
-                <button onClick={handleBack}>
+                <button
+                    onClick={handleBack}
+                    className="rounded-full p-2 hover:bg-gray-200/20 hover:text-white active:scale-90"
+                >
                     <ChevronLeft />
                 </button>
-                <button onClick={handleLoveClick}>
+                <button
+                    onClick={handleLoveClick}
+                    className="rounded-full p-2 hover:bg-gray-200/20 hover:text-red-500 active:scale-90"
+                >
                     <Heart className={cn('size-5', { 'fill-red-500 text-red-500': isLoved })} />
                 </button>
             </div>

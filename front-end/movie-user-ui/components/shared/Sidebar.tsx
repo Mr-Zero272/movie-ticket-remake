@@ -40,7 +40,7 @@ function Sidebar({}: Props) {
                         // if (link.route === '/profile') link.route = `${link.route}/${userId}`;
                         return (
                             <Fragment key={link.label}>
-                                <TooltipProvider>
+                                <TooltipProvider delayDuration={0}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <Link
@@ -81,31 +81,6 @@ function Sidebar({}: Props) {
                 <div>
                     <Separator orientation="horizontal" />
                     <SignedIn>
-                        {/* <Link
-                            className={cn(
-                                'group flex items-center rounded-lg px-4 py-3 font-medium tracking-wide text-gray-500 hover:bg-accent',
-                                {
-                                    'bg-accent text-gray-950 dark:text-white':
-                                        pathname.includes('/notifications') || pathname === '/notifications',
-                                },
-                            )}
-                            href={'/notifications'}
-                        >
-                            <Bell className="size-6" />
-
-                            <div className="flex w-full items-center justify-between max-lg:hidden">
-                                <p
-                                    className={cn('ml-3 text-gray-500 transition-all duration-150', {
-                                        'text-gray-950 dark:text-white':
-                                            pathname.includes('/notifications') || pathname === '/notifications',
-                                    })}
-                                >
-                                    Notifications
-                                </p>
-                                <Badge>12</Badge>
-                            </div>
-                        </Link> */}
-
                         <div
                             className={cn(
                                 'group flex items-center rounded-lg px-4 py-3 font-medium tracking-wide text-gray-500 hover:bg-accent max-lg:hidden',
@@ -130,7 +105,7 @@ function Sidebar({}: Props) {
                             </div>
                         </div>
                         <div className="group hidden items-center rounded-lg px-4 py-3 font-medium tracking-wide text-gray-500 hover:bg-accent max-lg:flex">
-                            <TooltipProvider>
+                            <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <ThemeButton />
@@ -147,7 +122,7 @@ function Sidebar({}: Props) {
                         </div>
 
                         <SignOutButton redirectUrl="/sign-in">
-                            <TooltipProvider>
+                            <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <div
@@ -179,7 +154,7 @@ function Sidebar({}: Props) {
                     </SignedIn>
 
                     <SignedOut>
-                        <TooltipProvider>
+                        <TooltipProvider delayDuration={0}>
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <Link

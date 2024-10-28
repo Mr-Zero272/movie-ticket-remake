@@ -6,6 +6,9 @@
     <span class="text-lg font-semibold text-gray-900 rtl:text-right dark:bg-gray-800 dark:text-white">Orders</span>
     <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">View and manage orders</p>
   </ng-template>
+  <ng-template #lastColumn let-order>
+    <app-button variant="link" [href]="'/order/' + order.id">Detail</app-button>
+  </ng-template>
 
   <app-table
     [haveSearch]="false"
@@ -14,6 +17,7 @@
     [tableData]="ordersData"
     [sortData]="sortData"
     [loading]="loading"
+    [lastColumn]="lastColumn"
     (onChooseSort)="handleChangeSort($event)"
     (onChoosePage)="handleChangePage($event)"
   />

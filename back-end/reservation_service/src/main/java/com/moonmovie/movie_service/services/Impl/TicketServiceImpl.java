@@ -6,6 +6,7 @@ import com.moonmovie.movie_service.exceptions.ReservationException;
 import com.moonmovie.movie_service.models.Ticket;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.TicketService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -76,5 +77,10 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<Ticket> getTicketsByShowingId(int showingId) {
         return ticketDao.findAllByShowingId(showingId);
+    }
+
+    @Override
+    public List<Ticket> getTicketsByOrderId(String orderId) {
+        return ticketDao.findAllByOrderId(orderId);
     }
 }

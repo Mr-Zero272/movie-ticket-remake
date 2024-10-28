@@ -65,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
         oldPayments.add(payment);
         order.setPayments(oldPayments);
         if (request.getPaymentStatus().equalsIgnoreCase("paid")) {
-            List<Ticket> tickets = ticketDao.findAllByOrderId(new ObjectId(order.getId()));
+            List<Ticket> tickets = ticketDao.findAllByOrderId(order.getId());
             List<String> seatIds = tickets.stream().map(Ticket::getSeatId).toList();
             order.setOrderStatus("complete");
             kafkaProducerService.sendSeatDetailInfo(seatIds);

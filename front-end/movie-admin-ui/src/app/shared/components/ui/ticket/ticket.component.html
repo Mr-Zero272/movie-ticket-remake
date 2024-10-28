@@ -1,0 +1,107 @@
+<div class="relative rounded-xl bg-accent p-5 dark:bg-[#262626]" [ngClass]="{ 'bg-[#262626] dark:bg-white': active }">
+  <div class="flex gap-x-5">
+    <div class="space-y-4">
+      <p class="mb-3 text-sm text-gray-500">Time</p>
+      <p class="text-3xl font-semibold" [ngClass]="{ 'text-white dark:text-black': active }">
+        {{ date | date: 'h:mm a' }}
+      </p>
+      <p class="text-sm text-gray-500">Date: {{ date | date: 'EEE - dd MMM, yyyy' }}</p>
+    </div>
+    <div
+      class="flex flex-1 items-center justify-end gap-x-4 max-sm:flex-col max-sm:items-end max-sm:gap-x-0 max-sm:gap-y-2"
+    >
+      <div
+        class="flex flex-col items-center justify-center rounded-lg bg-black p-3 text-sm text-white max-sm:flex-row max-sm:gap-x-2 max-sm:py-0.5 dark:bg-white dark:text-black"
+        [ngClass]="{ 'bg-white text-black dark:bg-black dark:text-white': active }"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-10 w-7"
+        >
+          <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3" />
+          <path
+            d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"
+          />
+          <path d="M5 18v2" />
+          <path d="M19 18v2" />
+        </svg>
+        <p class="font-bold">Seat</p>
+        <p>{{ seatNumber }}</p>
+      </div>
+      <div
+        class="flex flex-col items-center justify-center rounded-lg bg-black p-3 text-sm text-white max-sm:flex-row max-sm:gap-x-2 max-sm:py-0.5 dark:bg-white dark:text-black"
+        [ngClass]="{ 'bg-white text-black dark:bg-black dark:text-white': active }"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-10 w-7"
+        >
+          <path d="M14 10h2" />
+          <path d="M15 22v-8" />
+          <path d="M15 2v4" />
+          <path d="M2 10h2" />
+          <path d="M20 10h2" />
+          <path d="M3 19h18" />
+          <path d="M3 22v-6a2 2 135 0 1 2-2h14a2 2 45 0 1 2 2v6" />
+          <path d="M3 2v2a2 2 45 0 0 2 2h14a2 2 135 0 0 2-2V2" />
+          <path d="M8 10h2" />
+          <path d="M9 22v-8" />
+          <path d="M9 2v4" />
+        </svg>
+        <p class="font-bold">Row</p>
+        <p>{{ seatRow }}</p>
+      </div>
+      <div
+        class="flex flex-col items-center justify-center rounded-lg bg-black p-3 text-sm text-white max-sm:flex-row max-sm:gap-x-2 max-sm:py-0.5 dark:bg-white dark:text-black"
+        [ngClass]="{ 'bg-white text-black dark:bg-black dark:text-white': active }"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-10 w-7"
+        >
+          <path
+            d="M10 7.75a.75.75 0 0 1 1.142-.638l3.664 2.249a.75.75 0 0 1 0 1.278l-3.664 2.25a.75.75 0 0 1-1.142-.64z"
+          />
+          <path d="M12 17v4" />
+          <path d="M8 21h8" />
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+        </svg>
+
+        <p class="font-bold">Hall</p>
+        <p>{{ hall }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="my-5 border-b-2 border-dashed pt-5">
+    <div class="absolute -left-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
+    <div class="absolute -right-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
+  </div>
+  <div class="flex justify-between gap-x-5 font-bold" [ngClass]="{ 'text-white dark:text-black': active }">
+    <p>Movie:</p>
+    <p class="line-clamp-1">{{ movieTitle }}</p>
+  </div>
+</div>

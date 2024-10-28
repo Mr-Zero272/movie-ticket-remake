@@ -168,7 +168,7 @@ const ListTicket = ({ userId, listTickets, listPopularMovies }: Props) => {
                         Unpaid
                     </div>
                 </div>
-                <ul className="max-h-[23rem] min-h-60 space-y-3 overflow-x-hidden overflow-y-scroll max-md:max-h-[80rem]">
+                <ul className="min-h-60 space-y-3 overflow-x-hidden overflow-y-scroll md:max-h-[23rem]">
                     {loading ? (
                         <div>
                             <li>

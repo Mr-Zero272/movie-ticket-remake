@@ -10,4 +10,6 @@ public interface TicketService {
     public PaginationResponse<Ticket> getTickets(int page, int size, String filter, String userId);
 
     List<Ticket> getTicketsByShowingId(int showingId);
+
+    List<Ticket> getTicketsByOrderId(String orderId);
 }

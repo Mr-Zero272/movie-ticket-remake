@@ -11,4 +11,6 @@ public interface OrderService {
     Order addNewOrder(OrderRequest request);
     PaginationResponse<Order> getOrders(String orderStatus, String sort, String sortOrder, int page, int size);
     List<OrderStatisticalDetail> getOrderStatistics(int year);
+
+    Order getOrderById(String orderId);
 }

@@ -1,18 +1,29 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const isPublicRoute = ['/sign-in(.*)', '/sign-up(.*)', '/api/uploadthing', '/api/user(.*)'];
+const publicRoutes = [
+    '/sign-in',
+    '/sign-up',
+    '/change-pass',
+    '/api/uploadthing',
+    '/api/user',
+    '/',
+    '/detail',
+    '/search',
+    '/schedule',
+];
 
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
+    let isPublicRoute: boolean = false;
+    for (let i = 0; i < publicRoutes.length; i++) {
+        if (pathname.startsWith(publicRoutes[i])) {
+            isPublicRoute = true;
+            break;
+        }
+    }
 
-    if (
-        pathname.startsWith('/sign-in') ||
-        pathname.startsWith('/sign-up') ||
-        pathname.startsWith('/change-pass') ||
-        pathname.startsWith('/api/user') ||
-        pathname.startsWith('/api/uploadthing')
-    ) {
+    if (isPublicRoute) {
         return NextResponse.next();
     }
 

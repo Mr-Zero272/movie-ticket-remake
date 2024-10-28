@@ -10,17 +10,21 @@ import { Button } from '../ui/button';
 import { Frown, MoveRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '../ui/skeleton';
+import { useToast } from '../ui/use-toast';
+import { ToastAction } from '../ui/toast';
 
 type Props = {
     movieId: number;
+    isUserSignIn?: boolean;
 };
 
-const ShowingDetail = ({ movieId }: Props) => {
+const ShowingDetail = ({ movieId, isUserSignIn = false }: Props) => {
     const router = useRouter();
     const [activeDate, setActiveDate] = useState(new Date().toISOString().split('T')[0] + 'T00:00:00');
     const [showings, setShowings] = useState<ShowingDto[] | null>(null);
     const [activeShowing, setActiveShowing] = useState(0);
     const [loading, setLoading] = useState(false);
+    const { toast } = useToast();
 
     useEffect(() => {
         setLoading(true);
@@ -44,6 +48,18 @@ const ShowingDetail = ({ movieId }: Props) => {
     };
 
     const handleBooking = () => {
+        if (!isUserSignIn) {
+            toast({
+                title: 'Sign in is required',
+                description: 'You have to sign to booking!',
+                action: (
+                    <ToastAction altText="Go to sign in page">
+                        <Link href="/sign-in">Sign in now</Link>
+                    </ToastAction>
+                ),
+            });
+            return;
+        }
         router.push(`/showing/${activeShowing}`);
     };
 

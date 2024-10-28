@@ -12,24 +12,26 @@ export async function POST(req: Request) {
 
         if (response && 'token' in response) {
             const { token, refreshToken } = response;
+            cookieStore.delete('mmtk');
+            cookieStore.delete('mmrtk');
             if (keepLogin) {
                 cookieStore.set('mmtk', token, {
-                    httpOnly: true,
+                    httpOnly: false,
                     secure: false,
                     sameSite: 'lax',
                     path: '/',
                     maxAge: 60 * 60 * 24 * 7,
                 });
                 cookieStore.set('mmrtk', refreshToken, {
-                    httpOnly: true,
+                    httpOnly: false,
                     secure: false,
                     sameSite: 'lax',
                     path: '/',
                     maxAge: 60 * 60 * 24 * 7,
                 });
             } else {
-                cookieStore.set('mmtk', token, { httpOnly: true, secure: false, sameSite: 'lax', path: '/' });
-                cookieStore.set('mmrtk', refreshToken, { httpOnly: true, secure: false, sameSite: 'lax', path: '/' });
+                cookieStore.set('mmtk', token, { httpOnly: false, secure: false, sameSite: 'lax', path: '/' });
+                cookieStore.set('mmrtk', refreshToken, { httpOnly: false, secure: false, sameSite: 'lax', path: '/' });
             }
             return new Response(JSON.stringify({ status: 200, message: 'Authenticated successfully' }), {
                 headers: {

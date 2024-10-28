@@ -15,7 +15,6 @@ import com.moonmovie.movie_service.models.Ticket;
 import com.moonmovie.movie_service.requests.OrderRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.OrderService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -81,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
                     .hall(seatDetailDto.getHall())
                     .address(seatDetailDto.getAddress())
                     .showingId(request.getShowingId())
-                    .orderId(new ObjectId(orderSaved.getId()))
+                    .orderId(orderSaved.getId())
                     .createdAt(LocalDateTime.now())
                     .build());
         }
@@ -126,5 +125,10 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return orderStatisticalDetails;
+    }
+
+    @Override
+    public Order getOrderById(String orderId) {
+        return orderDao.findById(orderId).orElseThrow(() -> new ReservationException(ReservationErrorConstants.ERROR_ORDER_NOT_EXIST));
     }
 }
