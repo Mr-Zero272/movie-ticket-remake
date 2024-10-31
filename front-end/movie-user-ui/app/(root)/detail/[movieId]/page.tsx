@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation';
 import { currentUser } from '@/services/authServices';
 import RecommendMovies from '@/components/shared/RecommendMovies';
 import { Metadata, ResolvingMetadata } from 'next';
+import CommentSection from './comment-section';
 
 type Props = {
     params: Promise<{ movieId: number }>;
@@ -130,7 +131,7 @@ const Page = async ({ params }: Props) => {
                     </div>
                 </div>
                 <RecommendMovies movieId={movieId} userId={userId} />
-                <div>
+                <div className="mb-10">
                     <h3 className="mb-3 text-xl">Shared</h3>
                     <div className="flex gap-x-5">
                         <Link href="www.facebook.com" className="text-gray-500">
@@ -173,6 +174,7 @@ const Page = async ({ params }: Props) => {
                         </Link>
                     </div>
                 </div>
+                <CommentSection movieId={movieId} />
             </section>
         </div>
     );

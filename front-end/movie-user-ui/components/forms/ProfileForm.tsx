@@ -1,5 +1,4 @@
 'use client';
-import { useUploadThing } from '@/lib/uploadthing';
 import { isBase64Image } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
@@ -44,7 +43,6 @@ function ProfileForm({ user, title, sub }: Props) {
     const { toast } = useToast();
 
     const [files, setFiles] = useState<File[]>([]);
-    const { startUpload } = useUploadThing('media');
     const inputImageRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
     const pathname = usePathname();

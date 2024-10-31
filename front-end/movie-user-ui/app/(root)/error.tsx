@@ -1,10 +1,11 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Flag } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 function Error() {
     const route = useRouter();
+    const pathname = usePathname();
 
     return (
         <div className="mx-auto grid h-screen place-items-center px-8 text-center">
@@ -18,7 +19,7 @@ function Error() {
                     Don&apos;t worry, our team is already on it. <br />
                     Please try refreshing the page or come back later.
                 </p>
-                <Button color="gray" className="w-full px-4 md:w-[8rem]" onClick={() => route.back()}>
+                <Button color="gray" className="w-full px-4 md:w-[8rem]" onClick={() => route.prefetch(pathname)}>
                     Go back
                 </Button>
             </div>

@@ -1,3 +1,8 @@
 .blur-end {
   mask-image: linear-gradient(to top, transparent 0, transparent 30px, #000 25px, #000 100%);
 }
+
+.fade-effect {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  height: 100px; /* Điều chỉnh độ cao của hiệu ứng mờ */
+}

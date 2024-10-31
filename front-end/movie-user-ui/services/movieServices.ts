@@ -10,6 +10,7 @@ export const fetchMovie = async (movieId: number) => {
     try {
         const response = await axios.get(`${API_URL}/${movieId}`);
         const result = MovieSchema.safeParse(response.data);
+
         if (result.success) {
             return result.data;
         } else {
@@ -207,6 +208,6 @@ export const fetchRecommendMovies = async (movieId: number) => {
         }
     } catch (error: any) {
         console.error('Error fetching list recommend movies:', error.message);
-        throw new Error('Cannot fetch list recommend movies');
+        return [];
     }
 };

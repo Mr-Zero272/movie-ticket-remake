@@ -73,6 +73,10 @@ public class Movie implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
     private List<UserFavoriteMovie> userFavoriteMovies = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie", orphanRemoval = true)
+    @JsonBackReference
+    private List<Comment> comments = new ArrayList<>();
+
     @Override
     public int hashCode() {
         return 2023;

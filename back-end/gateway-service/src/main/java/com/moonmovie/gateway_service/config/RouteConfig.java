@@ -26,6 +26,14 @@ public class RouteConfig {
                         predicateSpec.path("/api/v2/moon-movie/movie/schedule")
                                 .filters(f -> f.filter(authenticationFilter))
                                 .uri("lb://movie-service"))
+                .route("movie-service-comment-get", predicateSpec ->
+                        predicateSpec.path("/api/v2/moon-movie/movie/comment/**")
+                                .and().method("GET")
+                                .uri("lb://movie-service"))
+                .route("movie-service-comment", predicateSpec ->
+                        predicateSpec.path("/api/v2/moon-movie/movie/comment/**")
+                                .filters(f -> f.filter(authenticationFilter))
+                                .uri("lb://movie-service"))
                 .route("movie-service-favorite", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/movie/favorite/**")
                                 .filters(f -> f.filter(authenticationFilter))
@@ -33,6 +41,10 @@ public class RouteConfig {
                 .route("movie-service", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/movie/**")
                                 .uri("lb://movie-service"))
+                .route("recommend-service-get", predicateSpec ->
+                        predicateSpec.path("/api/v2/moon-movie/recommend/keywords")
+                                .and().method("GET")
+                                .uri("lb://recommend-service"))
                 .route("recommend-service", predicateSpec ->
                         predicateSpec.path("/api/v2/moon-movie/recommend/**")
                                 .filters(f -> f.filter(authenticationFilter))
@@ -41,7 +53,7 @@ public class RouteConfig {
                         predicateSpec.path("/api/v2/moon-movie/seat/**")
                                 .filters(f -> f.filter(authenticationFilter))
                                 .uri("lb://seat-service"))
-                .route("seat-service", predicateSpec ->
+                .route("seat-service-websocket", predicateSpec ->
                         predicateSpec.path("/ws/**")
                                 .uri("lb://seat-service"))
                 .route("reservation-service", predicateSpec ->

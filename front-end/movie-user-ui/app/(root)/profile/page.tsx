@@ -1,6 +1,6 @@
 import ProfileForm from '@/components/forms/ProfileForm';
 import { currentUser } from '@/services/authServices';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 export async function generateMetadata(): Promise<Metadata> {

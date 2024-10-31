@@ -172,52 +172,53 @@ def getHistoryKeywords():
     
     return jsonify(results)
 
-@app.route('/api/v2/moon-movie/recommend/keywords', methods=['GET'])
+@app.route('/api/v2/moon-movie/recommend/keywords', methods=['GET', 'POST'])
 def recommend():
-    user_id = request.headers.get('user-id')
-    user_input = request.args.get('query')
-    # save history search keywords
-    conn = get_db_connection("moonmovie-recommend-service")
-    cursor = conn.cursor()
-    query = "SELECT COUNT(*) FROM keyword WHERE user_id = %s"
-    cursor.execute(query, (user_id,))
-    keyword_count = cursor.fetchone()[0];
+    if request.method == 'GET':
+        user_input = request.args.get('query')
+        recommendations = recommend_keywords(user_input)
+        return jsonify(recommendations)
     
-    if keyword_count >= 10:
-        select_oldest_query ="""
-            SELECT id FROM keyword
-            WHERE user_id = %s
-            ORDER BY created_at ASC
-            LIMIT 1
-        """
-        cursor.execute(select_oldest_query, (user_id,))
-        oldest_id_keyword = cursor.fetchone()[0]
-        delete_query="""
-        DELETE FROM keyword WHERE id = %s
-        """
-        
-        cursor.execute(delete_query, (oldest_id_keyword,))
-        
-    
-    same_keyword_count_query = "SELECT COUNT(*) FROM keyword WHERE user_id = %s AND keyword = %s"
-    cursor.execute(same_keyword_count_query, (user_id, user_input))
-    same_keyword_count = cursor.fetchone()[0];
-    if same_keyword_count == 0:
-        insert_query = """
-        INSERT INTO keyword (keyword, user_id, created_at)
-        VALUES(%s, %s, %s)
-        """
-        cursor.execute(insert_query, (user_input, user_id, datetime.now()))
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
-    
-    # return recommend keywords
-    recommendations = recommend_keywords(user_input)
-    return jsonify(recommendations)
-
+    if request.method == 'POST':
+        user_id = request.headers.get('user-id')
+        searchKeyword = request.json['searchKeyword']
+          # save history search keywords
+        conn = get_db_connection("moonmovie-recommend-service")
+        cursor = conn.cursor()
+        query = "SELECT COUNT(*) FROM keyword WHERE user_id = %s"
+        cursor.execute(query, (user_id,))
+        keyword_count = cursor.fetchone()[0];
+            
+        if keyword_count >= 10:
+            select_oldest_query ="""
+                SELECT id FROM keyword
+                WHERE user_id = %s
+                ORDER BY created_at ASC
+                LIMIT 1
+            """
+            cursor.execute(select_oldest_query, (user_id,))
+            oldest_id_keyword = cursor.fetchone()[0]
+            delete_query="""
+                DELETE FROM keyword WHERE id = %s
+            """
+ 
+            cursor.execute(delete_query, (oldest_id_keyword,))
+                
+        same_keyword_count_query = "SELECT COUNT(*) FROM keyword WHERE user_id = %s AND keyword = %s"
+        cursor.execute(same_keyword_count_query, (user_id, searchKeyword))
+        same_keyword_count = cursor.fetchone()[0];
+        if same_keyword_count == 0:
+            insert_query = """
+            INSERT INTO keyword (keyword, user_id, created_at)
+            VALUES(%s, %s, %s)
+            """
+            cursor.execute(insert_query, (searchKeyword, user_id, datetime.now()))
+            
+        conn.commit()
+        cursor.close()
+        conn.close()
+            
+        return jsonify(searchKeyword);     
 
 @app.route('/api/v2/moon-movie/recommend/<int:movieId>', methods=['GET'])
 def suggest(movieId):

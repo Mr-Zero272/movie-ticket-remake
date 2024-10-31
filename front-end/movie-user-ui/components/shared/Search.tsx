@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { useDebounce } from '@/hooks';
 import { cn } from '@/lib/utils';
-import { fetchHistoryKeywords, fetchRecommendKeywords } from '@/services/recommendServices';
+import { addHistoryKeyword, fetchHistoryKeywords, fetchRecommendKeywords } from '@/services/recommendServices';
 import { History, LoaderCircle, SearchIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator } from '../ui/dropdown-menu-custom';
@@ -78,6 +78,7 @@ function Search({ className }: Props) {
             const historyKeywords = await fetchHistoryKeywords();
 
             let recommendKeywords = await fetchRecommendKeywords(debounced);
+            console.log(recommendKeywords);
 
             // add current keyword
             recommendKeywords = [debounced, ...recommendKeywords];
@@ -123,6 +124,7 @@ function Search({ className }: Props) {
                 setSearchValue(searchResult[indexSearchKeyword - 1]);
             }
         } else if (e.key === 'Enter') {
+            addHistoryKeyword(searchValue);
             router.replace('/search/' + searchValue);
             setShowResult(false);
             e.preventDefault();
