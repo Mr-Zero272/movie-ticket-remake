@@ -86,15 +86,14 @@ const Step1 = ({
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [showingId, userId]);
 
     useEffect(() => {
         const sock = new SockJS('http://localhost:8085/ws');
         const stompClient = Stomp.over(sock);
         stompClient.connect({}, (frame: any) => {
             setMyStompClient(stompClient);
-            console.log('Connected: ' + frame);
+            // console.log('Connected: ' + frame);
         });
 
         return () => {
@@ -102,7 +101,6 @@ const Step1 = ({
                 stompClient.disconnect();
             }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -129,8 +127,7 @@ const Step1 = ({
                 });
             });
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [seatData]);
+    }, [seatData, myStompClient]);
 
     const handleChooseSeat = useCallback(
         (s: SeatDetail) => {

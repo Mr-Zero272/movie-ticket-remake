@@ -1,11 +1,8 @@
 import { fetchCommentById, fetchRepliesForComment } from '@/services/commentService';
-import React, { Fragment, useEffect, useState } from 'react';
-import Comment from '../../detail/[movieId]/comment';
-
-import CommentForm from '@/components/forms/CommentForm';
-import { redirect, useRouter } from 'next/navigation';
+import { Fragment } from 'react';
+import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import AddReply from './add-reply';
-import { Metadata, ResolvingMetadata } from 'next';
 
 type Props = {
     params: Promise<{ slugs: number[] }>;
