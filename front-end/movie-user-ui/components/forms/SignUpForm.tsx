@@ -257,7 +257,7 @@ const SignUpForm = (props: Props) => {
                 </Button>
                 <p className="text-grey-900 text-sm leading-relaxed">
                     Already have an account?{' '}
-                    <Link href="/sign-in" className="text-grey-700 font-bold">
+                    <Link href="/sign-in" className="text-grey-700 font-bold hover:underline">
                         Sign in
                     </Link>
                 </p>

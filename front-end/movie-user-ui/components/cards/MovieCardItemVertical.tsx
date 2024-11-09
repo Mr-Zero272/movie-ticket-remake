@@ -90,8 +90,8 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
                 <div className="mb-3 flex items-center justify-between">
                     <h3 className="line-clamp-2 flex-1 font-bold">{title}</h3>
                     <Heart
-                        className={cn('size-5 w-1/5 cursor-pointer text-red-500', {
-                            'fill-red-500 text-red-500': isFavorite,
+                        className={cn('size-5 w-1/5 cursor-pointer text-gray-500', {
+                            'animate-love fill-red-500 text-red-500': isFavorite,
                         })}
                         onClick={handleLoveClick}
                     />

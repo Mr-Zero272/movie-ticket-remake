@@ -1,6 +1,8 @@
 'use client';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogHeader } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 import { createRandomTransId } from '@/lib/utils';
 import { reservationServices } from '@/services';
 import { Bot, Check, X } from 'lucide-react';
@@ -12,6 +14,7 @@ type Props = {};
 const PaymentPage = (props: Props) => {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { user } = useAuth();
     const mm_method = searchParams.get('mm_method');
     const mm_cemail = searchParams.get('mm_cemail');
     const mm_amount = searchParams.get('mm_amount');
@@ -19,6 +22,7 @@ const PaymentPage = (props: Props) => {
     const mm_invoiceId = searchParams.get('mm_invoiceId');
     const vnPayReturnCode = searchParams.get('vnp_ResponseCode');
     const zalopayReturnCode = searchParams.get('status');
+    const { toast } = useToast();
 
     if (
         mm_method === null ||
@@ -112,14 +116,24 @@ const PaymentPage = (props: Props) => {
         addPayment();
         const newTransId = createRandomTransId();
 
-        const paymentMethod = await reservationServices.createPaymentToCheckout({
+        const paymentMethodRes = await reservationServices.createPaymentToCheckout({
+            orderId: mm_orderId,
+            userId: user ? user.id : '',
             method: mm_method,
             amount: +mm_amount,
             description: 'Pay for Moon Movie tickets',
             returnUrl: `http://localhost:3000/payment?mm_method=${mm_method}&mm_cemail=${mm_cemail}&mm_amount=${mm_amount}&mm_orderId=${mm_orderId}&mm_invoiceId=${newTransId}`,
             transactionId: newTransId,
         });
-        router.replace(paymentMethod.urlPayment);
+        if ('urlPayment' in paymentMethodRes) {
+            router.replace(paymentMethodRes.urlPayment);
+        } else {
+            toast({
+                title: 'Error',
+                description: paymentMethodRes.message,
+                variant: 'destructive',
+            });
+        }
     };
 
     return (

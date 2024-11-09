@@ -1,13 +1,13 @@
 package com.moonmovie.movie_service.responses;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class ResponseTemplate {
-    private int status = 200;
+public class ExceptionErrorResponse {
+    private int status;
     private String message;
 }

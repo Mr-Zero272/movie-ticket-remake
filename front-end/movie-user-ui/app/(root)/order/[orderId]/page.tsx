@@ -5,7 +5,7 @@ import { cn, formatCurrencyVND } from '@/lib/utils';
 import { currentUser } from '@/services/authServices';
 import { getOrderById, getTicketsByOrderId } from '@/services/reservationServices';
 import { format } from 'date-fns';
-import { HandCoins, SearchX } from 'lucide-react';
+import { Flag, HandCoins, SearchX } from 'lucide-react';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import BackBtn from './back-btn';
@@ -35,6 +35,22 @@ const OrderDetailPage = async ({ params }: Props) => {
 
     const orderId = (await params).orderId;
     const orderDetail = await getOrderById(orderId);
+    if (!orderDetail) {
+        return (
+            <div className="mx-auto grid h-screen place-items-center px-8 text-center">
+                <div>
+                    <Flag className="mx-auto h-20 w-20" />
+                    <h1 color="blue-gray" className="mt-10 text-3xl leading-snug md:text-4xl">
+                        Error 404
+                        <br /> It looks like this order does not exists.
+                    </h1>
+                    <p className="mx-auto mb-14 mt-8 text-[18px] font-normal text-gray-500 md:max-w-sm">
+                        Don&apos;t worry, you can call contact our if something is incorrect. <br />
+                    </p>
+                </div>
+            </div>
+        );
+    }
     if (orderDetail.customerId !== userInfo.id) {
         redirect('/not-found');
     }

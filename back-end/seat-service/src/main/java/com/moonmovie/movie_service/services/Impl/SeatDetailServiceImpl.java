@@ -5,6 +5,7 @@ import com.moonmovie.movie_service.dao.SeatDetailDao;
 import com.moonmovie.movie_service.dto.SeatDetailDto;
 import com.moonmovie.movie_service.models.Seat;
 import com.moonmovie.movie_service.models.SeatDetail;
+import com.moonmovie.movie_service.requests.CheckoutSeatsRequest;
 import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
 import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
 import com.moonmovie.movie_service.response.ResponseMessage;
@@ -110,18 +111,21 @@ public class SeatDetailServiceImpl implements SeatDetailService {
 
     @Override
     @Transactional
-    public List<String> checkoutSeat(List<String> seatIds) {
-        List<SeatDetail> seatDetails = seatDetailDao.findAllById(seatIds);
-        seatDetails.forEach(seatDetail -> seatDetail.setStatus("booked"));
+    public List<String> checkoutSeat(CheckoutSeatsRequest request) {
+        List<SeatDetail> seatDetails = seatDetailDao.findAllById(request.getSeatIds());
         seatDetails.forEach(seatDetail -> {
-            ChoosingSeatRequest request = new ChoosingSeatRequest();
-            request.setId(seatDetail.getId());
-            request.setUserId(seatDetail.getUserId());
-            request.setStatus(seatDetail.getStatus());
-            sendDataToWebSocket("/topic/seat-state", request);
+            seatDetail.setStatus("booked");
+            seatDetail.setUserId(request.getCustomerId());
+        });
+        seatDetails.forEach(seatDetail -> {
+            ChoosingSeatRequest req = new ChoosingSeatRequest();
+            req.setId(seatDetail.getId());
+            req.setUserId(seatDetail.getUserId());
+            req.setStatus(seatDetail.getStatus());
+            sendDataToWebSocket("/topic/seat-state", req);
         });
         seatDetailDao.saveAll(seatDetails);
-        return seatIds;
+        return request.getSeatIds();
     }
 
     @Override
@@ -138,6 +142,33 @@ public class SeatDetailServiceImpl implements SeatDetailService {
     @Transactional
     public void deleteSeatDetails(int showingId) {
         seatDetailDao.deleteAll(seatDetailDao.findAllByShowingId(showingId));
+    }
+
+    @Override
+    public List<String> refreshSeats(List<String> seatIds) {
+        List<SeatDetail> seats = seatDetailDao.findAllById(seatIds);
+        seats.forEach(seatDetail -> {
+            seatDetail.setStatus("available");
+            seatDetail.setUserId("");
+        });
+        seatDetailDao.saveAll(seats);
+        return seatIds;
+    }
+
+    @Override
+    public ResponseTemplate checkIfListSeatAvailableToCheckout(List<String> seatIds, String userId) {
+        ResponseTemplate res = new ResponseTemplate();
+        res.setMessage("Available to checkout");
+        List<SeatDetail> seats = seatDetailDao.findAllById(seatIds);
+        for(SeatDetail seatDetail : seats) {
+
+            if (!userId.isEmpty() && !seatDetail.getUserId().isEmpty() && !seatDetail.getUserId().equalsIgnoreCase(userId)) {
+                res.setStatus(409);
+                res.setMessage("Seats is not available");
+                break;
+            }
+        }
+        return res;
     }
 
     private SeatDetailDto convertSeatDetailToSeatDetailDto(SeatDetail seatDetail) {

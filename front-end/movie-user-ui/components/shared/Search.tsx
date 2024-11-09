@@ -8,6 +8,7 @@ import { addHistoryKeyword, fetchHistoryKeywords, fetchRecommendKeywords } from 
 import { History, LoaderCircle, SearchIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator } from '../ui/dropdown-menu-custom';
+import { Keyword } from '@/types/keyword';
 
 type Props = {
     className?: string;
@@ -17,10 +18,11 @@ function Search({ className }: Props) {
     const params = useParams();
     const router = useRouter();
     const [searchValue, setSearchValue] = useState(() =>
-        decodeURI(params?.q as string) === 'undefined' ? '' : decodeURI(params?.q as string),
+        params?.q === undefined ? '' : decodeURIComponent(params?.q as string),
     );
-    const [searchResult, setSearchResult] = useState<string[]>([]);
-    const [historyKeywords, setHistoryKeywords] = useState<string[]>([]);
+
+    const [searchResult, setSearchResult] = useState<Array<Keyword>>([]);
+    const [historyKeywords, setHistoryKeywords] = useState<Array<Keyword>>([]);
     const [showResult, setShowResult] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -41,12 +43,7 @@ function Search({ className }: Props) {
     };
 
     useEffect(() => {
-        const fetchHistoryKeywordsApi = async () => {
-            const historyKeywords = await fetchHistoryKeywords();
-            setHistoryKeywords(historyKeywords);
-        };
-
-        fetchHistoryKeywordsApi();
+        fetchHistory();
     }, []);
 
     useEffect(() => {
@@ -54,6 +51,12 @@ function Search({ className }: Props) {
             if (e.key === '/') {
                 e.preventDefault();
                 inputRef.current?.focus();
+                setShowResult(true);
+            }
+
+            if ((e.ctrlKey || e.metaKey) && e.key === 'x') {
+                e.preventDefault();
+                handleClear();
             }
         };
 
@@ -75,26 +78,14 @@ function Search({ className }: Props) {
             }
             setLoading(true);
 
-            const historyKeywords = await fetchHistoryKeywords();
-
-            let recommendKeywords = await fetchRecommendKeywords(debounced);
-            console.log(recommendKeywords);
-
-            // add current keyword
-            recommendKeywords = [debounced, ...recommendKeywords];
-
-            // filter unique keywords
-            recommendKeywords = Array.from(new Set(recommendKeywords));
-
-            recommendKeywords = recommendKeywords.slice(0, 7);
+            const recommendKeywords = await fetchRecommendKeywords(debounced, historyKeywords);
 
             setSearchResult(recommendKeywords);
-            setHistoryKeywords(historyKeywords);
 
             setLoading(false);
         };
 
-        if (searchResult.some((r) => r === debounced)) {
+        if (searchResult.some((r) => r.keyword === debounced)) {
             return;
         }
 
@@ -110,18 +101,18 @@ function Search({ className }: Props) {
     };
 
     const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const indexSearchKeyword = searchResult.indexOf(searchValue);
+        const indexSearchKeyword = searchResult.map((k) => k.keyword).indexOf(searchValue);
         if (e.key === 'ArrowDown') {
             if (indexSearchKeyword === searchResult.length - 1) {
-                setSearchValue(searchResult[0]);
+                setSearchValue(searchResult[0].keyword);
             } else if (indexSearchKeyword + 1 < searchResult.length) {
-                setSearchValue(searchResult[indexSearchKeyword + 1]);
+                setSearchValue(searchResult[indexSearchKeyword + 1].keyword);
             }
         } else if (e.key === 'ArrowUp') {
             if (indexSearchKeyword === 0) {
-                setSearchValue(searchResult[searchResult.length - 1]);
+                setSearchValue(searchResult[searchResult.length - 1].keyword);
             } else {
-                setSearchValue(searchResult[indexSearchKeyword - 1]);
+                setSearchValue(searchResult[indexSearchKeyword - 1].keyword);
             }
         } else if (e.key === 'Enter') {
             addHistoryKeyword(searchValue);
@@ -129,6 +120,16 @@ function Search({ className }: Props) {
             setShowResult(false);
             e.preventDefault();
         }
+    };
+
+    const fetchHistory = async () => {
+        const res = await fetchHistoryKeywords();
+        setHistoryKeywords(res);
+    };
+
+    const handleSearchFocus = async () => {
+        setShowResult(true);
+        fetchHistory();
     };
 
     return (
@@ -158,18 +159,17 @@ function Search({ className }: Props) {
                     className="no-focus mr-4 border-none bg-transparent outline-none"
                     value={searchValue}
                     placeholder="Search..."
-                    onFocus={() => setShowResult(true)}
+                    onFocus={handleSearchFocus}
                     onChange={handleSearchInputChange}
                     onKeyDown={handleOnKeyDown}
                 />
-                {((showResult && searchResult && searchResult.length > 0) ||
-                    (showResult && historyKeywords && historyKeywords.length > 0)) && (
+                {showResult && searchResult && searchResult.length > 0 && (
                     <DropdownMenu
                         className="absolute -left-4 top-12 w-96 max-sm:w-64"
-                        title="Movie"
+                        title="Movie tile"
                         onOutSideClick={handleHideResult}
                     >
-                        <div className="mb-2 flex flex-wrap items-center gap-2 py-2">
+                        {/* <div className="mb-2 flex flex-wrap items-center gap-2 py-2">
                             {historyKeywords.map((keywordHistory, index) => (
                                 <div
                                     className="w-fit cursor-pointer rounded-full border px-2 py-1 hover:bg-accent dark:border-gray-700"
@@ -187,20 +187,24 @@ function Search({ className }: Props) {
                                 </div>
                             ))}
                         </div>
-                        <DropdownMenuSeparator />
+                        <DropdownMenuSeparator /> */}
                         {searchResult.map((result, index) => (
                             <DropdownMenuItem
-                                key={result + index}
-                                isFocused={searchValue === result}
+                                key={result.keyword + index}
+                                isFocused={searchValue === result.keyword}
                                 onClick={() => {
-                                    setSearchValue(result);
+                                    setSearchValue(result.keyword);
                                     setShowResult(false);
                                     router.replace('/search/' + result);
                                 }}
                             >
                                 <div className="flex items-center gap-x-3">
-                                    <SearchIcon className="size-5 text-gray-500" />
-                                    {result}
+                                    {result.isHistory ? (
+                                        <History className="size-5 text-gray-500" />
+                                    ) : (
+                                        <SearchIcon className="size-5 text-gray-500" />
+                                    )}
+                                    {result.keyword}
                                 </div>
                             </DropdownMenuItem>
                         ))}

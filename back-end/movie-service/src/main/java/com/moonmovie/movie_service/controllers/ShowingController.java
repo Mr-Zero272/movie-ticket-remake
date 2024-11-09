@@ -56,7 +56,7 @@ public class ShowingController {
     }
 
     @GetMapping("/auditorium")
-    public ResponseEntity<List<ShowingDto>>  getShowingForAuditorium(
+    public ResponseEntity<List<ShowingDto>> getShowingForAuditorium(
             @RequestParam("auditoriumId") String auditoriumId,
             @RequestParam("date") LocalDate date) {
         return ResponseEntity.ok(showingService.getShowingsByDateAndAuditorium(date, auditoriumId));

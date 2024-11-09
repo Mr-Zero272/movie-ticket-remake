@@ -13,4 +13,10 @@ public class KafkaTopicConfig {
         return TopicBuilder.name("choosing_seat")
                 .build();
     }
+
+    @Bean
+    public NewTopic refreshSeatTopic() {
+        return TopicBuilder.name("refresh_seat")
+                .build();
+    }
 }

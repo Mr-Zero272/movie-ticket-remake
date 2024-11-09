@@ -11,6 +11,7 @@ import { currentUser } from '@/services/authServices';
 import RecommendMovies from '@/components/shared/RecommendMovies';
 import { Metadata, ResolvingMetadata } from 'next';
 import CommentSection from './comment-section';
+import ScrollTopButton from '@/components/shared/ScrollTopButton';
 
 type Props = {
     params: Promise<{ movieId: number }>;
@@ -175,6 +176,7 @@ const Page = async ({ params }: Props) => {
                     </div>
                 </div>
                 <CommentSection movieId={movieId} />
+                <ScrollTopButton />
             </section>
         </div>
     );

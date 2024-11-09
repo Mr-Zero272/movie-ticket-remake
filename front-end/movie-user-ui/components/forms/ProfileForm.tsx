@@ -33,8 +33,10 @@ type Props = {
 export const UserSchema = z.object({
     username: z.string().min(3).max(30),
     email: z.string().email(),
-    name: z.string().min(3).max(30),
-    bio: z.string().min(3).max(300),
+    name: z.string().refine((val) => val === '' || (val.length >= 3 && val.length <= 30), {
+        message: 'Username must be empty or between 3 and 30 characters',
+    }),
+    bio: z.string(),
     avatar: z.string().url(),
 });
 
@@ -133,7 +135,7 @@ function ProfileForm({ user, title, sub }: Props) {
                             name="email"
                             render={({ field }) => (
                                 <FormItem className="my-4 flex max-w-full items-center gap-x-5">
-                                    <FormLabel className="w-1/5 text-right text-gray-400">Email:</FormLabel>
+                                    <FormLabel className="w-1/5 text-right text-gray-400">Email*:</FormLabel>
                                     <div className="flex flex-1 flex-col">
                                         <FormControl>
                                             <Input type="email" className="no-focus" {...field} />
@@ -163,7 +165,7 @@ function ProfileForm({ user, title, sub }: Props) {
                             name="username"
                             render={({ field }) => (
                                 <FormItem className="my-4 flex w-full items-center gap-x-5">
-                                    <FormLabel className="w-1/5 text-right text-gray-400">Username: </FormLabel>
+                                    <FormLabel className="w-1/5 text-right text-gray-400">Username*: </FormLabel>
                                     <div className="flex flex-1 flex-col">
                                         <FormControl>
                                             <Input type="text" className="no-focus" {...field} />

@@ -161,6 +161,7 @@ export const fetchMovies = async ({
                 genreId,
             },
         });
+
         const result = PaginationMovieSchema.safeParse(res.data);
         if (result.success) {
             return result.data;
@@ -169,7 +170,7 @@ export const fetchMovies = async ({
         }
     } catch (error: any) {
         console.error('Error fetching list movies info:', error.message);
-        throw new Error('Cannot fetch list movies information');
+        return { data: [], page: 1, size: 10, totalPages: 0, totalElements: 0 };
     }
 };
 

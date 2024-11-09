@@ -19,10 +19,12 @@ import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.responses.ScheduleResponse;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,7 +69,12 @@ public class MovieServiceImpl implements MovieService {
     @Autowired
     private MovieDaoCustom movieDaoCustom;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     @Override
+    @Cacheable(value = "movies", key = "#query + '-' + #genreId + '-' + #originalLanguage + '-' + #status + '-' + #sort + " +
+            "'-' + #sortOrder + '-' + #page + '-' + #size", unless = "#result.data.isEmpty()")
     public PaginationResponse<Movie> getAllMovies(String query, Integer genreId, String originalLanguage, String status, String sort, String sortOrder, int page, int size) {
         if (genreId != null && genreId == 0) genreId = null;
         List<String> queries = new ArrayList<>();
@@ -143,7 +150,7 @@ public class MovieServiceImpl implements MovieService {
             e.printStackTrace();
         }
 
-        if (totalShowingsThisMonth > LocalDate.now().lengthOfMonth() * 8 * 10) {
+        if (totalShowingsThisMonth > LocalDate.now().lengthOfMonth() * 9 * 10) {
             throw new GlobalException(MovieErrorConstants.ERROR_MAX_SHOWINGS_THIS_MONTH);
         }
 

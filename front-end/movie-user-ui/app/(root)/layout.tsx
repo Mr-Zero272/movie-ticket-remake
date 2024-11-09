@@ -23,9 +23,9 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <AuthProvider>
-            <html lang="en">
-                <body className={inter.className}>
+        <html lang="en">
+            <body className={inter.className}>
+                <AuthProvider>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
                         <main className="flex">
                             <Sidebar />
@@ -38,8 +38,8 @@ export default function RootLayout({
                         <Footerbar />
                         <Toaster />
                     </ThemeProvider>
-                </body>
-            </html>
-        </AuthProvider>
+                </AuthProvider>
+            </body>
+        </html>
     );
 }

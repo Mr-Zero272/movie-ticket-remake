@@ -5,6 +5,7 @@ import com.moonmovie.movie_service.dao.OrderDao;
 import com.moonmovie.movie_service.dao.TicketDao;
 import com.moonmovie.movie_service.dto.MovieDto;
 import com.moonmovie.movie_service.dto.SeatDetailDto;
+import com.moonmovie.movie_service.dto.TicketDto;
 import com.moonmovie.movie_service.exceptions.ReservationException;
 import com.moonmovie.movie_service.feign.MovieServiceInterface;
 import com.moonmovie.movie_service.feign.SeatServiceInterface;
@@ -14,7 +15,9 @@ import com.moonmovie.movie_service.models.OrderStatisticalDetail;
 import com.moonmovie.movie_service.models.Ticket;
 import com.moonmovie.movie_service.requests.OrderRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
+import com.moonmovie.movie_service.services.MailService;
 import com.moonmovie.movie_service.services.OrderService;
+import com.moonmovie.movie_service.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,8 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,10 +37,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderDao orderDao;
+
     @Autowired
     private TicketDao ticketDao;
+
     @Autowired
     private MovieServiceInterface movieServiceInterface;
+
     @Autowired
     private SeatServiceInterface seatServiceInterface;
 
@@ -85,9 +93,10 @@ public class OrderServiceImpl implements OrderService {
                     .build());
         }
 
-        ticketDao.saveAll(tickets);
+        List<Ticket> ticketsSaved = ticketDao.saveAll(tickets);
         return orderSaved;
     }
+
 
     @Override
     public PaginationResponse<Order> getOrders(String orderStatus, String sort, String sortOrder, int page, int size) {

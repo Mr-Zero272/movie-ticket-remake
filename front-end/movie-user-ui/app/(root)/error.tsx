@@ -20,7 +20,7 @@ function Error() {
                     Please try refreshing the page or come back later.
                 </p>
                 <Button color="gray" className="w-full px-4 md:w-[8rem]" onClick={() => route.prefetch(pathname)}>
-                    Go back
+                    Refresh
                 </Button>
             </div>
         </div>

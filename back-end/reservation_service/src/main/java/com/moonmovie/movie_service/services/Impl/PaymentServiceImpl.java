@@ -3,7 +3,10 @@ package com.moonmovie.movie_service.services.Impl;
 import com.moonmovie.movie_service.constants.ReservationErrorConstants;
 import com.moonmovie.movie_service.dao.OrderDao;
 import com.moonmovie.movie_service.dao.TicketDao;
+import com.moonmovie.movie_service.dto.TicketDto;
+import com.moonmovie.movie_service.exceptions.GlobalException;
 import com.moonmovie.movie_service.exceptions.ReservationException;
+import com.moonmovie.movie_service.feign.SeatServiceInterface;
 import com.moonmovie.movie_service.helpers.HelpersService;
 import com.moonmovie.movie_service.kafka.KafkaProducerService;
 import com.moonmovie.movie_service.models.Order;
@@ -12,7 +15,9 @@ import com.moonmovie.movie_service.models.Ticket;
 import com.moonmovie.movie_service.requests.PaymentMethodRequest;
 import com.moonmovie.movie_service.requests.PaymentRequest;
 import com.moonmovie.movie_service.responses.PaymentMethodResponse;
+import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.services.PaymentService;
+import com.moonmovie.movie_service.services.TicketService;
 import com.moonmovie.movie_service.zalocrypto.HMACUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -47,8 +52,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     private KafkaProducerService kafkaProducerService;
+
     @Autowired
     private TicketDao ticketDao;
+
+    @Autowired
+    private TicketService ticketService;
+
+    @Autowired
+    private SeatServiceInterface seatServiceInterface;
 
     @Override
     public Payment addPayment(PaymentRequest request) {
@@ -64,18 +76,36 @@ public class PaymentServiceImpl implements PaymentService {
         List<Payment> oldPayments = order.getPayments();
         oldPayments.add(payment);
         order.setPayments(oldPayments);
+
+        List<Ticket> tickets = ticketDao.findAllByOrderId(order.getId());
+        List<String> seatIds = tickets.stream().map(Ticket::getSeatId).toList();
         if (request.getPaymentStatus().equalsIgnoreCase("paid")) {
-            List<Ticket> tickets = ticketDao.findAllByOrderId(order.getId());
-            List<String> seatIds = tickets.stream().map(Ticket::getSeatId).toList();
             order.setOrderStatus("complete");
-            kafkaProducerService.sendSeatDetailInfo(seatIds);
+            // Send mail
+            ticketService.sendTicketsToCusByMail(tickets, request.getCustomerEmail());
+
+            kafkaProducerService.sendSeatDetailInfo(seatIds, order.getCustomerId());
+        } else {
+
+            kafkaProducerService.sendRefreshSeatsInfo(seatIds);
         }
         orderDao.save(order);
         return payment;
     }
 
+    private void checkBeforeCreatePayment(String orderId, String customerId) throws ReservationException {
+        List<Ticket> tickets = ticketDao.findAllByOrderId(orderId);
+        List<String> seatIds = tickets.stream().map(Ticket::getSeatId).toList();
+        ResponseTemplate res = seatServiceInterface.checkListSeatAvailableToCheckout(seatIds, customerId).getBody();
+        if (res.getStatus() != 200) {
+            throw new GlobalException(res.getStatus(), "Some seats is not available to checkout!");
+        }
+    }
+
     @Override
-    public PaymentMethodResponse getPaymentForVnPay(PaymentMethodRequest request) throws UnsupportedEncodingException {
+    public PaymentMethodResponse getPaymentForVnPay(PaymentMethodRequest request) throws UnsupportedEncodingException
+            , ReservationException {
+        this.checkBeforeCreatePayment(request.getOrderId(), request.getUserId());
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_OrderInfo = request.getDescription();
@@ -156,7 +186,8 @@ public class PaymentServiceImpl implements PaymentService {
     }};
 
     @Override
-    public PaymentMethodResponse getPaymentForZaloPay(PaymentMethodRequest request) throws IOException {
+    public PaymentMethodResponse getPaymentForZaloPay(PaymentMethodRequest request) throws IOException, ReservationException {
+        this.checkBeforeCreatePayment(request.getOrderId(), request.getUserId());
         Random rand = new Random();
         int random_id = rand.nextInt(1000000);
         final Map embed_data = new HashMap() {{

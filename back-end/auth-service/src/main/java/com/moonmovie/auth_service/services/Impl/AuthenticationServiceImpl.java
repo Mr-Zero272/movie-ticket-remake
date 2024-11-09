@@ -17,7 +17,6 @@ import com.moonmovie.auth_service.response.ResponseTemplate;
 import com.moonmovie.auth_service.services.AuthenticationService;
 import com.moonmovie.auth_service.services.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.StringRedisTemplate;

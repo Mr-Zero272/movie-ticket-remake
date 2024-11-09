@@ -48,7 +48,7 @@ const SearchBaseOnUrl = (props: Props) => {
         genreId: 0,
     }));
     const [loading, setLoading] = useState(false);
-    let q = decodeURI(params?.q as string) === 'undefined' ? '' : decodeURI(params?.q as string);
+    let q = params.q === undefined ? '' : decodeURIComponent(params?.q as string);
 
     const isDefaultFilter = () => {
         if (

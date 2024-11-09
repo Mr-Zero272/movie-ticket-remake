@@ -189,7 +189,7 @@ def recommend():
         cursor.execute(query, (user_id,))
         keyword_count = cursor.fetchone()[0];
             
-        if keyword_count >= 10:
+        if keyword_count >= 20:
             select_oldest_query ="""
                 SELECT id FROM keyword
                 WHERE user_id = %s

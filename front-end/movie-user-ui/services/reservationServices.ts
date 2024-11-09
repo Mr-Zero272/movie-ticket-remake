@@ -1,7 +1,8 @@
 'use server';
-import { OrderSchema, PaymentMethodSchema, PaymentSchema } from '@/types/order';
+import { ResponseApiTemplate } from '@/types/auth';
+import { Order, OrderSchema, Payment, PaymentMethod, PaymentMethodSchema, PaymentSchema } from '@/types/order';
 import { TicketSchema } from '@/types/ticket';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 
@@ -105,18 +106,22 @@ export const addNewPayment = async ({
 };
 
 export const createPaymentToCheckout = async ({
+    orderId,
+    userId,
     method,
     amount,
     description,
     returnUrl,
     transactionId,
 }: {
+    orderId: string;
+    userId: string;
     method: string;
     amount: number;
     description: string;
     returnUrl: string;
     transactionId: string;
-}) => {
+}): Promise<PaymentMethod | ResponseApiTemplate> => {
     const mmtk = getToken();
     if (!mmtk) {
         throw new Error('User not sign in yet, cannot get session token');
@@ -126,6 +131,8 @@ export const createPaymentToCheckout = async ({
         const res = await axios.post(
             `${API_URL}/payment/method`,
             {
+                orderId,
+                userId,
                 method,
                 amount,
                 description,
@@ -144,8 +151,14 @@ export const createPaymentToCheckout = async ({
             throw new Error('Cannot valid payment method data return');
         }
     } catch (error: any) {
-        console.log('Error creating new payment method', error.message);
-        throw new Error('Cannot create new payment method');
+        if (isAxiosError(error)) {
+            console.log(error);
+
+            return error.response?.data as ResponseApiTemplate;
+        } else {
+            console.log('Error creating new payment method', error.message);
+            throw new Error('Cannot create new payment method');
+        }
     }
 };
 
@@ -210,7 +223,7 @@ export const getTicketsByOrderId = async (orderId: string) => {
     }
 };
 
-export const getOrderById = async (orderId: string) => {
+export const getOrderById = async (orderId: string): Promise<Order | null> => {
     const mmtk = getToken();
     if (!mmtk) {
         throw new Error('User not sign in yet, cannot get session token');
@@ -230,6 +243,6 @@ export const getOrderById = async (orderId: string) => {
         }
     } catch (error: any) {
         console.log('Error getting order info by id', error.message);
-        throw new Error('Cannot get order info by id');
+        return null;
     }
 };

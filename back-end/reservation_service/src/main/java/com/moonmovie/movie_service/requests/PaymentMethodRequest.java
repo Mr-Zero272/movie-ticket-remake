@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentMethodRequest {
+    private String orderId;
+    private String userId;
     private String method;
     private int amount;
     private String description;

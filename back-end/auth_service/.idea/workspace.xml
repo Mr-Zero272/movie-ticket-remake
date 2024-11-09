@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="47c4a7e7-e8a2-48ed-9b0d-d965326b2703" name="Changes" comment="" />
+    <list default="true" id="47c4a7e7-e8a2-48ed-9b0d-d965326b2703" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/java/com/moonmovie/auth_service/services/Impl/AuthenticationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/java/com/moonmovie/auth_service/services/Impl/AuthenticationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../movie-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../movie-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../movie-service/src/main/java/com/moonmovie/movie_service/MovieServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/../movie-service/src/main/java/com/moonmovie/movie_service/MovieServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../movie-service/src/main/java/com/moonmovie/movie_service/controllers/MovieController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../movie-service/src/main/java/com/moonmovie/movie_service/controllers/MovieController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../movie-service/src/main/java/com/moonmovie/movie_service/responses/PaginationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../movie-service/src/main/java/com/moonmovie/movie_service/responses/PaginationResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../movie-service/src/main/java/com/moonmovie/movie_service/services/Impl/MovieServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../movie-service/src/main/java/com/moonmovie/movie_service/services/Impl/MovieServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../movie-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../movie-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../reservation_service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../reservation_service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../reservation_service/src/main/java/com/moonmovie/movie_service/services/MailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../reservation_service/src/main/java/com/moonmovie/movie_service/services/MailService.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,10 +23,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2oPtSmQbTSknWe2pn5OyAK5azVe" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -25,8 +35,10 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "git-widget-placeholder": "master",
+    "go.import.settings.migrated": "true",
     "kotlin-language-version-configured": "true",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
@@ -49,8 +61,12 @@
       <option name="presentableId" value="Default" />
       <updated>1730783041359</updated>
       <workItem from="1730783042576" duration="2000" />
+      <workItem from="1730801975176" duration="130000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

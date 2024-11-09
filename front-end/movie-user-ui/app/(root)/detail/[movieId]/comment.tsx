@@ -182,7 +182,7 @@ const Comment = ({
     return (
         <Fragment>
             <article
-                className={cn('mb-7 border-b bg-white pb-5 text-base dark:bg-gray-900', {
+                className={cn('mb-7 border-b pb-5 text-base', {
                     'pl-4 lg:pl-10': level == 2,
                 })}
             >
@@ -252,7 +252,7 @@ const Comment = ({
                     )}
                 </footer>
                 {!isEditing && (
-                    <Fragment>
+                    <div className="rounded-lg bg-accent p-4 dark:bg-[#333334]">
                         <p className="text-gray-500 dark:text-gray-400">{commentInfo.content}</p>
                         <div className="mt-4 flex items-center space-x-4">
                             <button
@@ -273,7 +273,7 @@ const Comment = ({
                                 Reply
                             </button>
                         </div>
-                    </Fragment>
+                    </div>
                 )}
                 {isEditing && (
                     <CommentForm

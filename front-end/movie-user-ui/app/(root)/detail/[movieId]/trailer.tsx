@@ -113,7 +113,7 @@ function Trailer({ backdropPath, video, title, genres, userFavoriteMovies, userI
                     onClick={handleLoveClick}
                     className="rounded-full p-2 hover:bg-gray-200/20 hover:text-red-500 active:scale-90"
                 >
-                    <Heart className={cn('size-5', { 'fill-red-500 text-red-500': isLoved })} />
+                    <Heart className={cn('size-5', { 'animate-love fill-red-500 text-red-500': isLoved })} />
                 </button>
             </div>
             <div className="absolute bottom-6 left-10 text-white">

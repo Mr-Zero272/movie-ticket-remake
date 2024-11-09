@@ -62,10 +62,29 @@ const config = {
                     from: { height: 'var(--radix-accordion-content-height)' },
                     to: { height: '0' },
                 },
+                love: {
+                    '0%': { transform: 'scale(1)' },
+                    '20%': {
+                        transform: 'scale(1.1)',
+                    },
+                    '40%': {
+                        transform: 'scale(1.15)',
+                    },
+                    '60%': {
+                        transform: 'scale(1.25)',
+                    },
+                    '80%': {
+                        transform: 'scale(1.15)',
+                    },
+                    '100%': {
+                        transform: 'scale(1)',
+                    },
+                },
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out',
+                love: 'love 0.5s ease-in-out',
             },
         },
     },

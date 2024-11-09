@@ -90,7 +90,7 @@ const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: 
                     </div>
                     <Heart
                         className={cn('size-4 cursor-pointer text-gray-500', {
-                            'fill-red-500 text-red-500': isFavorite,
+                            'animate-love fill-red-500 text-red-500': isFavorite,
                         })}
                         onClick={handleLoveClick}
                     />

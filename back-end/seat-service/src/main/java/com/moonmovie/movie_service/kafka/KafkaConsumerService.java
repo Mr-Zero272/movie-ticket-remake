@@ -1,5 +1,6 @@
 package com.moonmovie.movie_service.kafka;
 
+import com.moonmovie.movie_service.requests.CheckoutSeatsRequest;
 import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
 import com.moonmovie.movie_service.services.Impl.SeatDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +42,14 @@ public class KafkaConsumerService {
     }
 
     @KafkaListener(topics = "checkout_seat",  groupId = "moon-movie")
-    public void checkoutSeat(@Payload List<String> seatIds) {
-        log.info(String.format("Received list seatId: -> %s", seatIds.toString()));
-        seatDetailService.checkoutSeat(seatIds);
+    public void checkoutSeat(@Payload CheckoutSeatsRequest request) {
+        log.info(String.format("Received checkout list seat ids: -> %s", request.getSeatIds()));
+        seatDetailService.checkoutSeat(request);
+    }
+
+    @KafkaListener(topics = "refresh_seat",  groupId = "moon-movie")
+    public void refreshSeat(@Payload List<String> seatIds) {
+        log.info(String.format("Refresh list seat ids: -> %s", seatIds.toString()));
+        seatDetailService.refreshSeats(seatIds);
     }
 }

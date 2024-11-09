@@ -8,7 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const user = await currentUser();
 
     return {
-        title: user?.username + ' - Moon Movie',
+        title: '@' + user?.username + ' - Moon Movie',
         description: 'Update your profile information',
     };
 }

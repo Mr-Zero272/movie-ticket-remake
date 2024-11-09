@@ -3,7 +3,7 @@ import { ButtonComponent } from '../../../../shared/components/ui/button/button.
 import { Chart } from 'chart.js';
 import { StatisticalCardComponent } from '../../../../shared/components/cards/statistical-card/statistical-card.component';
 import { MatTooltipModule, TooltipComponent } from '@angular/material/tooltip';
-import { NgClass, NgIf, NgStyle } from '@angular/common';
+import { Location, NgClass, NgIf, NgStyle } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ResponseSchedule, ScheduleService } from '../../services/schedule.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -40,13 +40,14 @@ export class DoScheduleComponent implements AfterViewInit, OnInit {
   resultForm: ResponseSchedule | null = null;
   loading: boolean = false;
   globalError: string = '';
-  chartMonth: number = 8;
+  chartMonth: number = new Date().getMonth() - 1;
   totalShowings = 0;
   datesInMonth: string = '';
 
   constructor(
     private scheduleService: ScheduleService,
     private toastService: ToastService,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -106,6 +107,7 @@ export class DoScheduleComponent implements AfterViewInit, OnInit {
 
   handleChangeChartMonth(e: Event) {
     const month = (e.target as HTMLSelectElement).value;
+    this.chartMonth = +month;
     this.renderShowingChart(+month);
   }
 
@@ -135,5 +137,9 @@ export class DoScheduleComponent implements AfterViewInit, OnInit {
       },
     });
     this.loading = false;
+  }
+
+  back() {
+    this.location.back();
   }
 }

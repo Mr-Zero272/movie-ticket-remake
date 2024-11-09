@@ -33,4 +33,9 @@ public class SeatDetailController {
     public ResponseEntity<List<SeatDetailDto>> fetchInfoSeatDetail(@RequestParam("showingId") int showingId, @RequestParam("userId") String userId) {
         return ResponseEntity.ok(seatDetailService.getListSeatDetailDto(showingId, userId));
     }
+
+    @GetMapping("/checkout")
+    public ResponseEntity<ResponseTemplate> checkListSeatAvailableToCheckout(@RequestParam("seatIds") List<String> seatIds, @RequestParam("userId") String userId) {
+        return ResponseEntity.ok(seatDetailService.checkIfListSeatAvailableToCheckout(seatIds, userId));
+    }
 }

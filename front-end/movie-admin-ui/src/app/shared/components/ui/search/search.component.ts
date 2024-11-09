@@ -89,6 +89,7 @@ export class SearchComponent {
     if (event.key === '/') {
       event.preventDefault();
       this.searchInput.nativeElement.focus();
+      this.showResult = true;
     }
   }
 

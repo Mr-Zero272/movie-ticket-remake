@@ -60,14 +60,17 @@ public class MovieDaoCustom {
             statusPredicate = cb.equal(cb.lower(movieRoot.get("status")), status.toLowerCase());
         }
 
+        // Predicate for delete flag
+        Predicate deleteFlagPredicate = cb.equal(movieRoot.get("deleteFlag"), false);
+
         // Combine predicates
         if (genreId == null) {
-            query.where(cb.and(titlePredicate, languagePredicate, statusPredicate));
+            query.where(cb.and(titlePredicate, languagePredicate, statusPredicate, deleteFlagPredicate));
         } else {
             Join<Movie, Genre> genreJoin = movieRoot.join("genres");
             // Predicate for genre matching the genreId
             Predicate genrePredicate = cb.equal(genreJoin.get("id"), genreId);
-            query.where(cb.and(titlePredicate, genrePredicate, languagePredicate, statusPredicate));
+            query.where(cb.and(titlePredicate, genrePredicate, languagePredicate, statusPredicate, deleteFlagPredicate));
         }
 
         // Apply sorting by relevance first, then by the requested sort field
@@ -118,15 +121,19 @@ public class MovieDaoCustom {
             countStatusPredicate = cb.equal(cb.lower(countRoot.get("status")), status.toLowerCase());
         }
 
+        // Predicate for delete flag
+        Predicate countDeleteFlagPredicate = cb.equal(countRoot.get("deleteFlag"), false);
+
         // Apply the predicates to the count query
         if (genreId == null) {
             countQuery.select(cb.count(countRoot))
-                    .where(cb.and(countTitlePredicate, countLanguagePredicate, countStatusPredicate));
+                    .where(cb.and(countTitlePredicate, countLanguagePredicate, countStatusPredicate, countDeleteFlagPredicate));
         } else {
             Join<Movie, Genre> countGenreJoin = countRoot.join("genres", JoinType.INNER);
             Predicate countGenrePredicate = cb.equal(countGenreJoin.get("id"), genreId);
             countQuery.select(cb.count(countRoot))
-                    .where(cb.and(countTitlePredicate, countGenrePredicate, countLanguagePredicate, countStatusPredicate));
+                    .where(cb.and(countTitlePredicate, countGenrePredicate, countLanguagePredicate,
+                            countStatusPredicate, countDeleteFlagPredicate));
         }
 
         // Execute the count query

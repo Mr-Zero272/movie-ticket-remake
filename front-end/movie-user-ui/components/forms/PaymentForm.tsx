@@ -7,12 +7,12 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import Image from 'next/image';
 import { formatCurrencyVND } from '@/lib/utils';
-import { Input } from '../ui/input';
 import { reservationServices } from '@/services';
-import { toast } from '../ui/use-toast';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Input } from '../ui/input';
 
 const FormSchema = z.object({
     email: z
@@ -65,20 +65,31 @@ const PaymentForm = (props: Props | PropsWithBackBtn) => {
         const addNewOrder = async () => {
             let orderId = '';
             if (!isPayAgain) {
-                const order = await reservationServices.addNewOrder({ startTime, customerId, showingId });
+                const order = await reservationServices.addNewOrder({
+                    startTime,
+                    customerId,
+                    showingId,
+                });
                 orderId = order.id;
             } else {
                 orderId = isPayAgain;
             }
 
-            const paymentMethod = await reservationServices.createPaymentToCheckout({
+            const paymentMethodRes = await reservationServices.createPaymentToCheckout({
+                orderId: orderId,
+                userId: customerId,
                 method: data.type,
                 amount: total,
                 description: 'Pay for Moon Movie tickets',
                 returnUrl: `http://localhost:3000/payment?mm_method=${data.type}&mm_cemail=${data.email}&mm_amount=${total}&mm_orderId=${orderId}&mm_invoiceId=${invoiceId}`,
                 transactionId: invoiceId,
             });
-            router.replace(paymentMethod.urlPayment);
+            if ('status' in paymentMethodRes) {
+                form.setError('email', { message: paymentMethodRes.message });
+            } else {
+                router.replace(paymentMethodRes.urlPayment);
+                form.setError('email', { message: '' });
+            }
         };
         addNewOrder();
     };

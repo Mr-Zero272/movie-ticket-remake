@@ -28,7 +28,7 @@ const CommentSection = ({ movieId }: Props) => {
     };
 
     return (
-        <section className="bg-white antialiased dark:bg-gray-900">
+        <section className="antialiased">
             <h3 className="mb-3 text-xl">Discussion</h3>
             <CommentForm labelSubmit="Post comment" movieId={movieId} onSuccess={handleSuccessAddComment} />
             {!loading ? (

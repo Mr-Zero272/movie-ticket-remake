@@ -13,11 +13,9 @@ public class UpdateUserRequest {
     @NotNull
     @Email
     private String email;
-    @NotNull
-    @Size(min = 3, max = 30)
+
     private String name;
-    @NotNull
-    @Size(min = 1, max = 300)
+
     private String bio;
     @NotNull
     private String avatar;
