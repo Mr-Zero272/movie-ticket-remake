@@ -123,8 +123,13 @@ function Search({ className }: Props) {
     };
 
     const fetchHistory = async () => {
-        const res = await fetchHistoryKeywords();
-        setHistoryKeywords(res);
+        if (historyKeywords.length === 0) {
+            const res = await fetchHistoryKeywords();
+            setHistoryKeywords(res);
+            setSearchResult(res);
+        } else {
+            setSearchResult(historyKeywords);
+        }
     };
 
     const handleSearchFocus = async () => {

@@ -158,13 +158,19 @@ public class SeatDetailServiceImpl implements SeatDetailService {
     @Override
     public ResponseTemplate checkIfListSeatAvailableToCheckout(List<String> seatIds, String userId) {
         ResponseTemplate res = new ResponseTemplate();
-        res.setMessage("Available to checkout");
+        res.setStatus(409);
+        res.setMessage("Seats is not available");
         List<SeatDetail> seats = seatDetailDao.findAllById(seatIds);
         for(SeatDetail seatDetail : seats) {
+            if (seatDetail.getUserId().isEmpty() && seatDetail.getStatus().equals("available")) {
+                res.setMessage("Available to checkout");
+                res.setStatus(200);
+                break;
+            }
 
-            if (!userId.isEmpty() && !seatDetail.getUserId().isEmpty() && !seatDetail.getUserId().equalsIgnoreCase(userId)) {
-                res.setStatus(409);
-                res.setMessage("Seats is not available");
+            if (seatDetail.getUserId().equalsIgnoreCase(userId) && seatDetail.getStatus().equals("choosing")) {
+                res.setMessage("Available to checkout");
+                res.setStatus(200);
                 break;
             }
         }

@@ -33,6 +33,8 @@ const Tickets = async () => {
         popularMovies = (await fetchPopularMovies({ page: 1, size: 20, sort: 'releaseDate', genreId: 0 })).data;
     }
 
+    const orderCount = new Set(listTickets.map((t) => t.orderId)).size;
+
     return (
         <Fragment>
             <div className="flex gap-3 rounded-lg bg-black p-4 dark:bg-white md:max-h-[35rem]">
@@ -65,7 +67,7 @@ const Tickets = async () => {
                             <CalendarCheck className="size-8 rounded-lg bg-blue-200 p-1.5 text-blue-800" />
                             <div className="text-sm">
                                 <MarqueeText text="Total orders" className="font-bold" />
-                                <p className="text-gray-500">10 orders</p>
+                                <p className="text-gray-500">{orderCount} orders</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-x-3">

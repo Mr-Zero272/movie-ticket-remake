@@ -11,8 +11,8 @@ export type ResponseAuthType = z.infer<typeof ResponseAuthTypeSchema>;
 export const SignUpFormSchema = z.object({
     username: z
         .string()
-        .min(3, { message: 'Username or email must contain at least 3 character(s)' })
-        .max(30, { message: 'Username or email must contain at most 30 character(s)' }),
+        .min(3, { message: 'Username must contain at least 3 character(s)' })
+        .max(30, { message: 'Username must contain at most 30 character(s)' }),
     email: z.string().email(),
     password: z.string().regex(new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/), {
         message: 'Password must contain at least one uppercase letter, one lowercase letter, and one digit.',

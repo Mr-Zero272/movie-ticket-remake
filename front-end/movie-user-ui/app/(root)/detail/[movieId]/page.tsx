@@ -79,10 +79,10 @@ const Page = async ({ params }: Props) => {
                         <p className="max-md:hidden">Reviews</p>
                         <p className="rounded-sm bg-gray-600 p-1.5 text-xs text-white">{123}</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <a href="#comment" className="flex items-center gap-3">
                         <MessageCircleMore className="size-6 dark:text-gray-500" />
-                        <p className="max-md:hidden">Rating now</p>
-                    </div>
+                        <p className="max-md:hidden">Leave a comment</p>
+                    </a>
                 </article>
                 <article>
                     <ShowingDetail movieId={movieId} isUserSignIn={userId !== '@'} />

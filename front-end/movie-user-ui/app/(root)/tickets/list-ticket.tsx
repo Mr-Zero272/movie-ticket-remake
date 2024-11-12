@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import DetailTicket from './detail-ticket';
 import { Movie } from '@/types/movie';
 import { getTickets } from '@/services/reservationServices';
+import { useRouter } from 'next/navigation';
 
 type Props = {
     userId: string;
@@ -19,6 +20,7 @@ type Props = {
 };
 
 const ListTicket = ({ userId, listTickets, listPopularMovies }: Props) => {
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState<'all' | 'active' | 'expired' | 'unpaid'>('all');
     const [tickets, setTickets] = useState(listTickets);
@@ -121,7 +123,9 @@ const ListTicket = ({ userId, listTickets, listPopularMovies }: Props) => {
                                     </p>
                                 </div>
                                 <div className="mt-2 flex justify-end">
-                                    <Button>Save</Button>
+                                    <Button onClick={() => router.push(`/order/${activeTicket?.orderId}`)}>
+                                        Order detail
+                                    </Button>
                                 </div>
                             </div>
                         </div>

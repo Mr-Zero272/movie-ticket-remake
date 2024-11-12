@@ -28,19 +28,20 @@ function Footerbar({}: Props) {
                                     <TooltipTrigger asChild>
                                         <Link
                                             className={cn(
-                                                'group flex flex-col items-center justify-between rounded-lg p-2 font-medium tracking-wide text-gray-500 hover:bg-accent',
-                                                { 'bg-accent text-primary dark:text-white': isActive },
+                                                'group flex flex-col items-center justify-between rounded-lg p-2 font-medium tracking-wide text-gray-500 transition-all duration-150 ease-in-out hover:bg-accent max-sm:flex-row',
+                                                {
+                                                    'bg-primary/5 text-primary dark:bg-accent dark:text-white':
+                                                        isActive,
+                                                },
                                             )}
                                             href={link.route}
                                         >
-                                            {link.icon}
+                                            <div>{link.icon}</div>
                                             <p
-                                                className={cn(
-                                                    'ml-3 w-full text-gray-500 transition-all duration-150 max-sm:hidden',
-                                                    {
-                                                        'text-primary dark:text-white': isActive,
-                                                    },
-                                                )}
+                                                className={cn('ml-3 w-full text-gray-500 max-sm:hidden', {
+                                                    'max-w-16 overflow-hidden text-ellipsis whitespace-nowrap text-primary dark:text-white max-sm:block':
+                                                        isActive,
+                                                })}
                                             >
                                                 {link.label}
                                             </p>

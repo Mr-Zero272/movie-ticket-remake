@@ -55,6 +55,7 @@ function MovieCarousel({ data }: Props) {
                     breakpoint: 660,
                     settings: {
                         slidesToShow: 1,
+                        centerPadding: '20px',
                     },
                 },
             ],
