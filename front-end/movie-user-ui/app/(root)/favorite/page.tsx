@@ -21,7 +21,7 @@ const FavoritePage = async () => {
 
     if (!userInfo?.onboarded) redirect('/onboarding');
 
-    const popularMovies = await fetchPopularMovies({ page: 3, size: 4, sort: 'releaseDate', genreId: 0 });
+    const popularMovies = await fetchPopularMovies({ page: 3, size: 20, sort: 'releaseDate', genreId: 0 });
     const favoriteMovies = await fetchListFavoriteMovies(userInfo.id);
 
     return (

@@ -200,7 +200,7 @@ function Search({ className }: Props) {
                                 onClick={() => {
                                     setSearchValue(result.keyword);
                                     setShowResult(false);
-                                    router.replace('/search/' + result);
+                                    router.replace('/search/' + result.keyword);
                                 }}
                             >
                                 <div className="flex items-center gap-x-3">

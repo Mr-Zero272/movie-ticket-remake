@@ -15,8 +15,9 @@ import { paginate } from '@/lib/utils';
 import { fetchMovies } from '@/services/movieServices';
 import { Genre } from '@/types/movie';
 import { PaginationMovie } from '@/types/pagination';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'nextjs-toploader/app';
 
 type LabelValue = {
     label: string;

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices';
 import { Genre, UserFavoriteMovie } from '@/types/movie';
 import { ChevronLeft, Heart, PauseCircle, PlayCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'nextjs-toploader/app';
 import React, { useEffect, useRef, useState } from 'react';
 
 type Props = {

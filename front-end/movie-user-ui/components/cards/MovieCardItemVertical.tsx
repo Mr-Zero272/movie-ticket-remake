@@ -77,18 +77,20 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
                     className="h-72 w-full"
                     quality={100}
                 />
-                <div className="absolute inset-0 hidden h-72 w-full items-center justify-center bg-gray-700 bg-opacity-35 group-hover:flex">
-                    <Link
-                        href={`/detail/${movieId}`}
-                        className="flex size-12 items-center justify-center rounded-full bg-white"
-                    >
+                <Link
+                    href={`/detail/${movieId}`}
+                    className="absolute inset-0 hidden h-72 w-full items-center justify-center bg-gray-700 bg-opacity-35 group-hover:flex"
+                >
+                    <div className="flex size-12 items-center justify-center rounded-full bg-white">
                         <Play className="size-5 fill-black dark:text-black" />
-                    </Link>
-                </div>
+                    </div>
+                </Link>
             </div>
             <div className="px-3 py-5 text-sm">
                 <div className="mb-3 flex items-center justify-between">
-                    <h3 className="line-clamp-2 flex-1 font-bold">{title}</h3>
+                    <Link href={`/detail/${movieId}`}>
+                        <h3 className="line-clamp-2 flex-1 font-bold hover:underline">{title}</h3>
+                    </Link>
                     <Heart
                         className={cn('size-5 w-1/5 cursor-pointer text-gray-500', {
                             'animate-love fill-red-500 text-red-500': isFavorite,

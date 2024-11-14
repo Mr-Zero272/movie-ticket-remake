@@ -2,6 +2,7 @@ import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
 import FilterMovie from '@/components/shared/FilterMovie';
 import MovieCarousel from '@/components/shared/MovieCarousel';
 import ScrollList from '@/components/shared/ScrollList';
+import ScrollTopButton from '@/components/shared/ScrollTopButton';
 import { currentUser } from '@/services/authServices';
 import { fetchAllGenres, fetchPopularMovies, fetchUpcomingMovies } from '@/services/movieServices';
 
@@ -24,6 +25,7 @@ export default async function Home() {
     genreData = [{ id: 0, name: 'None' }, ...genreData];
     return (
         <div className="p-4">
+            <ScrollTopButton />
             <MovieCarousel data={popularMovies.data.slice(1, 6)} />
             <ScrollList title="Opening this week">
                 <FilterMovie

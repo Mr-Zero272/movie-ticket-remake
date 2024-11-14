@@ -9,6 +9,7 @@ import { fetchScheduleShowings } from '@/services/movieServices';
 import { useRouter } from 'next/navigation';
 import DatePickerCustom from '../ui/date-picker-custom';
 import ScrollTopButton from './ScrollTopButton';
+import Link from 'next/link';
 
 const InfiniteScrollSchedule = () => {
     const router = useRouter();
@@ -112,14 +113,20 @@ const InfiniteScrollSchedule = () => {
                                     className="h-56 rounded-md"
                                 />
                                 <div>
-                                    <h2 className="title-font mb-2 line-clamp-2 text-2xl font-medium text-gray-900 dark:text-white">
-                                        {showing.movie.title}
-                                    </h2>
+                                    <Link href={`/detail/${showing.movie.id}`}>
+                                        <h2 className="title-font mb-2 line-clamp-2 text-2xl font-medium text-gray-900 hover:underline dark:text-white">
+                                            {showing.movie.title}
+                                        </h2>
+                                    </Link>
                                     <p className="mb-2 line-clamp-3 leading-relaxed">{showing.movie.overview}</p>
                                     <div className="mb-5 flex items-center gap-x-3 text-sm text-gray-400">
                                         <span>{showing.movie.runtime} MIN</span>
                                         <span className="h-3 w-[0.1rem] rounded-full bg-gray-400 dark:bg-white"></span>
-                                        <span className="uppercase">{showing.movie.genres[0].name}</span>
+                                        <span className="uppercase">
+                                            {showing.movie.genres.length === 0
+                                                ? 'unknown'
+                                                : showing.movie.genres[0].name}
+                                        </span>
                                     </div>
                                     <Button onClick={() => router.push(`/showing/${showing.id}`)}>
                                         Booking now

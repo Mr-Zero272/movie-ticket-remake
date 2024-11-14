@@ -1,17 +1,20 @@
 'use client';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { LoaderCircle, ScanLine, SearchX } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'nextjs-toploader/app';
+import { useEffect, useState } from 'react';
+import QRCode from 'react-qr-code';
+
 import TicketBase from '@/components/cards/TicketBase';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
-import { cn, formatCurrencyVND, formatMinutes } from '@/lib/utils';
-import { Ticket } from '@/types/ticket';
-import { format } from 'date-fns';
-import { LoaderCircle, SearchX, TicketIcon } from 'lucide-react';
-import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import DetailTicket from './detail-ticket';
-import { Movie } from '@/types/movie';
+
 import { getTickets } from '@/services/reservationServices';
-import { useRouter } from 'next/navigation';
+import { Movie } from '@/types/movie';
+import { Ticket } from '@/types/ticket';
 
 type Props = {
     userId: string;
@@ -58,78 +61,98 @@ const ListTicket = ({ userId, listTickets, listPopularMovies }: Props) => {
                     onEscapeKeyDown={() => setOpenDialog(false)}
                     className="dark:border-none"
                 >
-                    <DialogHeader>
-                        <div className="flex-none rounded-lg bg-white p-4 dark:bg-black">
-                            <div className="flex justify-between gap-x-4 rounded-t-lg bg-[linear-gradient(to_right,#92fe9d_0%,#00c9ff_100%)] px-10 py-2 font-bold text-white dark:text-black">
-                                <p>Moon Movie</p>
-                                <TicketIcon className="text-gray-400" />
-                                <p>Tickets</p>
+                    <div className="relative mt-10 flex-none rounded-lg bg-accent bg-white p-3 dark:bg-black">
+                        <div className="flex gap-x-2">
+                            <div className="relative w-1/3">
+                                <Image
+                                    src={
+                                        activeTicket
+                                            ? activeTicket.moviePoster
+                                            : 'http://localhost:8272/api/v2/moon-movie/media/images/defaultBackdrop.jpg'
+                                    }
+                                    alt="movie-poster"
+                                    height={70}
+                                    width={50}
+                                    quality={100}
+                                    className="relative bottom-10 h-32 w-28 rounded-md"
+                                />
                             </div>
-                            <div className="relative rounded-b-lg bg-accent p-4 dark:bg-[#262626]">
-                                <div className="flex justify-between gap-x-5">
-                                    <div>
-                                        <p className="text-sm text-gray-500">Movie</p>
-                                        <p className="font-bold">{activeTicket && activeTicket.movieTitle}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">Date & Time</p>
-                                        <p className="font-bold">
-                                            {activeTicket && format(`${activeTicket.date}`, 'dd MMM, yyyy - h:mm a')}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="my-5 border-b-2 border-dashed pt-5">
-                                    <div className="absolute -left-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
-                                    <div className="absolute -right-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
-                                </div>
-                                <div className="flex justify-between">
-                                    <div>
-                                        <p className="text-sm text-gray-500">Seat</p>
-                                        <p className="font-bold">{activeTicket && activeTicket.seatNumber}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">Row</p>
-                                        <p className="font-bold">{activeTicket && activeTicket.seatRow}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">Hall</p>
-                                        <p className="font-bold">{activeTicket && activeTicket.hall}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="mt-2 rounded-lg bg-accent p-4 dark:bg-[#262626]">
-                                <div className="flex justify-between">
-                                    <div>
-                                        <p className="text-sm text-gray-500">Price</p>
-                                        <p className="font-bold">
-                                            {activeTicket && formatCurrencyVND(activeTicket.price)}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">Runtime</p>
-                                        <p className="font-bold">
-                                            {activeTicket && formatMinutes(activeTicket.runtime)}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="my-3 flex items-center justify-between gap-x-5">
-                                    <p className="text-sm text-gray-500">Address</p>
-                                    <p className="line-clamp-2 font-bold">{activeTicket && activeTicket.address}</p>
-                                </div>
-                                <div className="flex items-center justify-between gap-x-5">
-                                    <Image src="/assets/qr-code.svg" alt="qr-code" width={100} height={100} />
-                                    <p className="text-gray-500">
-                                        Scan this code in front of the cinema hall to enter.
-                                    </p>
-                                </div>
-                                <div className="mt-2 flex justify-end">
-                                    <Button onClick={() => router.push(`/order/${activeTicket?.orderId}`)}>
-                                        Order detail
-                                    </Button>
-                                </div>
+                            <div className="flex-1">
+                                <h3 className="line-clamp-2 font-bold uppercase">
+                                    {activeTicket && activeTicket.movieTitle}
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                    Created at:{' '}
+                                    {format(
+                                        activeTicket ? activeTicket.date : '2024-11-11T00:00:00',
+                                        'dd MMM, yyyy - HH:mm',
+                                    )}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                    Run time:{' '}
+                                    <span className="font-medium text-black">
+                                        {activeTicket && activeTicket.runtime} min
+                                    </span>
+                                </p>
                             </div>
                         </div>
-                    </DialogHeader>
+                        <div className="mb-2">
+                            <p className="text-sm text-gray-500">Address</p>
+                            <p className="line-clamp-2 font-bold">{activeTicket && activeTicket.address}</p>
+                        </div>
+                        <div className="flex justify-between gap-x-5">
+                            <div>
+                                <p className="text-sm text-gray-500">Date</p>
+                                <p className="font-bold">
+                                    {format(
+                                        activeTicket ? activeTicket.date : '2024-11-11T00:00:00',
+                                        'EEEE, dd MMM yyyy',
+                                    )}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Time</p>
+                                <p className="font-bold">
+                                    {format(activeTicket ? activeTicket.date : '2024-11-11T00:00:00', 'HH:mm a')}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="my-5 border-b-2 border-dashed pt-2">
+                            <div className="absolute -left-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
+                            <div className="absolute -right-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
+                        </div>
+                        <div className="mb-2 flex justify-between">
+                            <div>
+                                <p className="text-sm text-gray-500">Seat</p>
+                                <p className="font-bold">{activeTicket && activeTicket.seatNumber}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Row</p>
+                                <p className="font-bold">{activeTicket && activeTicket.seatRow}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Cinema</p>
+                                <p className="font-bold">{activeTicket && activeTicket.hall}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between gap-x-5">
+                            <div className="border">
+                                <QRCode value={activeTicket ? activeTicket.id : ''} size={70} />
+                            </div>
+                            <p className="text-gray-500">Scan this code in front of the cinema hall to enter.</p>
+                        </div>
+
+                        <div className="absolute -top-10 right-0">
+                            <Button
+                                size="sm"
+                                variant="link"
+                                onClick={() => router.push(`/order/${activeTicket && activeTicket.orderId}`)}
+                            >
+                                <ScanLine className="me-2 size-5" />
+                                Order detail
+                            </Button>
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
             <div className="w-1/2 flex-none rounded-lg bg-white p-5 dark:bg-[#121212] max-[1490px]:w-2/3 max-md:w-full">

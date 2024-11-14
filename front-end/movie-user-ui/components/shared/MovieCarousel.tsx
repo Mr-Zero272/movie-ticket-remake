@@ -93,38 +93,84 @@ function MovieCarousel({ data }: Props) {
                 // }}
             >
                 <Slider {...settings} ref={sliderRef}>
-                    {data.map((movie, index) => (
-                        <div
-                            className={cn('scale-90 px-10 transition-all duration-500 ease-linear max-[1300px]:px-4', {
-                                'scale-100': index === activeSlide,
-                            })}
-                            key={movie.id}
-                        >
-                            <Image
-                                src={movie.posterPath}
-                                alt="poster"
-                                width={400}
-                                height={400}
-                                quality={100}
-                                className={cn('h-72 w-full rounded-lg transition-all duration-500 ease-linear', {
-                                    'rounded-none': index === activeSlide,
-                                })}
-                            />
-                            <div
-                                className={cn('py-2 opacity-0 transition-all duration-500 ease-linear', {
-                                    'opacity-100': index === activeSlide,
-                                })}
-                            >
-                                <h2 className="mb-3 line-clamp-2 text-2xl font-bold">{movie.title}</h2>
-                                <p className="mb-3 line-clamp-3 text-justify text-gray-500">{movie.overview}</p>
+                    {data.length !== 0
+                        ? data.map((movie, index) => (
+                              <div
+                                  className={cn(
+                                      'scale-90 px-10 transition-all duration-500 ease-linear max-[1300px]:px-4',
+                                      {
+                                          'scale-100': index === activeSlide,
+                                      },
+                                  )}
+                                  key={movie.id}
+                              >
+                                  <Image
+                                      src={movie.posterPath}
+                                      alt="poster"
+                                      width={400}
+                                      height={400}
+                                      quality={100}
+                                      className={cn('h-72 w-full rounded-lg transition-all duration-500 ease-linear', {
+                                          'rounded-none': index === activeSlide,
+                                      })}
+                                  />
+                                  <div
+                                      className={cn('py-2 opacity-0 transition-all duration-500 ease-linear', {
+                                          'opacity-100': index === activeSlide,
+                                      })}
+                                  >
+                                      <h2 className="mb-3 line-clamp-2 text-2xl font-bold">{movie.title}</h2>
+                                      <p className="mb-3 line-clamp-3 text-left text-gray-500">{movie.overview}</p>
 
-                                <Link href={`/detail/${movie.id}`} className="flex items-center gap-x-3">
-                                    <p className="font-bold text-primary">More Details</p>{' '}
-                                    <MoveRight className="text-primary" />
-                                </Link>
-                            </div>
-                        </div>
-                    ))}
+                                      <Link href={`/detail/${movie.id}`} className="flex items-center gap-x-3">
+                                          <p className="font-bold text-primary">More Details</p>{' '}
+                                          <MoveRight className="text-primary" />
+                                      </Link>
+                                  </div>
+                              </div>
+                          ))
+                        : Array.from({ length: 5 }, (_, index) => (
+                              <div
+                                  className={cn(
+                                      'scale-90 animate-pulse px-10 transition-all duration-500 ease-linear max-[1300px]:px-4',
+                                      {
+                                          'scale-100': index === activeSlide,
+                                      },
+                                  )}
+                                  key={index}
+                              >
+                                  <div
+                                      className={cn(
+                                          'h-72 w-full rounded-lg bg-gray-200 transition-all duration-500 ease-linear',
+                                          {
+                                              'rounded-none': index === activeSlide,
+                                          },
+                                      )}
+                                  />
+                                  <div
+                                      className={cn('py-2 opacity-0 transition-all duration-500 ease-linear', {
+                                          'opacity-100': index === activeSlide,
+                                      })}
+                                  >
+                                      <h2 className="mb-5 h-5 w-40 rounded-full bg-gray-200"></h2>
+                                      <div className="mb-2 flex gap-x-2">
+                                          <div className="mb-2 h-2 w-20 rounded-full bg-gray-200"></div>
+                                          <div className="mb-2 h-2 w-32 rounded-full bg-gray-200"></div>
+                                      </div>
+                                      <div className="mb-2 flex gap-x-2">
+                                          <div className="mb-2 h-2 w-10 rounded-full bg-gray-200"></div>
+                                          <div className="mb-2 h-2 w-16 rounded-full bg-gray-200"></div>
+                                          <div className="mb-2 h-2 flex-1 rounded-full bg-gray-200"></div>
+                                      </div>
+                                      <div className="mb-5 flex gap-x-2">
+                                          <div className="mb-2 h-2 w-40 rounded-full bg-gray-200"></div>
+                                          <div className="mb-2 h-2 w-16 rounded-full bg-gray-200"></div>
+                                      </div>
+
+                                      <div className="mb-2 h-4 w-32 rounded-full bg-gray-200"></div>
+                                  </div>
+                              </div>
+                          ))}
                 </Slider>
                 <div className="mt-3 flex gap-x-1 max-md:justify-center">{renderDots()}</div>
             </div>
