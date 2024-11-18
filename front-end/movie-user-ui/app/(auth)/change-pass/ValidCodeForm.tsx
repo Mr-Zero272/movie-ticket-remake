@@ -1,12 +1,13 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import HeaderMobile from '@/components/ui/header-mobile';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { sendOtpCodeChangePassword, validCode } from '@/services/authServices';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { Fragment, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 const FormSchema = z.object({
     code: z.string().min(5, {

@@ -1,20 +1,22 @@
 'use client';
-import { ResponseApiTemplate, SignInFormSchema, SignInInfo } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'nextjs-toploader/app';
+import { toast } from 'sonner';
+
 import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 
-type Props = {};
+import { type ResponseApiTemplate, SignInFormSchema, SignInInfo } from '@/types/auth';
 
-const SignInForm = (props: Props) => {
+const SignInForm = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const authGoogleCode = searchParams.get('code');
@@ -22,6 +24,7 @@ const SignInForm = (props: Props) => {
     const [showPassword, setShowPassword] = useState(false);
     const clientId = process.env.GG_CLIENT_ID;
     const redirectUri = 'http://localhost:3000/sign-in';
+    const googleSignUp = useRef(false);
 
     const form = useForm({
         resolver: zodResolver(SignInFormSchema),
@@ -65,6 +68,7 @@ const SignInForm = (props: Props) => {
                 form.setError('usernameOrEmail', { message: resJson.message });
                 return;
             }
+            toast.success('Sign in successfully!', { description: 'Enjoy your movie now!' });
             router.push('/');
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -72,17 +76,24 @@ const SignInForm = (props: Props) => {
     );
 
     useEffect(() => {
-        if (googleLoading) return;
-        if (authGoogleCode !== null) {
-            setGoogleLoading(true);
-            signIn({
-                redirectUri: 'http://localhost:3000/sign-in',
-                url: 'http://localhost:3000/api/user/auth/google',
-                code: authGoogleCode,
-                keepLogin: form.getValues().keepLogin,
-            });
-            setGoogleLoading(false);
-        }
+        const authGG = async () => {
+            if (googleSignUp.current) return;
+            if (authGoogleCode !== null && authGoogleCode !== undefined && authGoogleCode !== '') {
+                setGoogleLoading(true);
+                googleSignUp.current = true;
+                signIn({
+                    redirectUri: 'http://localhost:3000/sign-in',
+                    url: 'http://localhost:3000/api/user/auth/google',
+                    code: authGoogleCode,
+                    keepLogin: form.getValues().keepLogin,
+                });
+
+                googleSignUp.current = false;
+                setGoogleLoading(false);
+            }
+        };
+
+        authGG();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [authGoogleCode]);
 
@@ -203,7 +214,7 @@ const SignInForm = (props: Props) => {
                 </div>
                 <Button
                     className="mb-5"
-                    loading={form.formState.isSubmitting}
+                    loading={form.formState.isSubmitting || googleLoading}
                     disabled={form.formState.isSubmitting || googleLoading}
                 >
                     Sign In

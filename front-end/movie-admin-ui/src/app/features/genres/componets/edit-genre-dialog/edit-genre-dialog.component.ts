@@ -51,7 +51,7 @@ export class EditGenreDialogComponent implements OnInit {
       };
       this.genreService.updateGenre(genre).subscribe({
         next: () => {
-          this.toastService.showToast('success', 'Update hall info successfully!');
+          this.toastService.showToast('success', 'Update genre info successfully!');
         },
         error: (error) => {
           let errorMessage = 'Something went wrong!';

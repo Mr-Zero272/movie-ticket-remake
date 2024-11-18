@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class GenreServiceImpl implements GenreService {
 
@@ -49,6 +51,10 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Genre addGenre(Genre genre) {
+        Optional<Genre> genreCheck = genreDao.findByNameIgnoreCase(genre.getName());
+        if (genreCheck.isPresent()) {
+            throw new GlobalException(400, "This genre already exists.");
+        }
         return genreDao.save(genre);
     }
 
@@ -61,5 +67,15 @@ public class GenreServiceImpl implements GenreService {
 
         genre.setName(genreUpdate.getName());
         return genreDao.save(genre);
+    }
+
+    @Override
+    public Genre deleteGenre(int genreId) {
+        Optional<Genre> genreCheck = genreDao.findById(genreId);
+        if (genreCheck.isEmpty()) {
+            throw new GlobalException(400, "This genre does not exists.");
+        }
+        genreDao.delete(genreCheck.get());
+        return genreCheck.get();
     }
 }

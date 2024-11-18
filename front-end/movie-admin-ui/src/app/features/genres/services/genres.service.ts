@@ -85,6 +85,54 @@ export class GenresService {
       );
   }
 
+  addGenre(genreName: string) {
+    const currentData = this.genreSubject.getValue();
+    if (!this.token) {
+      return throwError(() => new Error('Token is missing'));
+    }
+    return this.http
+      .post<Genre>(
+        this.genreUrl,
+        { name: genreName },
+        {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
+        },
+      )
+      .pipe(
+        tap((genreAdded) => {
+          this.genreSubject.next({
+            ...currentData,
+            totalElements: currentData.totalElements + 1,
+            data: [genreAdded, ...currentData.data],
+          });
+        }),
+      );
+  }
+
+  deleteGenre(genreId: number) {
+    const currentData = this.genreSubject.getValue();
+    if (!this.token) {
+      return throwError(() => new Error('Token is missing'));
+    }
+    return this.http
+      .delete<Genre>(`${this.genreUrl}/${genreId}`, {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      })
+      .pipe(
+        tap((deletedGenre) => {
+          this.genreSubject.next({
+            ...currentData,
+            totalElements: currentData.totalElements - 1,
+            data: currentData.data.filter((g) => g.id !== deletedGenre.id),
+          });
+        }),
+      );
+  }
+
   fetchGenresForSearching({
     q = '',
     page = 1,

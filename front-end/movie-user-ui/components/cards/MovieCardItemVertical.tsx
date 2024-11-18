@@ -1,11 +1,14 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices';
-import { Ellipsis, Heart, Play } from 'lucide-react';
+import { CalendarDays, Ellipsis, Heart, Play } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
+import { HoverCard, HoverCardTrigger } from '../ui/hover-card';
+import { HoverCardArrow, HoverCardContent } from '@radix-ui/react-hover-card';
+import { format } from 'date-fns';
 
 type Props = {
     userId: string;
@@ -15,6 +18,8 @@ type Props = {
     runtime: number;
     firstGenre: string;
     love: boolean;
+    overview: string;
+    releaseDate: string;
     className?: string;
 };
 
@@ -52,7 +57,12 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
         );
     }
 
-    const { userId, movieId, poster, title, runtime, firstGenre, className, love } = props;
+    const { userId, movieId, poster, title, runtime, firstGenre, className, overview, releaseDate } = props;
+    let rlDate = releaseDate;
+    if (!rlDate) {
+        rlDate = new Date().toISOString();
+    }
+
     const handleLoveClick = async () => {
         if (userId === '' || userId === '@') return;
         if (isApiCall.current) return;
@@ -81,9 +91,28 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
                     href={`/detail/${movieId}`}
                     className="absolute inset-0 hidden h-72 w-full items-center justify-center bg-gray-700 bg-opacity-35 group-hover:flex"
                 >
-                    <div className="flex size-12 items-center justify-center rounded-full bg-white">
-                        <Play className="size-5 fill-black dark:text-black" />
-                    </div>
+                    <HoverCard openDelay={400}>
+                        <HoverCardTrigger asChild>
+                            <div className="relative flex size-10 items-center justify-center rounded-full bg-white">
+                                <Play className="size-5 fill-black dark:text-black" />
+                            </div>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="z-10 w-52" side="right" sideOffset={10}>
+                            <HoverCardArrow className="fill-white" />
+                            <div className="flex justify-between space-x-4 bg-white p-3">
+                                <div className="space-y-1">
+                                    <h4 className="line-clamp-2 text-sm font-bold">{title}</h4>
+                                    <p className="line-clamp-4 text-sm text-gray-500">{overview}</p>
+                                    <div className="flex items-center pt-2">
+                                        <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{' '}
+                                        <span className="text-xs text-muted-foreground">
+                                            Release {format(rlDate, 'MMMM yyyy')}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    </HoverCard>
                 </Link>
             </div>
             <div className="px-3 py-5 text-sm">

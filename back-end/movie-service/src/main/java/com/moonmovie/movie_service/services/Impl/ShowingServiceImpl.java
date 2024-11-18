@@ -71,17 +71,13 @@ public class ShowingServiceImpl implements ShowingService {
         Page<Showing> pageShowing;
 
         if (query.equalsIgnoreCase("") && auditoriumId.equalsIgnoreCase("")) {
-            System.out.println("do not have any");
             pageShowing = showingDao.findAllByDate(date, pageable);
         } else if (!query.equalsIgnoreCase("") && auditoriumId.equalsIgnoreCase("")) {
             query = "%" + query + "%";
             pageShowing = showingDao.findAllByTitleLikeAndDate(query, date, pageable);
-            System.out.println("Only like title");
         } else if (query.equalsIgnoreCase("") && !auditoriumId.equalsIgnoreCase("")) {
             pageShowing = showingDao.findAllByAuditoriumIdAndDate(auditoriumId, date, pageable);
-            System.out.println("Only has auditorium");
         } else if (!query.equalsIgnoreCase("") && !auditoriumId.equalsIgnoreCase("")) {
-            System.out.println("have both");
             query = "%" + query + "%";
             pageShowing = showingDao.findAllByTitleLikeAndAuditoriumIdAndDate(query, auditoriumId, date, pageable);
         } else {
@@ -170,8 +166,13 @@ public class ShowingServiceImpl implements ShowingService {
         List<Showing> showings = showingDao.findAllByStartTimeAndAuditoriumIdIsOrderAsc(request.getDate(), request.getAuditoriumId());
 
         if (request.getPosition() > totalShowing) {
+            LocalDateTime tempStartTime = request.getDate().atTime(6, 0);
+            if (!showings.isEmpty()) {
+                tempStartTime =
+                        dateTimeTransfer.calculateDatePlusMinutes(showings.get(showings.size() - 1).getStartTime(), showings.get(showings.size() - 1).getMovie().getRuntime() + 20);
+            }
             Showing showing = Showing.builder()
-                    .startTime(dateTimeTransfer.calculateDatePlusMinutes(showings.get(showings.size() - 1).getStartTime(), showings.get(showings.size() - 1).getMovie().getRuntime() + 20))
+                    .startTime(tempStartTime)
                     .auditoriumId(request.getAuditoriumId())
                     .priceEachSeat(movie.getPriceEachSeat())
                     .type(request.getType())

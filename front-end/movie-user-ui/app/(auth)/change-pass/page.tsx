@@ -1,5 +1,4 @@
 'use client';
-import { Metadata } from 'next';
 import { useState } from 'react';
 import ChangePasswordForm from './ChangePasswordForm';
 import SendOtpCodeForm from './SendOtpCodeForm';

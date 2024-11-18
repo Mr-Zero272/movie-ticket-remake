@@ -1,13 +1,14 @@
 'use client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import HeaderMobile from '@/components/ui/header-mobile';
 import { Input } from '@/components/ui/input';
 import { sendOtpCodeChangePassword } from '@/services/authServices';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { Fragment, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 const FormSchema = z.object({
     email: z.string().email({ message: 'This email is not valid!' }),

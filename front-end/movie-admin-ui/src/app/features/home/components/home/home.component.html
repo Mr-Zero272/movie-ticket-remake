@@ -3,10 +3,13 @@
     <article class="flex-1">
       <div class="mb-3 flex items-center justify-between">
         <div class="text-2xl font-semibold">Earnings</div>
-        <button class="flex items-center rounded-md px-3 py-1.5 hover:bg-accent">
+        <a
+          routerLink="orders"
+          class="flex cursor-pointer items-center rounded-md px-3 py-1.5 hover:bg-accent active:scale-90"
+        >
           <span class="me-2 font-medium">More</span>
           <ng-icon name="heroSquares2x2" size="20"></ng-icon>
-        </button>
+        </a>
       </div>
       <div class="relative mb-5 w-full rounded-2xl bg-black p-5 text-white md:h-56">
         <div class="absolute right-5 top-5 flex items-center justify-center gap-x-2">
@@ -103,9 +106,9 @@
     <article class="flex-1">
       <div class="mb-3 flex items-center justify-between">
         <div class="text-2xl font-semibold">Incomes Overview</div>
-        <button class="flex items-center rounded-md px-3 py-1.5 hover:bg-accent">
+        <a routerLink="orders" class="flex items-center rounded-md px-3 py-1.5 hover:bg-accent active:scale-90">
           <ng-icon name="heroArrowLongRight" size="20"></ng-icon>
-        </button>
+        </a>
       </div>
       <ng-template #loadingChart>
         <div class="flex w-full animate-pulse items-end justify-evenly overflow-x-auto rounded-lg border-2 p-8">
@@ -158,7 +161,9 @@
           </ng-container>
         </ul>
       </div>
-      <button class="w-full rounded-md py-1.5 font-medium hover:bg-accent">See more</button>
+      <a routerLink="orders" class="w-full cursor-pointer rounded-md py-1.5 text-center font-medium hover:bg-accent"
+        >See more</a
+      >
     </article>
   </div>
 </section>

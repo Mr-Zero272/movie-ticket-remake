@@ -1,13 +1,15 @@
 'use client';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { useRouter } from 'nextjs-toploader/app';
+import { Bot, Check, X } from 'lucide-react';
+
 import { useAuth } from '@/components/auth/AuthProvider';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogHeader } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
 import { createRandomTransId } from '@/lib/utils';
 import { reservationServices } from '@/services';
-import { Bot, Check, X } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
 
 type Props = {};
 
@@ -22,7 +24,6 @@ const PaymentPage = (props: Props) => {
     const mm_invoiceId = searchParams.get('mm_invoiceId');
     const vnPayReturnCode = searchParams.get('vnp_ResponseCode');
     const zalopayReturnCode = searchParams.get('status');
-    const { toast } = useToast();
 
     if (
         mm_method === null ||
@@ -128,10 +129,8 @@ const PaymentPage = (props: Props) => {
         if ('urlPayment' in paymentMethodRes) {
             router.replace(paymentMethodRes.urlPayment);
         } else {
-            toast({
-                title: 'Error',
+            toast.error('Error', {
                 description: paymentMethodRes.message,
-                variant: 'destructive',
             });
         }
     };

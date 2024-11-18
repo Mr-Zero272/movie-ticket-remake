@@ -1,6 +1,5 @@
+import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { StatisticalCardComponent } from '../../../../shared/components/cards/statistical-card/statistical-card.component';
-import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   heroArrowLongRight,
@@ -12,24 +11,21 @@ import {
   heroUsers,
   heroViewfinderCircle,
 } from '@ng-icons/heroicons/outline';
-import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
-import Chart, { Legend } from 'chart.js/auto';
-import { OrderItemComponent } from '../../../../shared/components/ui/order-item/order-item.component';
-import { AuthService } from '../../../../core/services/auth.service';
-import { User } from '../../../../shared/models/auth.model';
-import { HomeService } from '../../services/home.service';
-import {
-  OrderStatistical,
-  OrderStatisticalList,
-  OrderYearStatistical,
-} from '../../../../shared/models/order-statistical.model';
-import { Order } from '../../../../shared/models/order.model';
-import { OrdersService } from '../../../orders/services/orders.service';
-import { MovieService } from '../../../../shared/services/movie.service';
-import { MovieStatistical } from '../../../../shared/models/movie-statistical.model';
+import Chart from 'chart.js/auto';
 import { lastValueFrom } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth.service';
+import { StatisticalCardComponent } from '../../../../shared/components/cards/statistical-card/statistical-card.component';
+import { OrderItemComponent } from '../../../../shared/components/ui/order-item/order-item.component';
+import { User } from '../../../../shared/models/auth.model';
+import { MovieStatistical } from '../../../../shared/models/movie-statistical.model';
+import { OrderStatisticalList, OrderYearStatistical } from '../../../../shared/models/order-statistical.model';
+import { Order } from '../../../../shared/models/order.model';
 import { UserStatistical } from '../../../../shared/models/users-statistical.model';
+import { MovieService } from '../../../../shared/services/movie.service';
 import { UserService } from '../../../../shared/services/user.service';
+import { OrdersService } from '../../../orders/services/orders.service';
+import { HomeService } from '../../services/home.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -38,10 +34,10 @@ import { UserService } from '../../../../shared/services/user.service';
     NgFor,
     NgIconComponent,
     StatisticalCardComponent,
-    ButtonComponent,
     NgIconComponent,
     CurrencyPipe,
     DatePipe,
+    RouterLink,
     OrderItemComponent,
     NgIf,
   ],

@@ -23,6 +23,8 @@ const RecommendMovies = async ({ movieId, userId, className }: Props) => {
                         poster={movie.posterPath}
                         title={movie.title}
                         runtime={movie.runtime}
+                        overview={movie.overview}
+                        releaseDate={movie.releaseDate}
                         firstGenre={movie.genres.length === 0 ? 'unknown' : movie.genres[0].name}
                         love={movie.userFavoriteMovies.some((m) => m.userId === userId)}
                     />

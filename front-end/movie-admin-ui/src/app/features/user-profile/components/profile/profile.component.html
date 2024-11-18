@@ -1,6 +1,13 @@
 <article class="mb-10 flex items-center gap-x-3 xl:gap-x-10">
   <div class="relative w-fit p-3">
-    <input type="file" class="hidden" accept="image/*" (change)="handleFileInput($event)" #avatarInput />
+    <input
+      type="file"
+      class="hidden"
+      accept="image/*"
+      (change)="handleFileInput($event)"
+      #avatarInput
+      [disabled]="!canUpdate"
+    />
     <img
       class="size-32 cursor-pointer rounded-full border object-cover"
       [src]="

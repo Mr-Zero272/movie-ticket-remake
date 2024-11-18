@@ -1,18 +1,20 @@
 'use client';
-import MovieCardItemHorizontal from '@/components/cards/MovieCardItemHorizontal';
-import Stepper from '@/components/shared/Stepper';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
+
 import { stepperShowing } from '@/constants';
-import { Step } from '@/types/stepper';
-import React, { useCallback, useState } from 'react';
-import Step2 from './step-2';
-import Step1 from './step-1';
-import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
-import { Showing, ShowingDto } from '@/types/showing';
-import { SeatDetail } from '@/types/seat';
-import { fetchShowing, fetchShowings } from '@/services/movieServices';
-import { useToast } from '@/components/ui/use-toast';
 import { seatService } from '@/services';
+import { fetchShowing, fetchShowings } from '@/services/movieServices';
+import Stepper from '@/components/shared/Stepper';
+import Step1 from './step-1';
+import Step2 from './step-2';
+import MovieCardItemVertical from '@/components/cards/MovieCardItemVertical';
+import MovieCardItemHorizontal from '@/components/cards/MovieCardItemHorizontal';
+
+import { Step } from '@/types/stepper';
 import { User } from '@/types/auth';
+import { SeatDetail } from '@/types/seat';
+import { Showing, ShowingDto } from '@/types/showing';
 
 type Props = {
     userInfo: User;
@@ -22,7 +24,6 @@ type Props = {
 };
 
 const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) => {
-    const { toast } = useToast();
     const [listSelectedSeats, setListSelectedSeats] = useState<SeatDetail[]>([]);
     const [activeStep, setActiveStep] = useState(stepperShowing[0]);
     const [showingData, setShowingData] = useState<Showing | null>(showingInfo);
@@ -40,10 +41,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
 
     const handleChooseStep = (step: Step) => {
         if (step.step === 2 && amount === 0) {
-            toast({
-                title: 'Error!',
-                description: 'You need to choose at least 1 seat to continue!',
-            });
+            toast.error('Error!', { description: 'You need to choose at least 1 seat to continue!' });
             return;
         }
         setActiveStep(step);
@@ -145,8 +143,7 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                                 onChangeDate={handleChangeDate}
                                 onNextStep={() => {
                                     if (amount === 0) {
-                                        toast({
-                                            title: 'Error!',
+                                        toast.error('Error!', {
                                             description: 'You need to choose at least 1 seat to continue!',
                                         });
                                         return;
@@ -181,6 +178,8 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                             title={showingInfo.movie.title}
                             runtime={showingInfo.movie.runtime}
                             firstGenre={showingInfo.movie.genres[0].name}
+                            overview={showingInfo.movie.overview}
+                            releaseDate={showingInfo.movie.releaseDate}
                             love={showingInfo.movie.userFavoriteMovies.some((s) => s.userId === userInfo.id)}
                         />
                     </div>

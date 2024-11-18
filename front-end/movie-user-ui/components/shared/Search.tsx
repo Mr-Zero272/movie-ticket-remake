@@ -1,14 +1,17 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Input } from '../ui/input';
+import { History, LoaderCircle, SearchIcon } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useRouter } from 'nextjs-toploader/app';
+import { useEffect, useRef, useState } from 'react';
+
 import { useDebounce } from '@/hooks';
 import { cn } from '@/lib/utils';
 import { addHistoryKeyword, fetchHistoryKeywords, fetchRecommendKeywords } from '@/services/recommendServices';
-import { History, LoaderCircle, SearchIcon } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator } from '../ui/dropdown-menu-custom';
-import { Keyword } from '@/types/keyword';
+import { DropdownMenu, DropdownMenuItem } from '../ui/dropdown-menu-custom';
+import { Input } from '../ui/input';
+
+import { type Keyword } from '@/types/keyword';
 
 type Props = {
     className?: string;
@@ -44,6 +47,7 @@ function Search({ className }: Props) {
 
     useEffect(() => {
         fetchHistory();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {

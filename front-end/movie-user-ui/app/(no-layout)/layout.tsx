@@ -6,6 +6,7 @@ import { Inter } from 'next/font/google';
 import '../globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import AuthProvider from '@/components/auth/AuthProvider';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
     title: 'Moon Movie (Make your night bright)',
@@ -26,6 +27,7 @@ const RootLayout = ({ children }: Props) => {
                             <div className="flex min-h-screen w-full items-center justify-center">{children}</div>
                         </Suspense>
                     </ThemeProvider>
+                    <Toaster />
                 </AuthProvider>
             </body>
         </html>

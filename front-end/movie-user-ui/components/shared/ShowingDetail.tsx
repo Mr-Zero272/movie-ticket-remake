@@ -1,17 +1,17 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import DatePickerCustom from '../ui/date-picker-custom';
-import { ShowingDto } from '@/types/showing';
-import { fetchShowings } from '@/services/movieServices';
-import { cn, formatCurrencyVND } from '@/lib/utils';
-import Link from 'next/link';
 import { format } from 'date-fns';
-import { Button } from '../ui/button';
+import { useRouter } from 'nextjs-toploader/app';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
+import { cn, formatCurrencyVND } from '@/lib/utils';
+import { fetchShowings } from '@/services/movieServices';
 import { Frown, MoveRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Button } from '../ui/button';
+import DatePickerCustom from '../ui/date-picker-custom';
 import { Skeleton } from '../ui/skeleton';
-import { useToast } from '../ui/use-toast';
-import { ToastAction } from '../ui/toast';
+
+import { ShowingDto } from '@/types/showing';
 
 type Props = {
     movieId: number;
@@ -24,7 +24,6 @@ const ShowingDetail = ({ movieId, isUserSignIn = false }: Props) => {
     const [showings, setShowings] = useState<ShowingDto[] | null>(null);
     const [activeShowing, setActiveShowing] = useState(0);
     const [loading, setLoading] = useState(false);
-    const { toast } = useToast();
 
     useEffect(() => {
         setLoading(true);
@@ -32,7 +31,9 @@ const ShowingDetail = ({ movieId, isUserSignIn = false }: Props) => {
             const res = await fetchShowings(activeDate, movieId);
             setShowings(res);
 
-            setLoading(false);
+            setTimeout(() => {
+                setLoading(false);
+            }, 1000);
         };
 
         fetchApi();
@@ -49,14 +50,12 @@ const ShowingDetail = ({ movieId, isUserSignIn = false }: Props) => {
 
     const handleBooking = () => {
         if (!isUserSignIn) {
-            toast({
-                title: 'Sign in is required',
+            toast.info('Sign in is required', {
                 description: 'You have to sign to booking!',
-                action: (
-                    <ToastAction altText="Go to sign in page">
-                        <Link href="/sign-in">Sign in now</Link>
-                    </ToastAction>
-                ),
+                action: {
+                    label: 'Sign in now',
+                    onClick: () => router.push('/sign-in'),
+                },
             });
             return;
         }

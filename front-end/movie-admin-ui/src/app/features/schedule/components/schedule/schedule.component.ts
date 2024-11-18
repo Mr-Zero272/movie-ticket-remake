@@ -24,8 +24,6 @@ import { ToastService } from '../../../../core/services/toast.service';
     NgIf,
     NgFor,
     DatePickerComponent,
-    MovieHorizontalCardComponent,
-    DatePipe,
     ScheduleSearchComponent,
     MovieVerticalCardComponent,
     PaginationComponent,
@@ -119,7 +117,7 @@ export class ScheduleComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result !== undefined) {
+      if (result !== undefined && result !== '') {
         this.scheduleService.deleteShowing(+result).subscribe({
           error: (err) => {
             this.toastService.showToast('danger', 'Cannot delete this showing!!!');

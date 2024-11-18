@@ -1,0 +1,24 @@
+<mat-dialog-content class="wrapper-dialog">
+  <h4 mat-dialog-title>Edit genre information</h4>
+  <form [formGroup]="addGenreForm" (ngSubmit)="handleSubmit()" id="addGenreForm">
+    <div class="mb-5 text-start">
+      <label for="genreName" class="text-grey-900 mb-2 text-sm">Genre name*</label>
+      <input
+        id="genreName"
+        type="text"
+        required
+        formControlName="genreName"
+        placeholder="Genre name"
+        class="mt-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary dark:focus:ring-primary"
+        required
+      />
+      <app-error-display [control]="addGenreForm.controls['genreName']" [isFormSubmitted]="false" />
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button mat-dialog-close cdkFocusInitial type="submit" form="addGenreForm">
+    {{ loading ? 'Submit...' : 'Submit' }}
+  </button>
+</mat-dialog-actions>

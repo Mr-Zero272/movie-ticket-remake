@@ -338,6 +338,8 @@ const SearchBaseOnUrl = (props: Props) => {
                             poster={movie.posterPath}
                             title={movie.title}
                             runtime={movie.runtime}
+                            overview={movie.overview}
+                            releaseDate={movie.releaseDate}
                             firstGenre={displayFirstGenre(movie.genres)}
                             love={movie.userFavoriteMovies.some((m) => m.userId === props.userId)}
                         />

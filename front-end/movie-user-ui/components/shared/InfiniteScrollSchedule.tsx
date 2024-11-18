@@ -6,10 +6,11 @@ import { Button } from '../ui/button';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import { fetchScheduleShowings } from '@/services/movieServices';
-import { useRouter } from 'next/navigation';
+
 import DatePickerCustom from '../ui/date-picker-custom';
 import ScrollTopButton from './ScrollTopButton';
 import Link from 'next/link';
+import { useRouter } from 'nextjs-toploader/app';
 
 const InfiniteScrollSchedule = () => {
     const router = useRouter();

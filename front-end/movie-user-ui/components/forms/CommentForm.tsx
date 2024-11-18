@@ -1,16 +1,17 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Textarea } from '../ui/textarea';
+
+import { addNewComment, editComment } from '@/services/commentService';
+import { useAuth } from '../auth/AuthProvider';
 import { Button } from '../ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { useToast } from '../ui/use-toast';
-import { addNewComment, editComment } from '@/services/commentService';
+import { Textarea } from '../ui/textarea';
+
+import { type ResponseApiTemplate } from '@/types/auth';
 import { type Comment } from '@/types/comment';
-import { useAuth } from '../auth/AuthProvider';
-import { ResponseApiTemplate } from '@/types/auth';
+import { toast } from 'sonner';
 
 const FormSchema = z.object({
     content: z.string(),
@@ -33,7 +34,6 @@ interface EditCommentProps extends Props {
 }
 
 const CommentForm = (props: AddCommentProps | EditCommentProps) => {
-    const { toast } = useToast();
     const { user } = useAuth();
     let content = '';
     if ('content' in props) {
@@ -67,13 +67,11 @@ const CommentForm = (props: AddCommentProps | EditCommentProps) => {
         }
         if (res && 'id' in res) {
             if ('content' in props) {
-                toast({
-                    title: 'Update comment success!',
+                toast.success('Update comment success!', {
                     description: 'Your comment is updated!',
                 });
             } else {
-                toast({
-                    title: 'Add new comment successfully',
+                toast.success('Add new comment successfully', {
                     description: 'Thanks for your comment.',
                 });
             }

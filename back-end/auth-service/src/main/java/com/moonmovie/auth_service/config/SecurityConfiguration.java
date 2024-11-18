@@ -30,7 +30,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers("/api/v2/moon-movie/auth/**", "/api/v2/moon-movie/auth/user/**")
+                        req.requestMatchers("/api/v2/moon-movie/auth/**", "/api/v2/moon-movie/auth/user/**", "/api/v2" +
+                                        "/moon-movie/auth/users/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()

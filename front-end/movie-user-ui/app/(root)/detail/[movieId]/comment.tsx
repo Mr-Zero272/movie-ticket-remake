@@ -1,4 +1,10 @@
 'use client';
+import { format } from 'date-fns';
+import { EllipsisVertical, Loader2, MessageSquareText, Send } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'nextjs-toploader/app';
+import { Fragment, useEffect, useState } from 'react';
+
 import { useAuth } from '@/components/auth/AuthProvider';
 import CommentForm from '@/components/forms/CommentForm';
 import { Button } from '@/components/ui/button';
@@ -10,6 +16,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogTrigger,
 } from '@/components/ui/dialog';
 import {
     DropdownMenu,
@@ -19,17 +26,11 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { DropdownMenuItem as DropdownItemCustom } from '@/components/ui/dropdown-menu-custom';
-import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { deleteComment, fetchRepliesForComment } from '@/services/commentService';
-import { type Comment } from '@/types/comment';
-import { DialogTrigger } from '@radix-ui/react-dialog';
-import { format } from 'date-fns';
 
-import { EllipsisVertical, Loader2, MessageSquareText, Send } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Fragment, useEffect, useState } from 'react';
+import { type Comment } from '@/types/comment';
+import { toast } from 'sonner';
 
 type Props = {
     loading?: boolean;
@@ -62,7 +63,6 @@ const Comment = ({
     });
     const [isDeleted, setIsDeleted] = useState(false);
     const router = useRouter();
-    const { toast } = useToast();
 
     useEffect(() => {
         if (rps) {
@@ -112,21 +112,16 @@ const Comment = ({
             if (res) {
                 if ('content' in res) {
                     setIsDeleted(true);
-                    toast({
-                        title: 'Delete comment successfully!',
+                    toast.success('Delete comment successfully!', {
                         description: 'Your comment is deleted!',
                     });
                 } else {
-                    toast({
-                        variant: 'destructive',
-                        title: 'Cannot comment successfully!',
+                    toast.error('Cannot delete this comment!', {
                         description: 'Some thing went wrong!',
                     });
                 }
             } else {
-                toast({
-                    variant: 'destructive',
-                    title: 'Cannot comment successfully!',
+                toast.error('Cannot delete this comment!', {
                     description: 'Some thing went wrong!',
                 });
             }

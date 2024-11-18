@@ -275,6 +275,8 @@ const FilterMovie = (props: PropsWithTypeNormal | PropsWithTypePopular) => {
                             poster={movie.posterPath}
                             title={movie.title}
                             runtime={movie.runtime}
+                            overview={movie.overview}
+                            releaseDate={movie.releaseDate}
                             firstGenre={movie.genres[0].name}
                             love={movie.userFavoriteMovies.some((m) => m.userId === props.userId)}
                         />

@@ -1,20 +1,22 @@
 'use client';
-import { isBase64Image } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChangeEvent, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import * as z from 'zod';
+
+import { isBase64Image } from '@/lib/utils';
+import { updateUser } from '@/services/authServices';
+import { addImageFiles } from '@/services/mediaServices';
+import { useAuth } from '../auth/AuthProvider';
 import { Button } from '../ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import { useToast } from '../ui/use-toast';
-import { ErrorDetail, User } from '@/types/auth';
-import { updateUser } from '@/services/authServices';
-import { useAuth } from '../auth/AuthProvider';
-import { addImageFiles } from '@/services/mediaServices';
+
+import { User } from '@/types/auth';
 
 type UserInfo = {
     username: string;
@@ -42,7 +44,6 @@ export const UserSchema = z.object({
 
 function ProfileForm({ user, title, sub }: Props) {
     const { updateUser: updateUserInContext } = useAuth();
-    const { toast } = useToast();
 
     const [files, setFiles] = useState<File[]>([]);
     const inputImageRef = useRef<HTMLInputElement>(null);
@@ -111,10 +112,7 @@ function ProfileForm({ user, title, sub }: Props) {
             return;
         }
 
-        toast({
-            title: 'Update profile',
-            description: 'Your profile has been updated successfully.',
-        });
+        toast.success('Update profile', { description: 'Your profile has been updated successfully.' });
 
         if (!pathname.includes('/profile')) {
             router.push('/');

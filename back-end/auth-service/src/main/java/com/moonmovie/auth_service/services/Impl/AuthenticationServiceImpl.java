@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.moonmovie.auth_service.dao.UserDao;
+import com.moonmovie.auth_service.exception.GlobalException;
 import com.moonmovie.auth_service.jwt.JwtService;
 import com.moonmovie.auth_service.models.Authentication;
 import com.moonmovie.auth_service.models.Role;
@@ -16,6 +17,8 @@ import com.moonmovie.auth_service.response.AuthenticationResponse;
 import com.moonmovie.auth_service.response.ResponseTemplate;
 import com.moonmovie.auth_service.services.AuthenticationService;
 import com.moonmovie.auth_service.services.MailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
@@ -44,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
     @Autowired
     private UserDao userDao;
 
@@ -151,6 +155,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse authenticateWithGoogle(String code, String redirectUrl) throws UnsupportedEncodingException {
         String accessGoogleToken = getOauthAccessTokenGoogle(code, redirectUrl);
+        if (accessGoogleToken.isEmpty()) {
+            throw new GlobalException(400, "Cannot sign up with Google");
+        }
         User tempUserInfo = getProfileDetailsGoogle(accessGoogleToken);
         Optional<User> userInDatabase = userDao.findByEmail(tempUserInfo.getEmail());
 
@@ -250,7 +257,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, httpHeaders);
 
         String url = "https://accounts.google.com/o/oauth2/token";
-        String response = restTemplate.postForObject(url, requestEntity, String.class);
+        String response = "";
+        try {
+            response = restTemplate.postForObject(url, requestEntity, String.class);
+        } catch (Exception e) {
+            log.warn("Double call google api");
+            return "";
+        }
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         return jsonObject.get("access_token").toString();
     }

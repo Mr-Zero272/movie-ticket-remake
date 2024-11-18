@@ -7,6 +7,9 @@ import { GenresService } from '../../services/genres.service';
 import { MatDialog } from '@angular/material/dialog';
 import { EditGenreDialogComponent } from '../edit-genre-dialog/edit-genre-dialog.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
+import { AddGenreDialogComponent } from '../add-genre-dialog/add-genre-dialog.component';
+import { DeleteGenreDialogComponent } from '../delete-genre-dialog/delete-genre-dialog.component';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-genres',
@@ -40,6 +43,7 @@ export class GenresComponent implements AfterViewInit, OnInit {
   constructor(
     private cdr: ChangeDetectorRef,
     private genresService: GenresService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -103,9 +107,32 @@ export class GenresComponent implements AfterViewInit, OnInit {
     this.handleFetchGenres({});
   }
 
-  openDialog(genre: Genre): void {
+  openEditDialog(genre: Genre): void {
     this.dialog.open(EditGenreDialogComponent, {
       data: genre,
+    });
+  }
+
+  openAddDialog(): void {
+    this.dialog.open(AddGenreDialogComponent);
+  }
+
+  openDeleteDialog(genreId: number): void {
+    const dialogRef = this.dialog.open(DeleteGenreDialogComponent, {
+      data: { genreId: genreId },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined && result !== '') {
+        this.genresService.deleteGenre(+result).subscribe({
+          error: (err) => {
+            this.toastService.showToast('danger', 'Cannot delete this genre!!!');
+          },
+          next: () => {
+            this.toastService.showToast('success', 'Delete successfully!');
+          },
+        }).closed;
+      }
     });
   }
 }

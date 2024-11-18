@@ -21,11 +21,6 @@ import { ToastService } from '../../../../core/services/toast.service';
   selector: 'app-adding-showing',
   standalone: true,
   imports: [
-    NgIf,
-    NgFor,
-    AuditoriumBadgeComponent,
-    ShowingBadgeComponent,
-    MovieHorizontalCardComponent,
     FormsModule,
     SelectMovieComponent,
     SelectAuditoriumComponent,
@@ -77,7 +72,7 @@ export class AddingShowingComponent implements OnInit {
         this.preMovie = data.movie;
         const newS = new Showing(
           0,
-          data.date + 'T60:00:00',
+          data.date + 'T06:00:00',
           data.type,
           data.auditorium.id,
           data.movie.priceEachSeat,
@@ -108,6 +103,8 @@ export class AddingShowingComponent implements OnInit {
       return;
     }
     const valuesForm = this.addShowingForm.value;
+    console.log(valuesForm);
+
     this.loading = true;
     this.scheduleService
       .addShowing({
