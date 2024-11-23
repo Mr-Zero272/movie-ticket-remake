@@ -138,7 +138,9 @@ function Search({ className }: Props) {
 
     const handleSearchFocus = async () => {
         setShowResult(true);
-        fetchHistory();
+        if (searchValue === '') {
+            fetchHistory();
+        }
     };
 
     return (
