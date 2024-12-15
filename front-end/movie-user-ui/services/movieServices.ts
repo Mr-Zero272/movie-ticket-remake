@@ -1,6 +1,6 @@
 import { GenreSchema, MovieSchema } from '@/types/movie';
 import { PaginationMovieSchema, PaginationShowingSchema } from '@/types/pagination';
-import { ShowingDtoSchema, ShowingSchema } from '@/types/showing';
+import { EarliestShowtimesResSchema, ShowingDtoSchema, ShowingSchema } from '@/types/showing';
 import axios from 'axios';
 import * as z from 'zod';
 
@@ -210,5 +210,20 @@ export const fetchRecommendMovies = async (movieId: number) => {
     } catch (error: any) {
         console.error('Error fetching list recommend movies:', error.message);
         return [];
+    }
+};
+
+export const getEarliestShowtimesForMovie = async (movieId: number) => {
+    try {
+        const response = await axios.get(`${API_URL}/showing/future/${movieId}`);
+        const result = EarliestShowtimesResSchema.safeParse(response.data);
+        if (result.success) {
+            return result.data;
+        } else {
+            throw new Error('Cannot valid earliest showings information');
+        }
+    } catch (error: any) {
+        console.error('Error fetching earliest showings info:', error.message);
+        throw new Error('Cannot fetch earliest showings information');
     }
 };

@@ -5,13 +5,13 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { cn, formatCurrencyVND } from '@/lib/utils';
-import { fetchShowings } from '@/services/movieServices';
+import { fetchShowings, getEarliestShowtimesForMovie } from '@/services/movieServices';
 import { Frown, MoveRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import DatePickerCustom from '../ui/date-picker-custom';
 import { Skeleton } from '../ui/skeleton';
 
-import { ShowingDto } from '@/types/showing';
+import { type ShowingDto } from '@/types/showing';
 
 type Props = {
     movieId: number;
@@ -20,20 +20,38 @@ type Props = {
 
 const ShowingDetail = ({ movieId, isUserSignIn = false }: Props) => {
     const router = useRouter();
-    const [activeDate, setActiveDate] = useState(new Date().toISOString().split('T')[0] + 'T00:00:00');
+    const [activeDate, setActiveDate] = useState<string>('');
     const [showings, setShowings] = useState<ShowingDto[] | null>(null);
     const [activeShowing, setActiveShowing] = useState(0);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         setLoading(true);
-        const fetchApi = async () => {
-            const res = await fetchShowings(activeDate, movieId);
-            setShowings(res);
+        const fetchInitData = async () => {
+            const res = await getEarliestShowtimesForMovie(movieId);
+            setActiveDate(res.date);
+            setShowings(res.showingDtos);
 
             setTimeout(() => {
                 setLoading(false);
             }, 1000);
+        };
+
+        fetchInitData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        setLoading(true);
+        const fetchApi = async () => {
+            if (activeDate !== '') {
+                const res = await fetchShowings(activeDate, movieId);
+                setShowings(res);
+
+                setTimeout(() => {
+                    setLoading(false);
+                }, 1000);
+            }
         };
 
         fetchApi();
@@ -65,7 +83,10 @@ const ShowingDetail = ({ movieId, isUserSignIn = false }: Props) => {
     return (
         <div className="mb-5">
             <h1 className="mb-5 text-xl">Showings</h1>
-            <DatePickerCustom initialDate={activeDate} onChooseDate={handleChooseDate} />
+            <DatePickerCustom
+                initialDate={activeDate === '' ? new Date().toISOString().split('T')[0] + 'T00:00:00' : activeDate}
+                onChooseDate={handleChooseDate}
+            />
             <div className="mb-4">
                 {showings &&
                     !loading &&

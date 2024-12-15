@@ -31,6 +31,9 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Cancel</button>
+  <a [routerLink]="['hall', 'detail', data.id]" routerLinkActive="router-link-active" mat-button mat-dialog-close
+    >Edit list seat</a
+  >
   <button mat-button mat-dialog-close cdkFocusInitial type="submit" form="editHallInfoForm">
     {{ loading ? 'Submit...' : 'Update' }}
   </button>

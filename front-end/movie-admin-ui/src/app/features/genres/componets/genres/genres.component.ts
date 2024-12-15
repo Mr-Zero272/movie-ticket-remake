@@ -126,6 +126,8 @@ export class GenresComponent implements AfterViewInit, OnInit {
       if (result !== undefined && result !== '') {
         this.genresService.deleteGenre(+result).subscribe({
           error: (err) => {
+            console.log(err);
+
             this.toastService.showToast('danger', 'Cannot delete this genre!!!');
           },
           next: () => {

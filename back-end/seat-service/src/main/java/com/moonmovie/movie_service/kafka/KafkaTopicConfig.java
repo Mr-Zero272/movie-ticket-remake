@@ -19,4 +19,10 @@ public class KafkaTopicConfig {
         return TopicBuilder.name("refresh_seat")
                 .build();
     }
+
+    @Bean
+    public NewTopic changePositionSeatTopic() {
+        return TopicBuilder.name("change_position_seat")
+                .build();
+    }
 }

@@ -20,6 +20,8 @@ import { UsersComponent } from './features/users/components/users/users.componen
 import { BlankLayoutComponent } from './shared/components/layouts/blank-layout/blank-layout.component';
 import { MainLayoutComponent } from './shared/components/layouts/main-layout/main-layout.component';
 import { DetailComponent } from './features/orders/componets/detail/detail.component';
+import { ListSeatComponent } from './features/hall/components/list-seat/list-seat.component';
+import { StatisticalPageComponent } from './features/movies/components/statistical-page/statistical-page.component';
 
 export const routes: Routes = [
   {
@@ -46,6 +48,12 @@ export const routes: Routes = [
         data: {
           breadcrumb: 'adding',
         },
+      },
+      {
+        path: 'movies/statistical',
+        title: 'Movies statistical',
+        component: StatisticalPageComponent,
+        canActivate: [authGuard],
       },
       {
         path: 'movie/:id',
@@ -114,6 +122,12 @@ export const routes: Routes = [
         path: 'hall',
         title: 'Manage halls',
         component: HallComponent,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'hall/detail/:id',
+        title: 'Hall detail',
+        component: ListSeatComponent,
         canActivate: [authGuard],
       },
       {

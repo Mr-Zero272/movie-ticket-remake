@@ -1,8 +1,10 @@
 package com.moonmovie.movie_service.services.Impl;
 
 import com.moonmovie.movie_service.dao.GenreDao;
+import com.moonmovie.movie_service.dao.MovieDao;
 import com.moonmovie.movie_service.exceptions.GlobalException;
 import com.moonmovie.movie_service.models.Genre;
+import com.moonmovie.movie_service.models.Movie;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class GenreServiceImpl implements GenreService {
 
     @Autowired
     private GenreDao genreDao;
+
+    @Autowired
+    private MovieDao movieDao;
 
     @Override
     public PaginationResponse<Genre> getAllGenres(String q, String sort, String sortOrder, int page, int size) {
@@ -71,11 +76,15 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Genre deleteGenre(int genreId) {
-        Optional<Genre> genreCheck = genreDao.findById(genreId);
-        if (genreCheck.isEmpty()) {
-            throw new GlobalException(400, "This genre does not exists.");
+        Genre genre = genreDao.findById(genreId).orElseThrow(() -> new GlobalException(400, "This genre does not exists."));
+
+        for (Movie movie : genre.getMovies()) {
+            movie.getGenres().remove(genre);
+            movieDao.save(movie);
         }
-        genreDao.delete(genreCheck.get());
-        return genreCheck.get();
+
+
+        genreDao.delete(genre);
+        return genre;
     }
 }

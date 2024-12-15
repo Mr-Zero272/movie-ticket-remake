@@ -5,6 +5,7 @@ export const TicketSchema = z.object({
     seatId: z.string(),
     movieTitle: z.string(),
     moviePoster: z.string(),
+    movieId: z.number(),
     date: z.string(),
     runtime: z.number(),
     seatNumber: z.number(),
@@ -15,6 +16,8 @@ export const TicketSchema = z.object({
     showingId: z.number(),
     createdAt: z.string(),
     orderId: z.string(),
+    status: z.string(),
+    userId: z.string(),
 });
 
 export type Ticket = z.infer<typeof TicketSchema>;

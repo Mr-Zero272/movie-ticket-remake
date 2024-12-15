@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { LoaderCircle, ScanLine, SearchX } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'nextjs-toploader/app';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 
 import TicketBase from '@/components/cards/TicketBase';
@@ -15,6 +15,7 @@ import DetailTicket from './detail-ticket';
 import { getTickets } from '@/services/reservationServices';
 import { Movie } from '@/types/movie';
 import { Ticket } from '@/types/ticket';
+import { SeatDetail } from '@/types/seat';
 
 type Props = {
     userId: string;
@@ -32,6 +33,7 @@ const ListTicket = ({ userId, listTickets, listPopularMovies }: Props) => {
         return listTickets[0];
     });
     const [openDialog, setOpenDialog] = useState(false);
+    const hasMounted = useRef(false);
 
     const handleTicketClick = (ticket: Ticket) => {
         if (window.innerWidth <= 1490) {
@@ -44,15 +46,51 @@ const ListTicket = ({ userId, listTickets, listPopularMovies }: Props) => {
         if (loading) return;
 
         const fetchApi = async () => {
+            if (!hasMounted.current) {
+                hasMounted.current = true;
+                return;
+            }
             setLoading(true);
-            const res = await getTickets({ filter: filter, page: 1, size: 100 });
+            const res = await getTickets({ filter: filter, page: 1, size: 30 });
             setTickets(res);
+            if (res.length !== 0) {
+                setActiveTicket(res[0]);
+            }
             setLoading(false);
         };
 
         fetchApi();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filter]);
+
+    const handleChangeSeatPosition = useCallback((s: SeatDetail, ticketId: string) => {
+        setActiveTicket((prev) => {
+            if (prev !== null) {
+                return {
+                    ...prev,
+                    seatId: s.id,
+                    seatNumber: s.seat.numberSeat,
+                    seatRow: s.seat.rowSeat,
+                };
+            } else {
+                return prev;
+            }
+        });
+        setTickets((prev) => {
+            return prev.map((t) => {
+                if (t.id === ticketId) {
+                    return {
+                        ...t,
+                        seatId: s.id,
+                        seatNumber: s.seat.numberSeat,
+                        seatRow: s.seat.rowSeat,
+                    };
+                } else {
+                    return t;
+                }
+            });
+        });
+    }, []);
     return (
         <>
             <Dialog open={openDialog} onOpenChange={() => setOpenDialog(false)}>
@@ -62,96 +100,12 @@ const ListTicket = ({ userId, listTickets, listPopularMovies }: Props) => {
                     className="dark:border-none"
                 >
                     <div className="relative mt-10 flex-none rounded-lg bg-accent bg-white p-3 dark:bg-black">
-                        <div className="flex gap-x-2">
-                            <div className="relative w-1/3">
-                                <Image
-                                    src={
-                                        activeTicket
-                                            ? activeTicket.moviePoster
-                                            : 'http://localhost:8272/api/v2/moon-movie/media/images/defaultBackdrop.jpg'
-                                    }
-                                    alt="movie-poster"
-                                    height={70}
-                                    width={50}
-                                    quality={100}
-                                    className="relative bottom-10 h-32 w-28 rounded-md"
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="line-clamp-2 font-bold uppercase">
-                                    {activeTicket && activeTicket.movieTitle}
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                    Created at:{' '}
-                                    {format(
-                                        activeTicket ? activeTicket.date : '2024-11-11T00:00:00',
-                                        'dd MMM, yyyy - HH:mm',
-                                    )}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                    Run time:{' '}
-                                    <span className="font-medium text-black">
-                                        {activeTicket && activeTicket.runtime} min
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                        <div className="mb-2">
-                            <p className="text-sm text-gray-500">Address</p>
-                            <p className="line-clamp-2 font-bold">{activeTicket && activeTicket.address}</p>
-                        </div>
-                        <div className="flex justify-between gap-x-5">
-                            <div>
-                                <p className="text-sm text-gray-500">Date</p>
-                                <p className="font-bold">
-                                    {format(
-                                        activeTicket ? activeTicket.date : '2024-11-11T00:00:00',
-                                        'EEEE, dd MMM yyyy',
-                                    )}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Time</p>
-                                <p className="font-bold">
-                                    {format(activeTicket ? activeTicket.date : '2024-11-11T00:00:00', 'HH:mm a')}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="my-5 border-b-2 border-dashed pt-2">
-                            <div className="absolute -left-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
-                            <div className="absolute -right-4 -mt-4 size-8 rounded-full bg-white dark:bg-[#121212]"></div>
-                        </div>
-                        <div className="mb-2 flex justify-between">
-                            <div>
-                                <p className="text-sm text-gray-500">Seat</p>
-                                <p className="font-bold">{activeTicket && activeTicket.seatNumber}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Row</p>
-                                <p className="font-bold">{activeTicket && activeTicket.seatRow}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Cinema</p>
-                                <p className="font-bold">{activeTicket && activeTicket.hall}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between gap-x-5">
-                            <div className="border">
-                                <QRCode value={activeTicket ? activeTicket.id : ''} size={70} />
-                            </div>
-                            <p className="text-gray-500">Scan this code in front of the cinema hall to enter.</p>
-                        </div>
-
-                        <div className="absolute -top-10 right-0">
-                            <Button
-                                size="sm"
-                                variant="link"
-                                onClick={() => router.push(`/order/${activeTicket && activeTicket.orderId}`)}
-                            >
-                                <ScanLine className="me-2 size-5" />
-                                Order detail
-                            </Button>
-                        </div>
+                        <DetailTicket
+                            userId={userId}
+                            activeTicket={activeTicket}
+                            listPopularMovies={listPopularMovies}
+                            onUpdatePosition={handleChangeSeatPosition}
+                        />
                     </div>
                 </DialogContent>
             </Dialog>
@@ -225,7 +179,14 @@ const ListTicket = ({ userId, listTickets, listPopularMovies }: Props) => {
                     )}
                 </ul>
             </div>
-            <DetailTicket userId={userId} activeTicket={activeTicket} listPopularMovies={listPopularMovies} />
+            <div className="min-h-96 w-1/3 flex-none rounded-lg bg-white p-4 dark:bg-black max-[1490px]:hidden">
+                <DetailTicket
+                    userId={userId}
+                    activeTicket={activeTicket}
+                    listPopularMovies={listPopularMovies}
+                    onUpdatePosition={handleChangeSeatPosition}
+                />
+            </div>
         </>
     );
 };

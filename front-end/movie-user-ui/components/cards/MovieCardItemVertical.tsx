@@ -1,14 +1,17 @@
 'use client';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import Image from 'next/image';
+import Link from 'next/link';
+
+import { HoverCardArrow, HoverCardContent } from '@radix-ui/react-hover-card';
 import { cn } from '@/lib/utils';
 import { addToFavorite, deleteFavoriteMovie } from '@/services/favoriteServices';
 import { CalendarDays, Ellipsis, Heart, Play } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRef, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { HoverCard, HoverCardTrigger } from '../ui/hover-card';
-import { HoverCardArrow, HoverCardContent } from '@radix-ui/react-hover-card';
-import { format } from 'date-fns';
+import { useRouter } from 'nextjs-toploader/app';
 
 type Props = {
     userId: string;
@@ -25,6 +28,7 @@ type Props = {
 
 const MovieCardItemVertical = (props: Props | { loading: boolean; className?: string }) => {
     const isApiCall = useRef(false);
+    const router = useRouter();
     const [isFavorite, setIsFavorite] = useState(() => {
         if ('love' in props) {
             return props.love;
@@ -64,7 +68,16 @@ const MovieCardItemVertical = (props: Props | { loading: boolean; className?: st
     }
 
     const handleLoveClick = async () => {
-        if (userId === '' || userId === '@') return;
+        if (userId === '' || userId === '@') {
+            toast.info('Sign in is required', {
+                description: 'You have to sign to do this action!',
+                action: {
+                    label: 'Sign in now',
+                    onClick: () => router.push('/sign-in'),
+                },
+            });
+            return;
+        }
         if (isApiCall.current) return;
         isApiCall.current = true;
         if (isFavorite) {

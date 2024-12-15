@@ -14,6 +14,7 @@ import com.moonmovie.movie_service.models.ShowingStatistical;
 import com.moonmovie.movie_service.requests.AddShowingRequest;
 import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
 import com.moonmovie.movie_service.requests.UpdateShowingTimeAndAuditoriumRequest;
+import com.moonmovie.movie_service.responses.FutureShowingsResponse;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.services.MovieService;
@@ -29,7 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ShowingServiceImpl implements ShowingService {
@@ -215,6 +219,30 @@ public class ShowingServiceImpl implements ShowingService {
     @Override
     public List<ShowingStatistical> getShowingStatistical(Integer month, Integer year) {
         return showingDao.getShowingStatistical(month, year);
+    }
+
+    @Override
+    public FutureShowingsResponse getEarliestShowtimesForMovie(Integer movieId) {
+        FutureShowingsResponse response = new FutureShowingsResponse();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        List<ShowingDto> showings = showingDao.findUpcomingShowingsByMovie(movieId, currentDateTime);
+
+        if (showings.isEmpty()) {
+            response.setDate(currentDateTime);
+            response.setShowingDtos(Collections.emptyList());
+        } else {
+            Map<LocalDateTime, List<ShowingDto>> groupedByDate = showings.stream()
+                    .collect(Collectors.groupingBy(ShowingDto::getStartTime));
+
+            LocalDateTime earliestDate = groupedByDate.keySet().stream()
+                    .min(LocalDateTime::compareTo)
+                    .orElse(currentDateTime);
+
+            response.setDate(earliestDate);
+            response.setShowingDtos(groupedByDate.get(earliestDate));
+        }
+
+        return response;
     }
 
     private List<Showing> editShowingTime(List<Showing> showings, LocalDateTime startTime) {

@@ -83,9 +83,8 @@ public class MovieController {
     }
 
     @DeleteMapping("/{movieId}")
-    public ResponseEntity<ResponseTemplate> deleteMovie(@PathVariable("movieId") int id) {
-        movieService.deleteMovie(id);
-        return ResponseEntity.ok(new ResponseTemplate(200, "Delete movie with id: " + id + " successfully!"));
+    public ResponseEntity<MovieDto> deleteMovie(@PathVariable("movieId") int id) {
+        return ResponseEntity.ok(movieService.deleteMovie(id));
     }
 
     @GetMapping("/movie-showing/{showingId}")

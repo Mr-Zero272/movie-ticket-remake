@@ -1,32 +1,28 @@
+import { Location, NgIf } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MultiSelectComponent } from '../../../../shared/components/ui/multi-select/multi-select.component';
-import { NgFor, NgIf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SelectImageItemComponent } from '../select-image-item/select-image-item.component';
-import { SelectImagesComponent } from '../select-images/select-images.component';
-import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
-import { GenresService } from '../../../genres/services/genres.service';
-import { MediaService } from '../../services/media.service';
-import { SelectVideosTrailerComponent } from '../select-videos-trailer/select-videos-trailer.component';
-import { ErrorDisplayComponent } from '../../../../shared/components/ui/error-display/error-display.component';
-import { MovieService } from '../../services/movie.service';
 import { lastValueFrom } from 'rxjs';
-import { AddMovieRequest } from '../../../../shared/models/add-movie-request.model';
-import { AddMovieRequestBuilder } from '../../../../shared/models/add-movie-request.builder';
-import { DetailShowingType } from '../../../../shared/models/detail-showing-type.model';
-import { FormMovieService } from '../../services/form-movie.service';
 import { ToastService } from '../../../../core/services/toast.service';
-import { ImageBase } from '../../../../shared/models/image-base.model';
+import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
+import { ErrorDisplayComponent } from '../../../../shared/components/ui/error-display/error-display.component';
+import { MultiSelectComponent } from '../../../../shared/components/ui/multi-select/multi-select.component';
+import { AddMovieRequestBuilder } from '../../../../shared/models/add-movie-request.builder';
+import { AddMovieRequest } from '../../../../shared/models/add-movie-request.model';
+import { DetailShowingType } from '../../../../shared/models/detail-showing-type.model';
+import { GenresService } from '../../../genres/services/genres.service';
+import { FormMovieService } from '../../services/form-movie.service';
+import { MediaService } from '../../services/media.service';
+import { MovieService } from '../../services/movie.service';
+import { SelectImagesComponent } from '../select-images/select-images.component';
+import { SelectVideosTrailerComponent } from '../select-videos-trailer/select-videos-trailer.component';
 
 @Component({
   selector: 'app-add-movie',
   standalone: true,
   imports: [
     MultiSelectComponent,
-    NgFor,
     NgIf,
     ReactiveFormsModule,
-    SelectImageItemComponent,
     SelectImagesComponent,
     ButtonComponent,
     SelectVideosTrailerComponent,
@@ -59,34 +55,38 @@ export class AddMovieComponent implements OnInit {
     private movieService: MovieService,
     private toastService: ToastService,
     private formMovieService: FormMovieService,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
-    this.movieForm = new FormGroup({
-      genres: new FormControl<Array<{ key: string; value: string | number }>>([], Validators.required),
-      images: new FormControl<Array<{ file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }>>(
-        [],
-        Validators.required,
-      ),
-      trailer: new FormControl<{ file: File; url: string } | null>(null, Validators.required),
-      adult: new FormControl<boolean>(false),
-      title: new FormControl<string>('', Validators.required),
-      budget: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      overview: new FormControl<string>(''),
-      originalLanguage: new FormControl<string>('en', Validators.required),
-      runtime: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      voteAverage: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      releaseDate: new FormControl<string>(new Date().toISOString().split('T')[0], Validators.required),
-      voteCount: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      totalDateShowingsInMonth: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      monthToSchedule: new FormControl<number>(1, [Validators.required]),
-      yearToSchedule: new FormControl<number>(2024, [Validators.required]),
-      priceEachSeat: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      _2d: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      _2dSubtitles: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      _3d: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-      _3dSubtitles: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
-    });
+    this.movieForm = new FormGroup(
+      {
+        genres: new FormControl<Array<{ key: string; value: string | number }>>([], Validators.required),
+        images: new FormControl<Array<{ file: File; url: string; type: 'vertical' | 'horizontal' | 'square' }>>(
+          [],
+          Validators.required,
+        ),
+        trailer: new FormControl<{ file: File; url: string } | null>(null, Validators.required),
+        adult: new FormControl<boolean>(false),
+        title: new FormControl<string>('', Validators.required),
+        budget: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        overview: new FormControl<string>(''),
+        originalLanguage: new FormControl<string>('en', Validators.required),
+        runtime: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        voteAverage: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        releaseDate: new FormControl<string>(new Date().toISOString().split('T')[0], Validators.required),
+        voteCount: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        totalDateShowingsInMonth: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        monthToSchedule: new FormControl<number>(1, [Validators.required]),
+        yearToSchedule: new FormControl<number>(2024, [Validators.required]),
+        priceEachSeat: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        _2d: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        _2dSubtitles: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        _3d: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+        _3dSubtitles: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+      },
+      this.movieService.maxDateValidator(new Date().toISOString().split('T')[0]),
+    );
 
     this.genresService.fetchGenresForSearching({}).subscribe((data) => {
       this.genresData = data;
@@ -200,5 +200,9 @@ export class AddMovieComponent implements OnInit {
         this.toastService.showToast('danger', 'Cannot add new movie!');
       },
     });
+  }
+
+  back() {
+    this.location.back();
   }
 }

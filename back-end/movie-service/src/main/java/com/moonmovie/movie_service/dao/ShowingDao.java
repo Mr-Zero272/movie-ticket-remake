@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -27,6 +28,16 @@ public interface ShowingDao extends JpaRepository<Showing, Integer> {
     @Query("SELECT DAY(s.startTime) as date, COUNT(*) as totalMovies FROM Showing s WHERE " +
             "MONTH(s.startTime) = ?1 AND YEAR(s.startTime) = ?2 GROUP BY DAY(s.startTime)")
     List<ShowingStatistical> getShowingStatistical(int month, int year);
+
+    @Query("""
+       SELECT s.id as id, s.startTime as startTime, s.type as type, s.auditoriumId as auditoriumId, s.priceEachSeat as priceEachSeat, s.movie.runtime as runtime, s.movie.title as title
+       FROM Showing s 
+       WHERE s.movie.id = :movieId 
+       AND s.startTime >= :currentDateTime 
+       ORDER BY s.startTime ASC
+       """)
+    List<ShowingDto> findUpcomingShowingsByMovie(@Param("movieId") Integer movieId,
+                                                 @Param("currentDateTime") LocalDateTime currentDateTime);
 
     @Query("SELECT s.id as id, s.startTime as startTime, s.type as type, s.auditoriumId as auditoriumId, s.priceEachSeat as priceEachSeat, s.movie.runtime as runtime, s.movie.title as title " +
             "FROM Showing s WHERE DATE(s.startTime) = ?1 AND s.auditoriumId = ?2 ORDER BY s.startTime ASC")

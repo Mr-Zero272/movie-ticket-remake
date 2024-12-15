@@ -63,7 +63,7 @@ public interface MovieService {
      */
      Movie updateMovie(int id, MovieRequest movie);
 
-     void deleteMovie(int id);
+    MovieDto deleteMovie(int id);
 
      Movie updateMovieScheduleDetail(int id, MovieRequest movie);
 

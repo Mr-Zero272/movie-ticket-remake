@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,13 +36,14 @@ public class AuditoriumServiceImpl implements AuditoriumService {
     @Override
     @Transactional
     public Auditorium addAuditorium(Auditorium auditorium) {
-        Optional<Auditorium> auditoriumOptional = auditoriumDao.findByName(auditorium.getName());
+        Optional<Auditorium> auditoriumOptional = auditoriumDao.findByNameAndDeleteFlagIsFalse(auditorium.getName());
         if (auditoriumOptional.isPresent()) {
             throw new SeatException(SeatErrorConstants.ERROR_AUDITORIUM_ALREADY_EXISTS);
         }
 
         auditorium.setCreatedAt(LocalDateTime.now());
         auditorium.setModifiedAt(LocalDateTime.now());
+        auditorium.setDeleteFlag(false);
         Auditorium auditoriumSaved = auditoriumDao.save(auditorium);
         List<Seat> seats = getSeatList(auditoriumSaved);
         seatDao.saveAll(seats);
@@ -58,7 +60,7 @@ public class AuditoriumServiceImpl implements AuditoriumService {
             if (nameRows.get(i).equals("C") || nameRows.get(i).equals("D") || nameRows.get(i).equals("I"))
                 numberSeatInRow = 12;
             for (int j = 0; j < numberSeatInRow; j++) {
-                Seat seat = new Seat(null, nameRows.get(i), (j + 1), auditoriumSaved);
+                Seat seat = new Seat(null, nameRows.get(i), (j + 1), "normal", auditoriumSaved);
                 seats.add(seat);
             }
         }
@@ -68,9 +70,11 @@ public class AuditoriumServiceImpl implements AuditoriumService {
     @Override
     @Transactional
     public Auditorium updateAuditorium(String auditoriumId, Auditorium auditoriumUpdate) {
-        Auditorium auditorium = auditoriumDao.findById(auditoriumId).orElseThrow(() -> new SeatException(SeatErrorConstants.ERROR_AUDITORIUM_NOT_EXISTS));
+        Auditorium auditorium = auditoriumDao.findById(auditoriumId)
+                .orElseThrow(() -> new SeatException(SeatErrorConstants.ERROR_AUDITORIUM_NOT_EXISTS));
 
-        if (auditoriumDao.countByName(auditorium.getName()) == 1 && !auditorium.getName().equalsIgnoreCase(auditoriumUpdate.getName())) {
+        if (auditoriumDao.countByNameAndDeleteFlagIsFalse(auditorium.getName()) == 1
+                && !auditorium.getName().equalsIgnoreCase(auditoriumUpdate.getName())) {
             throw new SeatException(SeatErrorConstants.ERROR_AUDITORIUM_NAME_ALREADY_EXISTS);
         }
         auditorium.setName(auditoriumUpdate.getName());
@@ -83,7 +87,10 @@ public class AuditoriumServiceImpl implements AuditoriumService {
     @Override
     public List<String> getAvailableAuditoriums(int numAuditoriums) {
         Pageable pageable = PageRequest.of(0, numAuditoriums);
-        Page<Auditorium> auditoriumPage = auditoriumDao.findAll(pageable);
+        Page<Auditorium> auditoriumPage = auditoriumDao.findAllByDeleteFlagIsFalse(pageable);
+        if (auditoriumPage.getContent().size() < numAuditoriums) {
+            return Collections.emptyList();
+        }
         return auditoriumPage.getContent().stream().map(Auditorium::getId).toList();
     }
 
@@ -111,9 +118,9 @@ public class AuditoriumServiceImpl implements AuditoriumService {
 
         Page<Auditorium> auditoriumPage;
         if (q == null || q.isEmpty()) {
-            auditoriumPage = auditoriumDao.findAll(pageable);
+            auditoriumPage = auditoriumDao.findAllByDeleteFlagIsFalse(pageable);
         } else {
-            auditoriumPage = auditoriumDao.findAllByNameContainsIgnoreCase(q, pageable);
+            auditoriumPage = auditoriumDao.findAllByNameContainsIgnoreCaseAndDeleteFlagIsFalse(q, pageable);
         }
         PaginationResponse<Auditorium> resp = PaginationResponse.<Auditorium>builder()
                 .data(auditoriumPage.getContent())
@@ -123,5 +130,15 @@ public class AuditoriumServiceImpl implements AuditoriumService {
                 .totalElements(auditoriumPage.getTotalElements())
                 .build();
         return resp;
+    }
+
+    @Override
+    public Auditorium deleteAuditorium(String auditoriumId) {
+        Auditorium aud =
+                auditoriumDao.findByIdAndDeleteFlagIsFalse(auditoriumId).orElseThrow(() -> new SeatException(400,
+                        "This aud id does not exist!"));
+        aud.setDeleteFlag(true);
+
+        return auditoriumDao.save(aud);
     }
 }

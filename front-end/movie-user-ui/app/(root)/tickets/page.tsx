@@ -25,7 +25,7 @@ const Tickets = async () => {
 
     if (!userInfo?.onboarded) redirect('/onboarding');
 
-    const listTickets = await getTickets({ filter: 'all', page: 1, size: 100 });
+    const listTickets = await getTickets({ filter: 'all', page: 1, size: 30 });
 
     const favoriteMovies = await fetchListFavoriteMovies(userInfo.id);
     let popularMovies: Movie[] = [];

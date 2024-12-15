@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-button',
   standalone: true,
-  imports: [NgClass, NgIf, RouterLink],
+  imports: [NgClass, NgIf],
   templateUrl: './button.component.html',
   styleUrl: './button.component.css',
 })

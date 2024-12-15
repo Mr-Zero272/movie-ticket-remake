@@ -1,15 +1,14 @@
 package com.moonmovie.movie_service.controllers;
 
 import com.moonmovie.movie_service.dto.ShowingDto;
-import com.moonmovie.movie_service.models.MovieStatistical;
 import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.models.ShowingStatistical;
 import com.moonmovie.movie_service.requests.AddShowingRequest;
 import com.moonmovie.movie_service.requests.UpdateShowingTimeAndAuditoriumRequest;
+import com.moonmovie.movie_service.responses.FutureShowingsResponse;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.services.ShowingService;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,8 +32,14 @@ public class ShowingController {
         return ResponseEntity.ok(showingService.getAllShowings(startDate, movieId));
     }
 
+    @GetMapping("/future/{movieId}")
+    public ResponseEntity<FutureShowingsResponse> getFutureShowingsAndDate(@PathVariable Integer movieId) {
+        return ResponseEntity.ok(showingService.getEarliestShowtimesForMovie(movieId));
+    }
+
     @GetMapping("/schedule")
-    public ResponseEntity<PaginationResponse<Showing>> getScheduledShowings(
+    public ResponseEntity<PaginationResponse<Showing>> getScheduledShowings
+        (
             @RequestParam(value = "query", defaultValue = "") String query,
             @RequestParam(value = "auditoriumId", defaultValue = "") String auditoriumId,
             @RequestParam(value = "date", defaultValue = "2024-11-01T00:00:00") LocalDateTime date,

@@ -26,6 +26,7 @@ public class Seat implements Serializable {
 
 	private String rowSeat;
 	private int numberSeat;
+	private String status;
 
 	@DocumentReference
 	private Auditorium auditorium;

@@ -26,6 +26,11 @@ public class AuditoriumController {
         return ResponseEntity.ok(auditoriumService.updateAuditorium(auditoriumId, auditorium));
     }
 
+    @DeleteMapping("/{auditoriumId}")
+    public ResponseEntity<Auditorium> deleteAuditorium(@PathVariable("auditoriumId") String auditoriumId) {
+        return ResponseEntity.ok(auditoriumService.deleteAuditorium(auditoriumId));
+    }
+
     @GetMapping("/{auditoriumId}")
     public ResponseEntity<Auditorium> getAuditoriumById(@PathVariable("auditoriumId") String id) {
         return ResponseEntity.ok(auditoriumService.getAuditoriumById(id));

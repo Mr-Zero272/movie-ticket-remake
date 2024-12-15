@@ -13,7 +13,7 @@ import MovieCardItemHorizontal from '@/components/cards/MovieCardItemHorizontal'
 
 import { Step } from '@/types/stepper';
 import { User } from '@/types/auth';
-import { SeatDetail } from '@/types/seat';
+import { SeatChooseRes, SeatDetail } from '@/types/seat';
 import { Showing, ShowingDto } from '@/types/showing';
 
 type Props = {
@@ -24,6 +24,7 @@ type Props = {
 };
 
 const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) => {
+    const [seats, setSeats] = useState(listSeat);
     const [listSelectedSeats, setListSelectedSeats] = useState<SeatDetail[]>([]);
     const [activeStep, setActiveStep] = useState(stepperShowing[0]);
     const [showingData, setShowingData] = useState<Showing | null>(showingInfo);
@@ -56,6 +57,22 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
             }
         });
         setAmount(amount);
+    }, []);
+
+    const handleUpdateSeats = useCallback((s: SeatChooseRes) => {
+        setSeats((prev) =>
+            prev.map((sd) => {
+                if (sd.id === s.id) {
+                    return {
+                        ...sd,
+                        status: s.status,
+                        userId: s.userId,
+                    };
+                } else {
+                    return sd;
+                }
+            }),
+        );
     }, []);
 
     const handleChangeShowing = useCallback(
@@ -135,12 +152,13 @@ const BookingForm = ({ userInfo, showingInfo, listSeat, listShowTimes }: Props) 
                                 amount={amount}
                                 showingId={showingData ? showingData.id : null}
                                 showingDate={showingData ? showingData.startTime : null}
-                                seatData={listSeat}
+                                seatData={seats}
                                 listShowTimes={showTimes}
                                 loading={loading}
                                 onChooseSeat={handleChooseSeat}
                                 onChangeShowing={handleChangeShowing}
                                 onChangeDate={handleChangeDate}
+                                onListSeatsChange={handleUpdateSeats}
                                 onNextStep={() => {
                                     if (amount === 0) {
                                         toast.error('Error!', {

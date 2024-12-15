@@ -5,6 +5,8 @@ import com.moonmovie.movie_service.dao.TicketDao;
 import com.moonmovie.movie_service.dto.TicketDto;
 import com.moonmovie.movie_service.exceptions.ReservationException;
 import com.moonmovie.movie_service.models.Ticket;
+import com.moonmovie.movie_service.models.TicketsSoldStatistical;
+import com.moonmovie.movie_service.requests.SeatDetailInfo;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.MailService;
 import com.moonmovie.movie_service.services.TicketService;
@@ -37,48 +39,22 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public PaginationResponse<Ticket> getTickets(int page, int size, String filter, String userId) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        List<Ticket> ticketList = new ArrayList<>();
-        Integer ticketsCount = 0;
 
-        switch (filter.toLowerCase()) {
-            case "all":
-                ticketList = ticketDao.findAllTicketsFilterAll(userId, pageable);
-                if (!ticketList.isEmpty()) {
-                    ticketsCount = ticketDao.countTicketsFilterAll(userId);
-                }
-                break;
-            case "active":
-                ticketList = ticketDao.findAllTicketsFilterActiveOrExpired(userId, LocalDateTime.now(), pageable);
-                if (!ticketList.isEmpty()) {
-                    ticketsCount = ticketDao.countTicketsFilterActiveOrExpired(userId, LocalDateTime.now());
-                }
-                break;
-            case "expired":
-                ticketList = ticketDao.findAllTicketsFilterActiveOrExpired(userId, LocalDateTime.of(1900, 1, 1, 0, 0), pageable);
-                if (!ticketList.isEmpty()) {
-                    ticketsCount = ticketDao.countTicketsFilterActiveOrExpired(userId, LocalDateTime.of(1900, 1, 1, 0, 0));
-                }
-                break;
-            case "unpaid":
-                ticketList = ticketDao.findAllTicketsFilterUnpaid(userId, pageable);
-                if (!ticketList.isEmpty()) {
-                    ticketsCount = ticketDao.countTicketsFilterUnpaid(userId);
-                }
-                break;
-            default:
-                throw new ReservationException(ReservationErrorConstants.ERROR_NOT_EXIST_FILTER_TICKET);
-        }
+        Page<Ticket> ticketPage = switch (filter.toLowerCase()) {
+            case "all" -> ticketDao.findALlByUserId(userId, pageable);
+            case "active" -> ticketDao.findAllByUserIdAndDateAfter(userId, LocalDateTime.now(), pageable);
+            case "expired" -> ticketDao.findAllByUserIdAndDateBefore(userId, LocalDateTime.now(), pageable);
+            case "unpaid" -> ticketDao.findALlByUserIdAndStatus(userId, "unpaid", pageable);
+            default -> throw new ReservationException(ReservationErrorConstants.ERROR_NOT_EXIST_FILTER_TICKET);
+        };
 
-        Page<Ticket> ticketPage = new PageImpl<>(ticketList, pageable, ticketsCount);
-
-        PaginationResponse<Ticket> resp = PaginationResponse.<Ticket>builder()
+        return PaginationResponse.<Ticket>builder()
                 .data(ticketPage.getContent())
                 .page(page)
                 .size(size)
                 .totalPages(ticketPage.getTotalPages())
                 .totalElements(ticketPage.getTotalElements())
                 .build();
-        return resp;
     }
 
     @Override
@@ -115,5 +91,39 @@ public class TicketServiceImpl implements TicketService {
         Context context = new Context();
         context.setVariable("tickets", ticketDtos);
         mailService.sendEmailWithHtmlTemplate(email, "Thank for your order!", "ticketMail", context);
+    }
+
+    @Override
+    public PaginationResponse<TicketsSoldStatistical> fetchTicketsByStatistical(String sort, String sortOrder,int page,
+                                                                                int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Integer ticketsCount = ticketDao.countSoldStatistical();
+        List<TicketsSoldStatistical> ticketsSoldStatisticalList = new ArrayList<>();
+        if (sortOrder.equals("asc")) {
+            ticketsSoldStatisticalList = ticketDao.findAllSoldStatistical(sort, -1, pageable);
+        } else {
+            ticketsSoldStatisticalList = ticketDao.findAllSoldStatistical(sort, 1, pageable);
+        }
+        Page<TicketsSoldStatistical> ticketPage = new PageImpl<>(ticketsSoldStatisticalList, pageable, ticketsCount);
+
+        PaginationResponse<TicketsSoldStatistical> resp = PaginationResponse.<TicketsSoldStatistical>builder()
+                .data(ticketPage.getContent())
+                .page(page)
+                .size(size)
+                .totalPages(ticketPage.getTotalPages())
+                .totalElements(ticketPage.getTotalElements())
+                .build();
+        return resp;
+    }
+
+    @Override
+    public List<Ticket> updateSeatPosition(SeatDetailInfo seatDetailInfo) {
+        List<Ticket> tickets = ticketDao.findAllBySeatId(seatDetailInfo.getOldId());
+        tickets.forEach(t -> {
+            t.setSeatId(seatDetailInfo.getNewId());
+            t.setSeatNumber(seatDetailInfo.getNumberSeat());
+            t.setSeatRow(seatDetailInfo.getRowSeat());
+        });
+        return ticketDao.saveAll(tickets);
     }
 }

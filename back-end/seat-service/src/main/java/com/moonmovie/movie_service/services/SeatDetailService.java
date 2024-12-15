@@ -1,6 +1,7 @@
 package com.moonmovie.movie_service.services;
 
 import com.moonmovie.movie_service.dto.SeatDetailDto;
+import com.moonmovie.movie_service.requests.ChangeSeatPositionRequest;
 import com.moonmovie.movie_service.requests.CheckoutSeatsRequest;
 import com.moonmovie.movie_service.response.ResponseMessage;
 import com.moonmovie.movie_service.models.SeatDetail;
@@ -29,4 +30,6 @@ public interface SeatDetailService {
     public List<String> refreshSeats(List<String> seatIds);
 
     ResponseTemplate checkIfListSeatAvailableToCheckout(List<String> seatIds, String userId);
+
+    SeatDetail changeSeatPosition(ChangeSeatPositionRequest request);
 }

@@ -12,6 +12,7 @@ import { Textarea } from '../ui/textarea';
 import { type ResponseApiTemplate } from '@/types/auth';
 import { type Comment } from '@/types/comment';
 import { toast } from 'sonner';
+import { useRouter } from 'nextjs-toploader/app';
 
 const FormSchema = z.object({
     content: z.string(),
@@ -34,7 +35,8 @@ interface EditCommentProps extends Props {
 }
 
 const CommentForm = (props: AddCommentProps | EditCommentProps) => {
-    const { user } = useAuth();
+    const { user, isUserSignedIn } = useAuth();
+    const router = useRouter();
     let content = '';
     if ('content' in props) {
         content = props.content;
@@ -50,6 +52,18 @@ const CommentForm = (props: AddCommentProps | EditCommentProps) => {
         if (data.content === '') {
             return;
         }
+
+        if (!isUserSignedIn()) {
+            toast.info('Sign in is required', {
+                description: 'You have to sign to do this action!',
+                action: {
+                    label: 'Sign in now',
+                    onClick: () => router.push('/sign-in'),
+                },
+            });
+            return;
+        }
+
         if (props.onSubmit) props.onSubmit();
         let res: Comment | ResponseApiTemplate | undefined = undefined;
         if ('content' in props) {

@@ -3,23 +3,22 @@ package com.moonmovie.movie_service.services.Impl;
 import com.moonmovie.movie_service.dao.SeatDao;
 import com.moonmovie.movie_service.dao.SeatDetailDao;
 import com.moonmovie.movie_service.dto.SeatDetailDto;
+import com.moonmovie.movie_service.exceptions.SeatException;
+import com.moonmovie.movie_service.kafka.KafkaProducerService;
 import com.moonmovie.movie_service.models.Seat;
 import com.moonmovie.movie_service.models.SeatDetail;
-import com.moonmovie.movie_service.requests.CheckoutSeatsRequest;
-import com.moonmovie.movie_service.requests.ChoosingSeatRequest;
-import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
-import com.moonmovie.movie_service.response.ResponseMessage;
+import com.moonmovie.movie_service.requests.*;
 import com.moonmovie.movie_service.response.ResponseTemplate;
 import com.moonmovie.movie_service.services.SeatDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +32,8 @@ public class SeatDetailServiceImpl implements SeatDetailService {
     private SeatDetailDao seatDetailDao;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
 
     public void sendDataToWebSocket(String destination, Object data) {
         messagingTemplate.convertAndSend(destination, data);
@@ -43,12 +44,13 @@ public class SeatDetailServiceImpl implements SeatDetailService {
         List<Seat> seats = seatDao.findByAuditoriumId(new ObjectId(request.getAuditoriumId()));
         List<SeatDetail> seatDetails = new ArrayList<>();
         for (Seat seatItem : seats) {
+            boolean isNormalSeat = seatItem.getStatus().equalsIgnoreCase("normal");
             SeatDetail seatDetail = SeatDetail.builder()
                     .price(request.getPrice())
                     .showingId(request.getShowingId())
                     .seat(seatItem)
-                    .status("available")
-                    .userId("")
+                    .status( isNormalSeat ? "available" : "booked")
+                    .userId(isNormalSeat ? "" : "admin")
                     .build();
             seatDetails.add(seatDetail);
         }
@@ -98,6 +100,7 @@ public class SeatDetailServiceImpl implements SeatDetailService {
         seatDetailList.forEach(seatStatus -> {
             seatStatus.setStatus("available");
             seatStatus.setUserId("");
+            sendDataToWebSocket("/topic/seat-state", new ChoosingSeatRequest(seatStatus.getId(), "available", ""));
         });
         seatDetailDao.saveAll(seatDetailList);
 
@@ -175,6 +178,38 @@ public class SeatDetailServiceImpl implements SeatDetailService {
             }
         }
         return res;
+    }
+
+    @Override
+    public SeatDetail changeSeatPosition(ChangeSeatPositionRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+        long daysBetween = ChronoUnit.DAYS.between(now, request.getStartTime());
+
+        if (request.getStartTime().isAfter(now) && daysBetween >= 3) {
+            SeatDetail oldSeat = seatDetailDao.findById(request.getOldPosition()).orElseThrow(() -> new SeatException(400,
+                    "This seat is not exists!"));
+            SeatDetail newSeat =
+                    seatDetailDao.findById(request.getNewPosition()).orElseThrow(() -> new SeatException(400,
+                            "This seat is not exists!"));
+
+            if (!newSeat.getUserId().equalsIgnoreCase("") && !newSeat.getStatus().equalsIgnoreCase("available")) {
+                throw new SeatException(400, "This seat is booked by someone else!");
+            }
+
+            SeatDetailInfo reqKafka = new SeatDetailInfo(oldSeat.getId(), newSeat.getId(),
+                    newSeat.getSeat().getRowSeat(), newSeat.getSeat().getNumberSeat());
+
+            newSeat.setStatus(oldSeat.getStatus());
+            newSeat.setUserId(oldSeat.getUserId());
+            SeatDetail newSeatSaved = seatDetailDao.save(newSeat);
+            oldSeat.setUserId("");
+            oldSeat.setStatus("available");
+            kafkaProducerService.sendUpdatePositionSeatInfo(reqKafka);
+            seatDetailDao.save(oldSeat);
+            return newSeatSaved;
+        } else {
+            throw new SeatException(400, "This show has been released or the seat change deadline has passed.");
+        }
     }
 
     private SeatDetailDto convertSeatDetailToSeatDetailDto(SeatDetail seatDetail) {

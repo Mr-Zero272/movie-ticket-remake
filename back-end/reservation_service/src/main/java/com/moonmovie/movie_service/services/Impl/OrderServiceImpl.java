@@ -79,6 +79,7 @@ public class OrderServiceImpl implements OrderService {
             tickets.add(Ticket.builder()
                     .seatId(seatDetailDto.getId())
                     .movieTitle(movieDto.getTitle())
+                    .movieId(movieDto.getId())
                     .moviePoster(movieDto.getPosterPath())
                     .date(request.getShowingTime())
                     .runtime(movieDto.getRuntime())
@@ -88,12 +89,14 @@ public class OrderServiceImpl implements OrderService {
                     .hall(seatDetailDto.getHall())
                     .address(seatDetailDto.getAddress())
                     .showingId(request.getShowingId())
+                    .status("unpaid")
+                    .userId(request.getCustomerId())
                     .orderId(orderSaved.getId())
                     .createdAt(LocalDateTime.now())
                     .build());
         }
 
-        List<Ticket> ticketsSaved = ticketDao.saveAll(tickets);
+        ticketDao.saveAll(tickets);
         return orderSaved;
     }
 

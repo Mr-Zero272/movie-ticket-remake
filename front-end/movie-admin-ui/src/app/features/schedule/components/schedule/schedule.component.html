@@ -29,7 +29,17 @@
     </div>
   </article>
   <article class="2xl:w-4/5">
-    <app-date-picker class="rounded-lg bg-white" (onChooseDate)="handleChangeDate($event)"></app-date-picker>
+    <div class="flex items-center gap-x-4 px-5">
+      <label for="active_date" class="mb-2 font-medium text-gray-900 dark:text-white">Choose date*:</label>
+      <input
+        class="block w-60 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500 dark:focus:ring-orange-500"
+        type="date"
+        id="active_date"
+        [(ngModel)]="activeDate"
+        (input)="handleChangeDate()"
+      />
+    </div>
+
     <div class="rounded-lg bg-white p-5">
       <div class="flex items-center justify-between">
         <div class="mb-5 text-2xl font-bold">List showings</div>

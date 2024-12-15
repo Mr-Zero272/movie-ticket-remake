@@ -35,7 +35,6 @@ function Search({ className }: Props) {
 
     const handleClear = () => {
         setSearchValue('');
-        setSearchResult([]);
         if (inputRef.current !== null) {
             inputRef.current.focus();
         }

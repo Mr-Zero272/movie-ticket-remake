@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { cn, generateDateRangeNext } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -12,9 +12,9 @@ type Props = {
 
 const DatePickerCustom = ({ initialDate, className, onChooseDate }: Props) => {
     const itemsRef = useRef<null | HTMLDivElement>(null);
-    const [isMouseDown, setIsMouseDown] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
+    const isMouseDown = useRef(false);
+    const startX = useRef(0);
+    const scrollLeft = useRef(0);
     const moveDistance = useRef(0);
 
     const listDate = useMemo(() => {
@@ -22,6 +22,12 @@ const DatePickerCustom = ({ initialDate, className, onChooseDate }: Props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const [activeDate, setActiveDate] = useState(initialDate);
+
+    useEffect(() => {
+        setActiveDate(initialDate);
+    }, [initialDate]);
+
+    console.log(initialDate);
 
     const handleDateClick = (date: string) => {
         if (moveDistance.current < 5) {
@@ -43,29 +49,29 @@ const DatePickerCustom = ({ initialDate, className, onChooseDate }: Props) => {
     };
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        setIsMouseDown(true);
+        isMouseDown.current = true;
         if (itemsRef.current !== null) {
-            setStartX(e.pageX - itemsRef.current.offsetLeft);
-            setScrollLeft(itemsRef.current.scrollLeft);
+            startX.current = e.pageX - itemsRef.current.offsetLeft;
+            scrollLeft.current = itemsRef.current.scrollLeft;
         }
         moveDistance.current = 0;
     };
 
     const handleMouseLeave = () => {
-        setIsMouseDown(false);
+        isMouseDown.current = false;
     };
 
     const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-        setIsMouseDown(false);
+        isMouseDown.current = false;
     };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isMouseDown) return;
+        if (!isMouseDown.current) return;
         e.preventDefault();
         if (itemsRef.current !== null) {
             const x = e.pageX - itemsRef.current?.offsetLeft;
-            const walk = (x - startX) * 1;
-            itemsRef.current.scrollLeft = scrollLeft - walk;
+            const walk = (x - startX.current) * 1;
+            itemsRef.current.scrollLeft = scrollLeft.current - walk;
             moveDistance.current += Math.abs(walk);
         }
     };
@@ -94,7 +100,7 @@ const DatePickerCustom = ({ initialDate, className, onChooseDate }: Props) => {
                 onMouseMove={handleMouseMove}
             >
                 {listDate.map((date) => {
-                    const active = date === activeDate;
+                    const active = date.split('T')[0] === activeDate.split('T')[0];
                     return (
                         <div
                             key={date}

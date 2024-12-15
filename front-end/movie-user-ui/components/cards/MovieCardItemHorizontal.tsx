@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
+import { useRouter } from 'nextjs-toploader/app';
+import { toast } from 'sonner';
 
 type Props = {
     userId: string;
@@ -18,6 +20,7 @@ type Props = {
 };
 
 const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: string }) => {
+    const router = useRouter();
     const isApiCall = useRef(false);
     const [isFavorite, setIsFavorite] = useState(() => {
         if ('love' in props) {
@@ -52,7 +55,16 @@ const MovieCardItemHorizontal = (props: Props | { loading: boolean; className?: 
 
     const { userId, movieId, poster, title, runtime, firstGenre, className, love } = props;
     const handleLoveClick = async () => {
-        if (userId === '' || userId === '@') return;
+        if (userId === '' || userId === '@') {
+            toast.info('Sign in is required', {
+                description: 'You have to sign to do this action!',
+                action: {
+                    label: 'Sign in now',
+                    onClick: () => router.push('/sign-in'),
+                },
+            });
+            return;
+        }
         if (isApiCall.current) return;
         isApiCall.current = true;
         if (isFavorite) {

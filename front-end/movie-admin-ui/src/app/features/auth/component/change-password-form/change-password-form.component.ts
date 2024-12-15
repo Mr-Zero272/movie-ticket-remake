@@ -1,19 +1,18 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ChangePassService } from '../../services/change-pass.service';
-import { ToastService } from '../../../../core/services/toast.service';
-import { ErrorDisplayComponent } from '../../../../shared/components/ui/error-display/error-display.component';
-import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { NgIf } from '@angular/common';
+import { Component, Input } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroEye, heroEyeSlash } from '@ng-icons/heroicons/outline';
-import { Router } from '@angular/router';
+import { ToastService } from '../../../../core/services/toast.service';
+import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { HeaderMobileComponent } from '../../../../shared/components/ui/header-mobile/header-mobile.component';
+import { ChangePassService } from '../../services/change-pass.service';
 
 @Component({
   selector: 'app-change-password-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ErrorDisplayComponent, ButtonComponent, NgIf, NgIconComponent, HeaderMobileComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, NgIf, NgIconComponent, HeaderMobileComponent],
   templateUrl: './change-password-form.component.html',
   styleUrl: './change-password-form.component.scss',
   providers: [

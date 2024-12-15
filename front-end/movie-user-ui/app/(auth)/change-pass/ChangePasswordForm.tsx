@@ -14,12 +14,18 @@ import { toast } from 'sonner';
 
 const FormSchema = z
     .object({
-        newPassword: z.string().regex(new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/), {
-            message: 'Password must contain at least one uppercase letter, one lowercase letter, and one digit.',
-        }),
-        confirmPassword: z.string().regex(new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/), {
-            message: 'Password must contain at least one uppercase letter, one lowercase letter, and one digit.',
-        }),
+        newPassword: z
+            .string()
+            .regex(new RegExp(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/), {
+                message:
+                    'Password must contain at least one uppercase letter, one lowercase letter, one special character, one number and at least 8 characters',
+            }),
+        confirmPassword: z
+            .string()
+            .regex(new RegExp(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/), {
+                message:
+                    'Password must contain at least one uppercase letter, one lowercase letter, one special character, one number and at least 8 characters',
+            }),
     })
     .superRefine(({ newPassword, confirmPassword }, ctx) => {
         if (confirmPassword !== newPassword) {

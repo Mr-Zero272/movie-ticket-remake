@@ -1,0 +1,31 @@
+<div class="w-full">
+  <ng-template #headerTable>
+    <span class="text-lg font-semibold text-gray-900 rtl:text-right dark:bg-gray-800 dark:text-white"
+      >Top Sold Tickets Movie</span
+    >
+    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">View and analyze movies</p>
+  </ng-template>
+  <ng-template #lastColumn let-movie>
+    <app-button variant="link" [href]="'/movie/' + movie.movieId">Detail</app-button>
+  </ng-template>
+  <app-table
+    [haveSearch]="false"
+    [headerTable]="headerTable"
+    [columns]="columns"
+    [tableData]="hotMoviesData"
+    [sortData]="sortData"
+    [loading]="loading"
+    [lastColumn]="lastColumn"
+    (onChooseSort)="handleChangeSort($event)"
+    (onChoosePage)="handleChangePage($event)"
+  ></app-table>
+  <ng-template #movieTemplate let-movie>
+    <div class="flex items-center gap-x-2">
+      <img class="size-20 rounded-md border" [src]="movie.moviePoster" alt="movie poster" />
+      <div class="text-ellipsis font-medium text-gray-500">{{ movie.movieTitle }}</div>
+    </div>
+  </ng-template>
+  <ng-template #movieTemplateLoading>
+    <app-movie-horizontal-card [loading]="true"></app-movie-horizontal-card>
+  </ng-template>
+</div>

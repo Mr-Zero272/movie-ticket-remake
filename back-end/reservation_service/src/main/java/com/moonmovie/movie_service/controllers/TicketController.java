@@ -1,6 +1,7 @@
 package com.moonmovie.movie_service.controllers;
 
 import com.moonmovie.movie_service.models.Ticket;
+import com.moonmovie.movie_service.models.TicketsSoldStatistical;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,15 @@ public class TicketController {
     @GetMapping("/showing/total/{showingId} ")
     public ResponseEntity<Integer> getTotalTicketsByShowingId(@PathVariable("showingId") int showingId) {
         return ResponseEntity.ok(ticketService.getTicketsByShowingId(showingId).size());
+    }
+
+    @GetMapping("/statistical")
+    public ResponseEntity<PaginationResponse<TicketsSoldStatistical>> fetchTicketsByStatistical(
+            @RequestParam(value = "sort", defaultValue = "none", required = false) String sort,
+            @RequestParam(value = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(ticketService.fetchTicketsByStatistical(sort, sortOrder, page, size));
     }
 }

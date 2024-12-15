@@ -178,6 +178,7 @@ export const getTickets = async ({
 
     try {
         const res = await axios.get(`${API_URL}/ticket`, {
+            timeout: 15000,
             headers: { Authorization: 'Bearer ' + mmtk },
             withCredentials: true,
             params: {
@@ -195,7 +196,7 @@ export const getTickets = async ({
         }
     } catch (error: any) {
         console.log('Error getting list tickets', error.message);
-        throw new Error('Cannot get list tickets');
+        return [];
     }
 };
 

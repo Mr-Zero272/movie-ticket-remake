@@ -1,6 +1,7 @@
 'use client';
-import { zodResolver } from '@hookform/resolvers/zod';
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
@@ -11,12 +12,11 @@ import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ResponseApiTemplate, SignUpFormSchema, SignUpInfo } from '@/types/auth';
 import { toast } from 'sonner';
 
-type Props = {};
+import { ResponseApiTemplate, SignUpFormSchema, SignUpInfo } from '@/types/auth';
 
-const SignUpForm = (props: Props) => {
+const SignUpForm = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const authGoogleCode = searchParams.get('code');

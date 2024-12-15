@@ -5,7 +5,7 @@ import { Flag, Frown, Info } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
-import { Seat, SeatDetail } from '@/types/seat';
+import { Seat, SeatChooseRes, SeatDetail } from '@/types/seat';
 import { ShowingDto } from '@/types/showing';
 import { fetchSeatDetails } from '@/services/seatServices';
 import { format } from 'date-fns';
@@ -25,6 +25,7 @@ type Props = {
     onChooseSeat: (s: SeatDetail, amount: number) => void;
     onChangeShowing: (showingId: number) => void;
     onChangeDate: (date: string) => void;
+    onListSeatsChange: (s: SeatChooseRes) => void;
 };
 
 const Step1 = ({
@@ -39,6 +40,7 @@ const Step1 = ({
     onNextStep,
     onChangeDate,
     onChangeShowing,
+    onListSeatsChange,
 }: Props) => {
     const [seatData, setSeatData] = useState(seats);
     const [myStompClient, setMyStompClient] = useState<null | CompatClient>(null);
@@ -109,7 +111,8 @@ const Step1 = ({
                 // console.log(listSeats);
                 // console.log(message.body);
                 // console.log('call sub 1 lan');
-                const seatInfo = JSON.parse(message.body);
+                const seatInfo = JSON.parse(message.body) as SeatChooseRes;
+                onListSeatsChange(seatInfo);
                 setSeatData((prevListSeats) => {
                     let listSeatUpdated = prevListSeats.map((seat) => {
                         if (seat.id === seatInfo.id) {
@@ -127,13 +130,16 @@ const Step1 = ({
                 });
             });
         }
-    }, [seatData, myStompClient]);
+    }, [seatData, myStompClient, onListSeatsChange]);
 
     const handleChooseSeat = useCallback(
         (s: SeatDetail) => {
+            if (s.status === 'choosing' && s.userId !== userId) return;
             if (s.status === 'booked') return;
             // console.log(!listSeatSelected.some((seat) => seat.id === seatId && seatStatus === 'choosing'));
-            if (!seatData.some((seat) => seat.id === s.id) && s.status === 'choosing') return;
+            if (!seatData.some((seat) => seat.id === s.id) && s.status === 'choosing') {
+                return;
+            }
             if (myStompClient !== null) {
                 myStompClient.publish({
                     destination: '/app/choosing-seat-ws',

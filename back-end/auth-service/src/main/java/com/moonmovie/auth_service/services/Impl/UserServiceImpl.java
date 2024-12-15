@@ -67,9 +67,11 @@ public class UserServiceImpl implements UserService {
         user.setModifiedAt(LocalDateTime.now());
         user.setOnboarded(true);
         if (!request.getAvatar().equalsIgnoreCase(user.getAvatar())) {
-            Map<String, List<String>> req = new IdentityHashMap<>();
-            req.put("filenames", List.of(user.getAvatar().substring(53)));
-            mediaServiceInterface.deleteImages(req);
+            if (!request.getAvatar().substring(53).equalsIgnoreCase("user-avatar.png")) {
+                Map<String, List<String>> req = new IdentityHashMap<>();
+                req.put("filenames", List.of(user.getAvatar().substring(53)));
+                mediaServiceInterface.deleteImages(req);
+            }
             user.setAvatar(request.getAvatar());
         }
         return convertUserToDto(userDao.save(user));

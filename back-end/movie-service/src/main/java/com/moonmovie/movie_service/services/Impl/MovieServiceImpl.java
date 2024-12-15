@@ -15,7 +15,6 @@ import com.moonmovie.movie_service.requests.GenerateSeatDetailRequest;
 import com.moonmovie.movie_service.requests.MovieRequest;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.RecommendMovieResponse;
-import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.responses.ScheduleResponse;
 import com.moonmovie.movie_service.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -110,7 +106,7 @@ public class MovieServiceImpl implements MovieService {
 
         Page<Movie> pageMovie;
         if (genreId == null || genreId == 0) {
-            pageMovie = movieDao.findAllByVoteCountGreaterThanEqual(100, pageable);
+            pageMovie = movieDao.findAllByVoteCountGreaterThanEqualAndDeleteFlagIsFalse(100, pageable);
         } else {
             pageMovie = movieDao.findAllByVoteCountGreaterThanEqualAndGenreIs(100, genreId, pageable);
         }
@@ -155,7 +151,7 @@ public class MovieServiceImpl implements MovieService {
         }
 
         // Check if the movie has the same title
-        if (movieDao.findByTitle(request.getTitle()).isPresent()) {
+        if (movieDao.findByTitleAndDeleteFlagIsFalse(request.getTitle()).isPresent()) {
             throw new GlobalException(MovieErrorConstants.ERROR_MOVIE_EXISTED);
         }
 
@@ -233,9 +229,10 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void deleteMovie(int id) {
+    public MovieDto deleteMovie(int id) {
         Movie movie = movieDao.findById(id).orElseThrow(() -> new GlobalException(MovieErrorConstants.ERROR_MOVIE_NOT_EXIST));
-        movieDao.delete(movie);
+        movie.setDeleteFlag(true);
+        return this.convertMovieToMovieDto(movieDao.save(movie));
     }
 
     @Override
@@ -266,7 +263,7 @@ public class MovieServiceImpl implements MovieService {
             throw new GlobalException(MovieErrorConstants.ERROR_THIS_MONTH_WAS_SCHEDULED);
         }
 
-        List<Movie> movies = movieDao.findAllByMonthToScheduleAndYearToSchedule(month, year);
+        List<Movie> movies = movieDao.findAllByMonthToScheduleAndYearToScheduleAndDeleteFlagIsFalse(month, year);
 
         // 28 -> 31 days
         YearMonth yearMonthObject = YearMonth.of(year, month);
@@ -320,7 +317,10 @@ public class MovieServiceImpl implements MovieService {
                     int showings3DSubtitles = scheduleMovieInfo.get(z).getDetailShowingTypes().get(3).getShowings();
 
 
-                    if (infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() >= maxScreeningsPerDay) {
+                    LocalDateTime lastSStartTime =
+                            infoAuditoriumInThisMonth.get(currentDate).get(j).getLastScreeningsStartTime();
+                    if (infoAuditoriumInThisMonth.get(currentDate).get(j).getTotalScreeningsScheduled() >= maxScreeningsPerDay
+                    || lastSStartTime.toLocalTime().isAfter(LocalTime.of(21, 30))) {
                         if (checkedAu == 10) {
                             currentDate += 1;
                             checkedAu = 0;
@@ -445,7 +445,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public PaginationResponse<Movie> getUpcomingMovies(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Movie> pageMovie = movieDao.findAllByStatus("Upcoming", pageable);
+        Page<Movie> pageMovie = movieDao.findAllByStatusAndDeleteFlagIsFalse("Upcoming", pageable);
 
         PaginationResponse<Movie> resp = PaginationResponse.<Movie>builder()
                 .data(pageMovie.getContent())
@@ -470,7 +470,7 @@ public class MovieServiceImpl implements MovieService {
             return s.get(0).intValue();
         }).toList();
         Pageable pageable = PageRequest.of(0, movieRecommendIds.size());
-        Page<Movie> pageMovie = movieDao.findAllByIdIn(movieRecommendIds, pageable);
+        Page<Movie> pageMovie = movieDao.findAllByIdInAndDeleteFlagIsFalse(movieRecommendIds, pageable);
         return pageMovie.getContent();
     }
 

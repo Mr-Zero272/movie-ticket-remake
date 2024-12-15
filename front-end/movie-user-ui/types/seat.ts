@@ -25,3 +25,9 @@ export const SeatDetailSchema = z.object({
 export type Auditorium = z.infer<typeof AuditoriumSchema>;
 export type Seat = z.infer<typeof SeatSchema>;
 export type SeatDetail = z.infer<typeof SeatDetailSchema>;
+
+export type SeatChooseRes = {
+    id: string;
+    status: string;
+    userId: string;
+};

@@ -131,7 +131,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
     this.loadingAfterView = true;
     this.homeService.getOrderStatistical(2024).subscribe((data) => {
       this.orderStatisticalData = data;
-      this.balance = this.homeService.getBalance(2024, data);
+      this.balance = this.homeService.getBalanceMoth(2024, new Date().getMonth() + 1, data);
       this.differencePercentBalance = this.homeService.getPercentDifferenceBalance(2024, data);
 
       this.dataIncomesChart = {

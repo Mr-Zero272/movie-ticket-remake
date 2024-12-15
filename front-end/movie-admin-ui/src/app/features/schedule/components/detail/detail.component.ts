@@ -1,29 +1,19 @@
-import { Location, NgClass, NgFor, NgIf } from '@angular/common';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Location, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { MovieScheduleVerticalCardComponent } from '../../../../shared/components/cards/movie-schedule-vertical-card/movie-schedule-vertical-card.component';
-import { DatePickerComponent } from '../../../../shared/components/ui/date-picker/date-picker.component';
-import { AuditoriumBadgeComponent } from '../../../../shared/components/ui/auditorium-badge/auditorium-badge.component';
-import { MarqueeTextComponent } from '../../../../shared/components/ui/marquee-text/marquee-text.component';
-import { ShowingBadgeComponent } from '../showing-badge/showing-badge.component';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Showing } from '../../../../shared/models/showing.model';
-import { ScheduleService } from '../../services/schedule.service';
-import { HallService } from '../../../hall/services/hall.service';
-import { Hall } from '../../../../shared/models/hall.model';
-import {
-  CdkDrag,
-  CdkDragDrop,
-  CdkDropList,
-  CdkDropListGroup,
-  moveItemInArray,
-  transferArrayItem,
-} from '@angular/cdk/drag-drop';
-import { EditShowingDragDropComponent } from '../edit-showing-drag-drop/edit-showing-drag-drop.component';
-import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
-import { EditShowingRequest } from '../../../../shared/models/edit-showing-request.model';
+import { ActivatedRoute } from '@angular/router';
 import { ToastService } from '../../../../core/services/toast.service';
 import { MovieHorizontalCardComponent } from '../../../../shared/components/cards/movie-horizontal-card/movie-horizontal-card.component';
+import { MovieScheduleVerticalCardComponent } from '../../../../shared/components/cards/movie-schedule-vertical-card/movie-schedule-vertical-card.component';
+import { AuditoriumBadgeComponent } from '../../../../shared/components/ui/auditorium-badge/auditorium-badge.component';
+import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
+import { EditShowingRequest } from '../../../../shared/models/edit-showing-request.model';
+import { Hall } from '../../../../shared/models/hall.model';
+import { Showing } from '../../../../shared/models/showing.model';
+import { HallService } from '../../../hall/services/hall.service';
+import { ScheduleService } from '../../services/schedule.service';
+import { EditShowingDragDropComponent } from '../edit-showing-drag-drop/edit-showing-drag-drop.component';
 
 @Component({
   selector: 'app-detail',
@@ -33,13 +23,7 @@ import { MovieHorizontalCardComponent } from '../../../../shared/components/card
     NgFor,
     MovieScheduleVerticalCardComponent,
     AuditoriumBadgeComponent,
-    DatePickerComponent,
-    MarqueeTextComponent,
-    ShowingBadgeComponent,
     ReactiveFormsModule,
-    CdkDropListGroup,
-    CdkDropList,
-    CdkDrag,
     EditShowingDragDropComponent,
     ButtonComponent,
     MovieHorizontalCardComponent,
@@ -90,8 +74,6 @@ export class DetailScheduleComponent implements OnInit {
   }
 
   handleEdit(editRequest: EditShowingRequest) {
-    console.log(editRequest);
-
     this.editRequest = editRequest;
   }
 

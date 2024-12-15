@@ -1,0 +1,174 @@
+<div class="flex gap-10 p-10 max-md:flex-col max-md:p-5 max-sm:p-2">
+  <div class="flex flex-1 flex-col items-center">
+    <div class="my-16 flex flex-col items-center">
+      <div class="h-2 w-40 rounded-full bg-gray-500"></div>
+      <p class="text-gray-400">Screen</p>
+    </div>
+    <div class="flex flex-col items-center gap-0.5">
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(0, 8); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="size-4 cursor-pointer rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(8, 18); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(18, 30); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(30, 42); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(42, 56); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(56, 70); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(70, 84); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(84, 98); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(98, 110); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+      <div class="flex justify-center gap-0.5">
+        @for (seat of listSeats.slice(110, 120); track seat.id) {
+          <div
+            [ngClass]="{
+              'others-seat': seat.status === 'problem',
+              'your-seat': activeSeat ? activeSeat.id === seat.id : false,
+              'available-seat': seat.status === 'normal',
+            }"
+            class="available-seat size-4 rounded-sm border"
+            (click)="chooseSeat(seat)"
+          ></div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-1 flex-col justify-center">
+    <div>
+      <div class="text-3xl font-medium">Hall: {{ hall?.name }}</div>
+      <div>Address: {{ hall?.address }}</div>
+      <div>Seat: 156 seats</div>
+    </div>
+    <div class="mt-5">
+      <h3>Edit seat info</h3>
+      <p><ng-icon class="me-2" name="heroPencilSquare" size="20"></ng-icon>Click to a seat to edit its information!</p>
+      <div class="flex gap-x-1">
+        <div class="text-gray-500">Seat number:</div>
+        <div class="font-medium">{{ activeSeat?.numberSeat }}</div>
+      </div>
+      <div class="flex gap-x-1">
+        <div class="text-gray-500">Seat row:</div>
+        <div class="font-medium">{{ activeSeat?.rowSeat }}</div>
+      </div>
+
+      <div>
+        <label for="seat-status" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+          >Seat status</label
+        >
+        <select
+          id="seat-status"
+          [(ngModel)]="seatStatus"
+          class="mb-5 block w-56 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500 dark:focus:ring-orange-500"
+        >
+          <option value="normal">Normal</option>
+          <option value="problem">Have problem</option>
+        </select>
+        <app-button (click)="handleSubmit()" [loading]="loading" [disabled]="loading"> Edit </app-button>
+      </div>
+    </div>
+  </div>
+</div>

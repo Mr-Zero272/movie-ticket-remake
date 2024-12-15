@@ -18,6 +18,7 @@ export class ErrorDisplayComponent {
     required: 'This field is required',
     min: 'Minimum length is not met',
     max: 'Maximum length exceeded',
+    maxDate: 'This date has passed the maximum date.',
     // Add more error messages as needed
   };
 

@@ -48,7 +48,7 @@
           [icon]="iconBalance"
           valueType="currency"
           [value]="balance"
-          describe="Total balance this year"
+          describe="Total balance this month"
         />
         <app-statistical-card
           [loading]="loading"
@@ -62,14 +62,14 @@
           [icon]="iconMovies"
           valueType="normal"
           [value]="getTotalMovies() + ' movies'"
-          describe="Total order this month"
+          describe="All movies in the system"
         />
         <app-statistical-card
           [loading]="loading"
           [icon]="iconUsers"
           valueType="normal"
           [value]="getTotalUsers() + ' users'"
-          describe="Total order this month"
+          describe="Total users in the system"
         />
       </div>
     </article>

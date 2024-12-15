@@ -11,9 +11,13 @@ import java.util.Optional;
 @Repository
 public interface AuditoriumDao extends MongoRepository<Auditorium, String> {
 
-    int countByName(String name);
+    int countByNameAndDeleteFlagIsFalse(String name);
 
-    Page<Auditorium> findAllByNameContainsIgnoreCase(String name,Pageable pageable);
+    Optional<Auditorium> findByIdAndDeleteFlagIsFalse(String id);
 
-    Optional<Auditorium> findByName(String name);
+    Page<Auditorium> findAllByNameContainsIgnoreCaseAndDeleteFlagIsFalse(String name,Pageable pageable);
+
+    Page<Auditorium> findAllByDeleteFlagIsFalse(Pageable pageable);
+
+    Optional<Auditorium> findByNameAndDeleteFlagIsFalse(String name);
 }

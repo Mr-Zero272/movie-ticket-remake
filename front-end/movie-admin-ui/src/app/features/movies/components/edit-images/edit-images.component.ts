@@ -1,7 +1,8 @@
 import { NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { SelectImageItemComponent } from '../select-image-item/select-image-item.component';
 import { ImageBase } from '../../../../shared/models/image-base.model';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-images',
@@ -24,8 +25,6 @@ export class EditImagesComponent implements OnInit {
   loading: boolean = false;
   images: Array<ImageBase> = [];
   needDeleteImage: Array<ImageBase> = [];
-
-  constructor() {}
 
   ngOnInit(): void {
     this.urls.map((url) => {

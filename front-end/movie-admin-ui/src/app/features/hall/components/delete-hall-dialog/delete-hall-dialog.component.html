@@ -1,0 +1,16 @@
+<mat-dialog-content class="wrapper-dialog">
+  <h6>Delete this hall??</h6>
+  <p>
+    There are a few conditions to be able to delete it.
+    <a routerLink="/condition/delete/hall" class="border-primary italic text-primary hover:border-b"
+      >You can refer to it here</a
+    >. And note that you cannot recover after completing this action.
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="deleteHall()">
+    {{ loading ? 'Delete...' : 'Delete' }}
+  </button>
+</mat-dialog-actions>

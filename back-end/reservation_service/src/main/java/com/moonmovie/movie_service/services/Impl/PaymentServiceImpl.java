@@ -19,6 +19,7 @@ import com.moonmovie.movie_service.responses.ResponseTemplate;
 import com.moonmovie.movie_service.services.PaymentService;
 import com.moonmovie.movie_service.services.TicketService;
 import com.moonmovie.movie_service.zalocrypto.HMACUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -28,6 +29,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +47,7 @@ import java.util.*;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+    private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
     @Autowired
     private OrderDao orderDao;
 
@@ -81,12 +85,19 @@ public class PaymentServiceImpl implements PaymentService {
         List<String> seatIds = tickets.stream().map(Ticket::getSeatId).toList();
         if (request.getPaymentStatus().equalsIgnoreCase("paid")) {
             order.setOrderStatus("complete");
+            tickets.forEach(t -> {
+                t.setStatus("paid");
+            });
+            ticketDao.saveAll(tickets);
             // Send mail
-            ticketService.sendTicketsToCusByMail(tickets, request.getCustomerEmail());
+            try {
+                ticketService.sendTicketsToCusByMail(tickets, request.getCustomerEmail());
+            } catch (Exception e){
+                log.info("Cannot send email, skip...");
+            }
 
             kafkaProducerService.sendSeatDetailInfo(seatIds, order.getCustomerId());
         } else {
-
             kafkaProducerService.sendRefreshSeatsInfo(seatIds);
         }
         orderDao.save(order);
@@ -179,17 +190,15 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private static Map<String, String> config = new HashMap<String, String>() {{
-        put("app_id", "2554");
-        put("key1", "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn");
-        put("key2", "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf");
+        put("app_id", "2553");
+        put("key1", "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL");
+        put("key2", "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz");
         put("endpoint", "https://sb-openapi.zalopay.vn/v2/create");
     }};
 
     @Override
     public PaymentMethodResponse getPaymentForZaloPay(PaymentMethodRequest request) throws IOException, ReservationException {
         this.checkBeforeCreatePayment(request.getOrderId(), request.getUserId());
-        Random rand = new Random();
-        int random_id = rand.nextInt(1000000);
         final Map embed_data = new HashMap() {{
         }};
         embed_data.put("redirecturl", request.getReturnUrl());
@@ -241,7 +250,7 @@ public class PaymentServiceImpl implements PaymentService {
         for (String key : result.keySet()) {
             objResult.put(key, result.get(key));
         }
-
+        System.out.println(objResult);
         PaymentMethodResponse response = new PaymentMethodResponse();
         response.setMethod("zalopay");
         response.setUrlPayment((String) objResult.get("order_url"));

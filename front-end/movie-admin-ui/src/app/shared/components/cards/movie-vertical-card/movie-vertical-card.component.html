@@ -16,13 +16,23 @@
       <ng-icon name="heroEllipsisHorizontal" size="16" />
     </div>
     <mat-menu #menuCard="matMenu">
-      <div
+      @for (menuItem of menu; track $index) {
+        <div
+          class="w-full cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+          (click)="menuItem.action()"
+        >
+          {{ menuItem.label }}
+        </div>
+      }
+      <!-- <div
         *ngFor="let menuItem of menu"
         class="w-full cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
         (click)="menuItem.action()"
       >
         {{ menuItem.label }}
-      </div>
+      </div> -->
+      <!-- <div>123</div>
+      <div>123</div> -->
     </mat-menu>
   </div>
 

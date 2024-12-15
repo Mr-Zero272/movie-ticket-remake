@@ -26,6 +26,7 @@ public class Ticket implements Serializable {
     private String seatId;
     private String movieTitle;
     private String moviePoster;
+    private int movieId;
     private LocalDateTime date;
     private int runtime;
     private int seatNumber;
@@ -35,6 +36,8 @@ public class Ticket implements Serializable {
     private String address;
     private int showingId;
     private String orderId;
+    private String status;
+    private String userId;
     private LocalDateTime createdAt;
 
     @Override

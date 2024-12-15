@@ -2,6 +2,7 @@ package com.moonmovie.movie_service.dao;
 
 import com.moonmovie.movie_service.models.Seat;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,5 @@ public interface SeatDao extends MongoRepository<Seat, String> {
 
     @Aggregation({"{$match: {\"auditorium\": ?0}}"})
     public List<Seat> findByAuditoriumId(ObjectId auditoriumId);
+
 }

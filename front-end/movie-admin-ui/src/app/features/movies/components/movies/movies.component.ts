@@ -1,5 +1,4 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
 import { MovieHorizontalCardComponent } from '../../../../shared/components/cards/movie-horizontal-card/movie-horizontal-card.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { TableComponent } from '../../../../shared/components/ui/table/table.component';
@@ -10,11 +9,12 @@ import { Movie } from '../../../../shared/models/movie.model';
 import { Pagination } from '../../../../shared/models/pagination-obj.model';
 import { Column, Sort } from '../../../../shared/models/table';
 import { MovieService } from '../../services/movie.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-movies',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, TabsComponent, ButtonComponent, TableComponent, MovieHorizontalCardComponent],
+  imports: [TabsComponent, ButtonComponent, TableComponent, MovieHorizontalCardComponent],
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.css',
 })
@@ -45,8 +45,8 @@ export class MoviesComponent implements AfterViewInit, OnInit {
       value: 53,
     },
     {
-      label: 'Crime',
-      value: 80,
+      label: 'Statistical',
+      value: 'statistical',
     },
   ];
   activeTab: LabelAndValue = this.tabsData[0];
@@ -76,6 +76,11 @@ export class MoviesComponent implements AfterViewInit, OnInit {
       key: 'budget',
       order: 'asc',
     },
+    {
+      label: 'Last updated',
+      key: 'modifiedAt',
+      order: 'asc',
+    },
   ];
   activeSort: Sort = this.sortData[0];
   @ViewChild('movieTemplate', { static: true }) movieTemplate!: TemplateRef<any>;
@@ -84,6 +89,7 @@ export class MoviesComponent implements AfterViewInit, OnInit {
   constructor(
     private cdr: ChangeDetectorRef,
     private movieService: MovieService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -97,6 +103,7 @@ export class MoviesComponent implements AfterViewInit, OnInit {
       { label: 'Vote Average', key: 'voteAverage' },
       { label: 'Release Date', key: 'releaseDate' },
       { label: 'Budget', key: 'budget' },
+      { label: 'Last updated', key: 'modifiedAt' },
     ];
     this.cdr.detectChanges();
   }
@@ -171,8 +178,12 @@ export class MoviesComponent implements AfterViewInit, OnInit {
   }
 
   handleChooseTab(tab: LabelAndValue) {
-    this.activeTab = tab;
-    this.handleFetchMovies({});
+    if (tab.value === 'statistical') {
+      this.router.navigate(['movies', 'statistical']);
+    } else {
+      this.activeTab = tab;
+      this.handleFetchMovies({});
+    }
   }
 
   handleDisplayGenre(genres: Array<Genre>): string {

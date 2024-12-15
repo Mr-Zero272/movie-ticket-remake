@@ -3,6 +3,7 @@ export class Ticket {
   public seatId: string;
   public movieTitle: string;
   public moviePoster: string;
+  public movieId: number;
   public date: string;
   public runtime: number;
   public seatNumber: number;
@@ -19,6 +20,7 @@ export class Ticket {
     seatId: string,
     movieTitle: string,
     moviePoster: string,
+    movieId: number,
     date: string,
     runtime: number,
     seatNumber: number,
@@ -34,6 +36,7 @@ export class Ticket {
     this.seatId = seatId;
     this.movieTitle = movieTitle;
     this.moviePoster = moviePoster;
+    this.movieId = movieId;
     this.date = date;
     this.runtime = runtime;
     this.seatNumber = seatNumber;

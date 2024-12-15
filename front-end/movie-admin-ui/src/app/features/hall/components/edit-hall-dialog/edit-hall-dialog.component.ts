@@ -6,11 +6,13 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { ErrorDisplayComponent } from '../../../../shared/components/ui/error-display/error-display.component';
 import { Hall } from '../../../../shared/models/hall.model';
 import { HallService } from '../../services/hall.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-edit-hall-dialog',
   standalone: true,
   imports: [
+    RouterLink,
     ReactiveFormsModule,
     MatDialogContent,
     MatDialogActions,

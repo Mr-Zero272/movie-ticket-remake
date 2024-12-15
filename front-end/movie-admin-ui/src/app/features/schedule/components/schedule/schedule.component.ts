@@ -16,6 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DeleteShowingDialogComponent } from '../delete-showing-dialog/delete-showing-dialog.component';
 import { Router } from '@angular/router';
 import { ToastService } from '../../../../core/services/toast.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-schedule',
@@ -30,6 +31,7 @@ import { ToastService } from '../../../../core/services/toast.service';
     NgIconComponent,
     ButtonComponent,
     MatTooltipModule,
+    FormsModule,
   ],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
@@ -43,7 +45,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 })
 export class ScheduleComponent implements OnInit {
   showingData: Pagination<Showing> = new Pagination<Showing>([], 1, 10, 1, 1);
-  activeDate: string = new Date().toISOString().split('T')[0] + 'T00:00:00';
+  activeDate: string = new Date().toISOString().split('T')[0];
   loading: boolean = false;
   searchValue: string = '';
   page: number = 1;
@@ -65,7 +67,7 @@ export class ScheduleComponent implements OnInit {
   loadData() {
     const params = {
       query: this.searchValue,
-      date: this.activeDate,
+      date: this.activeDate + 'T00:00:00',
       page: this.page,
       size: 10,
     };
@@ -77,8 +79,7 @@ export class ScheduleComponent implements OnInit {
     this.loading = false;
   }
 
-  handleChangeDate(date: string) {
-    this.activeDate = date;
+  handleChangeDate() {
     this.loadData();
   }
 
@@ -91,7 +92,7 @@ export class ScheduleComponent implements OnInit {
     if (this.loading) return;
     this.loading = true;
     this.showingService
-      .fetchShowings({ query: this.searchValue, date: this.activeDate, page: page, size: 10 })
+      .fetchShowings({ query: this.searchValue, date: this.activeDate + 'T00:00:00', page: page, size: 10 })
       .subscribe((data) => {
         this.showingData = data;
       }).closed;
@@ -102,11 +103,17 @@ export class ScheduleComponent implements OnInit {
     return [
       {
         label: 'Detail',
-        action: () => this.router.navigate(['/showing/' + showing.id]),
+        action: () => {
+          console.log('444');
+          this.router.navigate(['/showing/' + showing.id]);
+        },
       },
       {
         label: 'Delete',
-        action: () => this.openDeleteDialog(showing.id),
+        action: () => {
+          this.openDeleteDialog(showing.id);
+          console.log('123');
+        },
       },
     ];
   }

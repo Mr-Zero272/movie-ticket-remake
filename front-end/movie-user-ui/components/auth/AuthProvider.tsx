@@ -12,6 +12,7 @@ type AuthContextType = {
     loading: boolean;
     signOut: (redirectUrl: string) => void;
     updateUser: (user: User) => void;
+    isUserSignedIn: () => boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -19,6 +20,9 @@ const AuthContext = createContext<AuthContextType>({
     loading: false,
     signOut: () => {},
     updateUser: () => {},
+    isUserSignedIn: () => {
+        return false;
+    },
 });
 
 const AuthProvider = ({ children }: Props) => {
@@ -41,11 +45,14 @@ const AuthProvider = ({ children }: Props) => {
         callApi();
 
         setLoading(false);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const updateUser = (user: User) => {
         setUser(user);
+    };
+
+    const isUserSignedIn = () => {
+        return user !== undefined;
     };
 
     const signOut = async (redirectUrl: string) => {
@@ -57,7 +64,11 @@ const AuthProvider = ({ children }: Props) => {
         router.replace(redirectUrl);
     };
 
-    return <AuthContext.Provider value={{ user, signOut, loading, updateUser }}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={{ user, signOut, loading, updateUser, isUserSignedIn }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 // Custom hook to use auth context

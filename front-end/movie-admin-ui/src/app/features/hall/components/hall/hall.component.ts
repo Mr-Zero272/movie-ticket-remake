@@ -19,6 +19,10 @@ import { EditHallDialogComponent } from '../edit-hall-dialog/edit-hall-dialog.co
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { AuditoriumBadgeComponent } from '../../../../shared/components/ui/auditorium-badge/auditorium-badge.component';
+import { AddGenreDialogComponent } from '../../../genres/componets/add-genre-dialog/add-genre-dialog.component';
+import { AddNewHallDialogComponent } from '../add-new-hall-dialog/add-new-hall-dialog.component';
+import { DeleteHallDialogComponent } from '../delete-hall-dialog/delete-hall-dialog.component';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-hall',
@@ -78,6 +82,7 @@ export class HallComponent implements OnInit, AfterViewInit, AfterContentInit {
   constructor(
     private cdr: ChangeDetectorRef,
     private hallService: HallService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -156,6 +161,30 @@ export class HallComponent implements OnInit, AfterViewInit, AfterContentInit {
       console.log('The dialog was closed');
       if (result !== undefined) {
         console.log(result);
+      }
+    });
+  }
+
+  openAddDialog() {
+    this.dialog.open(AddNewHallDialogComponent);
+  }
+
+  openDeleteDialog(hallId: string): void {
+    const dialogRef = this.dialog.open(DeleteHallDialogComponent, {
+      data: { hallId: hallId },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined && result !== '') {
+        this.hallService.deleteHall(result).subscribe({
+          error: (err) => {
+            console.log(err);
+            this.toastService.showToast('danger', 'Cannot delete this hall!!!');
+          },
+          next: () => {
+            this.toastService.showToast('success', 'Delete hall successfully!');
+          },
+        }).closed;
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditImagesComponent } from '../edit-images/edit-images.component';
 import { EditTrailerComponent } from '../edit-trailer/edit-trailer.component';
@@ -21,6 +21,8 @@ import { FilesHandleService } from '../../services/files-handle.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { FormMovieService } from '../../services/form-movie.service';
 import { Movie } from '../../../../shared/models/movie.model';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteMovieDialogComponent } from '../delete-movie-dialog/delete-movie-dialog.component';
 
 @Component({
   selector: 'app-edit-movie',
@@ -32,8 +34,6 @@ import { Movie } from '../../../../shared/models/movie.model';
     ErrorDisplayComponent,
     ButtonComponent,
     NgIf,
-    SelectImagesComponent,
-    SelectVideosTrailerComponent,
     MultiSelectComponent,
   ],
   templateUrl: './edit-movie.component.html',
@@ -72,6 +72,9 @@ export class EditMovieComponent implements OnInit {
   urlImagesHorizontalSubmitted: string[] = [];
   urlTrailerSubmitted: string[] = [];
 
+  // dialog edit hall information
+  readonly dialog = inject(MatDialog);
+
   constructor(
     private genresService: GenresService,
     private mediaService: MediaService,
@@ -89,52 +92,57 @@ export class EditMovieComponent implements OnInit {
       if (this.movieId !== null) {
         this.movieService.getMovie(+this.movieId).subscribe((data) => {
           this.movieData = data;
-          console.log(this.movieData);
-
+          document.title = data.title + 'Moon Movie';
           // image
           this.urlImages = this.movieData.galleries.map((g) => g.imgUrl);
 
-          this.movieForm = new FormGroup({
-            genres: new FormControl<Array<{ key: string; value: string | number }>>(
-              this.movieData.genres.map((genre) => ({ key: genre.name, value: genre.id })),
-              Validators.required,
-            ),
-            adult: new FormControl<boolean>(this.movieData.adult),
-            title: new FormControl<string>(this.movieData.title, Validators.required),
-            budget: new FormControl<number>(this.movieData.budget, [Validators.required, Validators.min(1)]),
-            overview: new FormControl<string>(this.movieData.overview),
-            originalLanguage: new FormControl<string>(this.movieData.originalLanguage, Validators.required),
-            runtime: new FormControl<number>(this.movieData.runtime, [Validators.required, Validators.min(1)]),
-            voteAverage: new FormControl<number>(this.movieData.voteAverage, [Validators.required, Validators.min(1)]),
-            releaseDate: new FormControl<string>(this.movieData.releaseDate, Validators.required),
-            voteCount: new FormControl<number>(this.movieData.voteCount, [Validators.required, Validators.min(1)]),
-            totalDateShowingsInMonth: new FormControl<number>(this.movieData.totalDateShowingsInMonth, [
-              Validators.required,
-              Validators.min(1),
-            ]),
-            monthToSchedule: new FormControl<number>(this.movieData.monthToSchedule, [Validators.required]),
-            yearToSchedule: new FormControl<number>(this.movieData.yearToSchedule, [Validators.required]),
-            priceEachSeat: new FormControl<number>(this.movieData.priceEachSeat, [
-              Validators.required,
-              Validators.min(1),
-            ]),
-            _2d: new FormControl<number>(this.movieData.detailShowingTypes[0].showings, [
-              Validators.required,
-              Validators.min(1),
-            ]),
-            _2dSubtitles: new FormControl<number>(this.movieData.detailShowingTypes[1].showings, [
-              Validators.required,
-              Validators.min(1),
-            ]),
-            _3d: new FormControl<number>(this.movieData.detailShowingTypes[2].showings, [
-              Validators.required,
-              Validators.min(1),
-            ]),
-            _3dSubtitles: new FormControl<number>(this.movieData.detailShowingTypes[3].showings, [
-              Validators.required,
-              Validators.min(1),
-            ]),
-          });
+          this.movieForm = new FormGroup(
+            {
+              genres: new FormControl<Array<{ key: string; value: string | number }>>(
+                this.movieData.genres.map((genre) => ({ key: genre.name, value: genre.id })),
+                Validators.required,
+              ),
+              adult: new FormControl<boolean>(this.movieData.adult),
+              title: new FormControl<string>(this.movieData.title, Validators.required),
+              budget: new FormControl<number>(this.movieData.budget, [Validators.required, Validators.min(1)]),
+              overview: new FormControl<string>(this.movieData.overview),
+              originalLanguage: new FormControl<string>(this.movieData.originalLanguage, Validators.required),
+              runtime: new FormControl<number>(this.movieData.runtime, [Validators.required, Validators.min(1)]),
+              voteAverage: new FormControl<number>(this.movieData.voteAverage, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+              releaseDate: new FormControl<string>(this.movieData.releaseDate, Validators.required),
+              voteCount: new FormControl<number>(this.movieData.voteCount, [Validators.required, Validators.min(1)]),
+              totalDateShowingsInMonth: new FormControl<number>(this.movieData.totalDateShowingsInMonth, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+              monthToSchedule: new FormControl<number>(this.movieData.monthToSchedule, [Validators.required]),
+              yearToSchedule: new FormControl<number>(this.movieData.yearToSchedule, [Validators.required]),
+              priceEachSeat: new FormControl<number>(this.movieData.priceEachSeat, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+              _2d: new FormControl<number>(this.movieData.detailShowingTypes[0].showings, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+              _2dSubtitles: new FormControl<number>(this.movieData.detailShowingTypes[1].showings, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+              _3d: new FormControl<number>(this.movieData.detailShowingTypes[2].showings, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+              _3dSubtitles: new FormControl<number>(this.movieData.detailShowingTypes[3].showings, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+            },
+            this.movieService.maxDateValidator(new Date().toISOString().split('T')[0]),
+          );
 
           this.genresService.fetchGenresForSearching({}).subscribe((data) => {
             this.genresData = data.filter((g) => !this.movieData.genres.map((gg) => gg.id).includes(g.value));
@@ -188,8 +196,8 @@ export class EditMovieComponent implements OnInit {
     // check extra fields error
     this.handleExtraFieldsError();
 
-    console.log(this.movieForm.status);
-    console.log(this.isFormValid);
+    // console.log(this.movieForm.status);
+    // console.log(this.isFormValid);
 
     if (this.movieForm.status === 'INVALID' || !this.isFormValid) {
       return;
@@ -296,7 +304,7 @@ export class EditMovieComponent implements OnInit {
         this.isFormSubmitted = false;
         this.isFormLoading = false;
         this.globalError = '';
-        this.toastService.showToast('success', 'Edit movie with title is' + data.title + ' information success!');
+        this.toastService.showToast('success', 'Edit movie with title is ' + data.title + ' information success!');
         this.location.back();
       },
       error: (err) => {
@@ -305,6 +313,32 @@ export class EditMovieComponent implements OnInit {
         this.globalError = err?.error?.message;
         this.toastService.showToast('danger', 'Cannot edit movie information!');
       },
+    });
+  }
+
+  back() {
+    this.location.back();
+  }
+
+  openDeleteDialog(movieId: number): void {
+    const dialogRef = this.dialog.open(DeleteMovieDialogComponent, {
+      data: { movieId: movieId },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined && result !== '') {
+        this.movieService.deleteMovie(+result).subscribe({
+          error: (err) => {
+            console.log(err);
+
+            this.toastService.showToast('danger', 'Cannot delete this genre!!!');
+          },
+          next: () => {
+            this.toastService.showToast('success', 'Delete successfully!');
+            this.back();
+          },
+        }).closed;
+      }
     });
   }
 }

@@ -9,6 +9,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { StatisticalCardComponent } from '../../../../shared/components/cards/statistical-card/statistical-card.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { ResponseSchedule, ScheduleService } from '../../services/schedule.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-do-schedule',
@@ -124,19 +125,25 @@ export class DoScheduleComponent implements AfterViewInit, OnInit {
     if (this.loading) return;
 
     this.loading = true;
-    this.scheduleService.doSchedule(this.scheduleForm.value.month, this.scheduleForm.value.year).subscribe({
-      next: (data) => {
-        this.isFormHasResult = true;
-        this.resultForm = data;
-        this.toastService.showToast('success', 'Schedule successfully!');
-        this.globalError = '';
-      },
-      error: (err) => {
-        this.globalError = err.error.message;
-        this.toastService.showToast('danger', 'Something went wrong. Try again later!');
-      },
-    });
-    this.loading = false;
+    this.scheduleService
+      .doSchedule(this.scheduleForm.value.month, this.scheduleForm.value.year)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+        }),
+      )
+      .subscribe({
+        next: (data) => {
+          this.isFormHasResult = true;
+          this.resultForm = data;
+          this.toastService.showToast('success', 'Schedule successfully!');
+          this.globalError = '';
+        },
+        error: (err) => {
+          this.globalError = err.error.message;
+          this.toastService.showToast('danger', 'Something went wrong. Try again later!');
+        },
+      });
   }
 
   back() {

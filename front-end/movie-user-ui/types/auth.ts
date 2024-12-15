@@ -14,8 +14,9 @@ export const SignUpFormSchema = z.object({
         .min(3, { message: 'Username must contain at least 3 character(s)' })
         .max(30, { message: 'Username must contain at most 30 character(s)' }),
     email: z.string().email(),
-    password: z.string().regex(new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/), {
-        message: 'Password must contain at least one uppercase letter, one lowercase letter, and one digit.',
+    password: z.string().regex(new RegExp(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/), {
+        message:
+            'Password must contain at least one uppercase letter, one lowercase letter, one special character, one number and at least 8 characters.',
     }),
     keepLogin: z.boolean(),
 });
@@ -27,8 +28,9 @@ export const SignInFormSchema = z.object({
         .string()
         .min(3, { message: 'Username or email must contain at least 3 character(s)' })
         .max(150, { message: 'Username or email must contain at most 150 character(s)' }),
-    password: z.string().regex(new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/), {
-        message: 'Password must contain at least one uppercase letter, one lowercase letter, and one digit.',
+    password: z.string().regex(new RegExp(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/), {
+        message:
+            'Password must contain at least one uppercase letter, one lowercase letter, one special character, one number and at least 8 characters',
     }),
     keepLogin: z.boolean(),
 });

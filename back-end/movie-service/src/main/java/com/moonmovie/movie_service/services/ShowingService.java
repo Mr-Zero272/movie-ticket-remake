@@ -5,6 +5,7 @@ import com.moonmovie.movie_service.models.Showing;
 import com.moonmovie.movie_service.models.ShowingStatistical;
 import com.moonmovie.movie_service.requests.AddShowingRequest;
 import com.moonmovie.movie_service.requests.UpdateShowingTimeAndAuditoriumRequest;
+import com.moonmovie.movie_service.responses.FutureShowingsResponse;
 import com.moonmovie.movie_service.responses.PaginationResponse;
 import com.moonmovie.movie_service.responses.ResponseTemplate;
 
@@ -31,4 +32,6 @@ public interface ShowingService {
     ResponseTemplate deleteShowing(int showingId);
 
     List<ShowingStatistical> getShowingStatistical(Integer month, Integer year);
+
+    FutureShowingsResponse getEarliestShowtimesForMovie(Integer movieId);
 }

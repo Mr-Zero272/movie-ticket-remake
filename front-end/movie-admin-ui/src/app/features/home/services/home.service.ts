@@ -39,6 +39,10 @@ export class HomeService {
       }, 0);
   }
 
+  getBalanceMoth(year: number = 2024, month: number = 1, data: OrderStatisticalList) {
+    return data.filter((osl) => osl.year === year)[0].orderStatisticalList[month - 1].totalAmount;
+  }
+
   getPercentDifferenceBalance(year: number = 2024, data: OrderStatisticalList) {
     const thisYearListOrder = data.find((osl) => osl.year === year);
     const prevYearListOrder = data.find((osl) => osl.year === year - 1);
@@ -54,7 +58,7 @@ export class HomeService {
       );
 
       if (totalThisYear > totalPrevYear) {
-        return Math.round(100 - (totalThisYear * 100) / totalPrevYear);
+        return Math.abs(Math.round(100 - (totalThisYear * 100) / totalPrevYear));
       } else {
         return Math.round(100 - (totalPrevYear * 100) / totalThisYear);
       }
