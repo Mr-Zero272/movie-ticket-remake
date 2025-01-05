@@ -3,7 +3,8 @@ import { format } from 'date-fns';
 import { EllipsisVertical, Loader2, MessageSquareText, Send } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'nextjs-toploader/app';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 import { useAuth } from '@/components/auth/AuthProvider';
 import CommentForm from '@/components/forms/CommentForm';
@@ -30,10 +31,15 @@ import { cn } from '@/lib/utils';
 import { deleteComment, fetchRepliesForComment } from '@/services/commentService';
 
 import { type Comment } from '@/types/comment';
-import { toast } from 'sonner';
 
+// This file contains the implementation of the comment section for the movie detail page.
+// It includes components and logic for displaying comments, handling user input, and managing replies to comments.
+
+// Comment's props
 type Props = {
+    // loading prop to handle skeleton state
     loading?: boolean;
+    // level prop to handle view of comments
     level?: number;
     movieId: number;
     commentInfo: Comment;
@@ -49,9 +55,11 @@ const Comment = ({
     replies: rps,
     showReply = false,
 }: Props) => {
+    // get user info from provider
     const { user } = useAuth();
     const [isFetchingReplies, setIsFetchingReplies] = useState(false);
     const [commentInfo, setCommentInfo] = useState(commentInformation);
+    // edit state
     const [isEditing, setIsEditing] = useState(false);
     const [isShowReply, setIsShowReply] = useState(showReply);
     const [isShowAddReplyForm, setIsShowAddReplyForm] = useState(false);
@@ -61,6 +69,7 @@ const Comment = ({
         }
         return [];
     });
+    // delete state
     const [isDeleted, setIsDeleted] = useState(false);
     const router = useRouter();
 
@@ -71,6 +80,7 @@ const Comment = ({
     }, [rps]);
 
     const handleShowingReplies = () => {
+        // only show replies for level 1
         if (level === 2) {
             router.push(`/comment/${movieId}/${commentInfo.id}`);
             return;
@@ -89,9 +99,9 @@ const Comment = ({
         }
     };
 
-    const handleUpdateSuccess = (c: Comment) => {
+    const handleUpdateSuccess = useCallback((c: Comment) => {
         setCommentInfo(c);
-    };
+    }, []);
 
     const handleCancelAddReply = () => {
         setIsShowAddReplyForm(false);

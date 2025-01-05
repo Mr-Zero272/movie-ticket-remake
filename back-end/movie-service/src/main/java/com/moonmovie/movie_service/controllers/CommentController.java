@@ -14,6 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("api/v2/moon-movie/movie/comment")
 public class CommentController {
+    
     @Autowired
     private CommentService commentService;
 
