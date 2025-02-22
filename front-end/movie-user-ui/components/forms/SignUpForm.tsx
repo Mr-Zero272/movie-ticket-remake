@@ -1,18 +1,17 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { Button } from '../ui/button';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Input } from '../ui/input';
-import { Checkbox } from '../ui/checkbox';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { Button } from '../ui/button';
+import { Checkbox } from '../ui/checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Input } from '../ui/input';
 
 import { ResponseApiTemplate, SignUpFormSchema, SignUpInfo } from '@/types/auth';
 

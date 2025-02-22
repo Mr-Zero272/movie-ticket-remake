@@ -1,8 +1,22 @@
-# Fullstack Movie Reservation System
+# Fullstack Moon Movie
+
+![Demo App](/screenshots/movie-h-1.png)
+![Demo App](/screenshots/movie-h-2.png)
 
 ## Overview
 
 This project is a comprehensive fullstack application for managing movie bookings. The backend is built in Java with Microservices architecture and the frontend consists of two separate Nextjs and Angular projects: one for the user interface and one for the admin interface. This is a remake of an old project of mine but with quite a few upgrades in terms of logic and back-end to front-end processes. I will keep this project updated as much as possible.
+
+Highlights:
+
+- 🌟 Microservices architecture for backend
+- 🎃 Nextjs for User UI, Angular for Admin UI.
+- 👾 Choose movie seats in real time
+- 🚀 Keyword suggestions when searching.
+- 👌 Online payment via e-wallets.
+- ⭐ Movie scheduling algorithm.
+- 🐞 All UI is responsive to fit all devices.
+- ⏳ And much more!
 
 ## Backend
 
@@ -16,13 +30,6 @@ The backend is composed of the following microservices:
 6. **Reservation Service**: Manages reservations for movie tickets.
 7. **Seat Service**: Manages seat availability and selection.
 8. **Recommend Service**: Responsible for providing suggestions to users.
-
-### Technologies Used
-
-- **Java**
-- **Spring Boot**
-- **Spring Cloud** (for microservices and service discovery)
-- **Eureka** (for service registry)
 
 ## Frontend
 
@@ -48,26 +55,35 @@ The frontend is divided into two separate projects:
 
 ### Technologies Used
 
-- **ReactJS**
-- **Axios** (for making API requests)
-- **Tailwindcss** (for making API requests)
-- **Shadcn/ui** (for making API requests)
-- **Nextjs** (for making API requests)
-- **Angular** (for making API requests)
-- **Flowbite** (for making API requests)
-- **Java** (for making API requests)
-- **Spring Boot** (for making API requests)
-- **Spring security** (for making API requests)
-- **Microservices** (for making API requests)
-  -...
+### Technologies Used
+
+- 🍏 Java 17
+- 🍎 Spring Boot
+- 🍐 Spring Security
+- 🍊 Spring Cloud (for microservices and service discovery)
+- 🍋 Eureka (for service registry)
+- 🍉 Python
+- 🍇 Flask
+- 🍓 MySQL, MongoDB and Redis
+- 🍈 Nextjs
+- 🥝 Angular
+- 🥑 Axios
+- 🍍Tailwindcss
+- 🍒 Shadcn/ui
+- 🍑 Zod
+- 🍆 React Hook Form
+- 🥒Tanstack Table
+- 🥕 Socket.io
+- 🍌 ...
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Java 17**
+- **JDK 17**
 - **Node.js**
 - **npm or yarn**
+- **python 3**
 
 ### Installation
 
@@ -75,6 +91,8 @@ The frontend is divided into two separate projects:
 
    - Clone the repository and navigate to the backend directory.
    - Build the project using Maven: `mvn clean install`.
+   - Next, just start Registry Service first and then the remaining services.
+   - For recommendation service just run `py main.py`.
 
 2. **Frontend**:
    - Clone the repository and navigate to the frontend directories (user and admin).
@@ -85,7 +103,3 @@ The frontend is divided into two separate projects:
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit pull requests for any enhancements or bug fixes.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
